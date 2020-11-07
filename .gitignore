@@ -1,0 +1,15 @@
+# write by hyelim
+
+*.user
+
+BombRect/.vs/
+BombRect/Debug/
+BombRect/Release/
+BombRect/x64/
+
+BombRect/BombRect_Client/Debug/
+BombRect/BombRect_Client/Release/
+BombRect/BombRect_Client/x64/
+BombRect/BombRect_Server/Debug/
+BombRect/BombRect_Server/Release/
+BombRect/BombRect_Server/x64/

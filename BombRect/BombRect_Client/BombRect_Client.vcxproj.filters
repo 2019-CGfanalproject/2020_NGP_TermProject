@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Default">
+      <UniqueIdentifier>{272a7028-2d6d-434f-9982-c39d1b575e41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Default\Header">
+      <UniqueIdentifier>{136fe76f-96c6-4077-bffd-52a74a2c06f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Default\Source">
+      <UniqueIdentifier>{ac665899-ff48-4444-8d5b-a22c28e75140}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{5f1bbc96-c403-4d72-bd14-dde780959588}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameFramework">
+      <UniqueIdentifier>{ad72d736-fbdb-4d83-b296-c3887524f367}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NetworkCommunicator">
+      <UniqueIdentifier>{84a8ad48-8c9e-45bb-a90a-a5f523592d9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject">
+      <UniqueIdentifier>{d9d36520-05de-47d4-8c98-21179f585638}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Default\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Default\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Default\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Default\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="BombRect_Client.h">
+      <Filter>Default\Header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>Default\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="BombRect_Client.cpp">
+      <Filter>Default\Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="BombRect_Client.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="BombRect_Client.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
