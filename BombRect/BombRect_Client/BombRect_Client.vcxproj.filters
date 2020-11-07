@@ -26,6 +26,12 @@
     <Filter Include="GameObject">
       <UniqueIdentifier>{d9d36520-05de-47d4-8c98-21179f585638}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene\SceneManager">
+      <UniqueIdentifier>{3dfc6c65-f37a-44ff-8b38-1ed49755b916}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Scenes">
+      <UniqueIdentifier>{2f893943-6a5a-467f-b344-3043988f9e75}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -43,6 +49,16 @@
     <ClInclude Include="BombRect_Client.h">
       <Filter>Default\Header</Filter>
     </ClInclude>
+    <ClInclude Include="GameFramework.h">
+      <Filter>GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Scene\SceneManager</Filter>
+    </ClInclude>
+    <ClInclude Include="global.h" />
+    <ClInclude Include="Scene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -50,6 +66,12 @@
     </ClCompile>
     <ClCompile Include="BombRect_Client.cpp">
       <Filter>Default\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="GameFramework.cpp">
+      <Filter>GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Scene\SceneManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
