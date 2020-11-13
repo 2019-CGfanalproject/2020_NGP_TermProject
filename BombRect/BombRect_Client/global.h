@@ -1,4 +1,7 @@
 #pragma once
+constexpr LONG CLIENT_WIDTH = 500;
+constexpr LONG CLIENT_HEIGHT = 500;
+
 enum class SceneID : int {
 	LOGIN,
 	LOBBY,

@@ -102,8 +102,21 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+   RECT desktop_rect;
+   GetWindowRect(GetDesktopWindow(), &desktop_rect);
+
+   HWND hWnd = CreateWindowW(
+       szWindowClass, 
+       szTitle, 
+       WS_POPUP,
+       (desktop_rect.right - CLIENT_WIDTH) / 2,
+       (desktop_rect.bottom - CLIENT_HEIGHT) / 2,
+       CLIENT_WIDTH, CLIENT_HEIGHT,
+       nullptr, 
+       nullptr, 
+       hInstance, 
+       nullptr
+   );
 
    if (!hWnd)
    {
@@ -153,24 +166,4 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
     return 0;
-}
-
-// 정보 대화 상자의 메시지 처리기입니다.
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    UNREFERENCED_PARAMETER(lParam);
-    switch (message)
-    {
-    case WM_INITDIALOG:
-        return (INT_PTR)TRUE;
-
-    case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-        {
-            EndDialog(hDlg, LOWORD(wParam));
-            return (INT_PTR)TRUE;
-        }
-        break;
-    }
-    return (INT_PTR)FALSE;
 }

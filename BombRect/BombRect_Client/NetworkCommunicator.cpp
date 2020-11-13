@@ -10,7 +10,6 @@ void NetworkCommunicator::Initialize()
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0);
 
-	// 소켓 만들기
 	m_Socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (INVALID_SOCKET == m_Socket);
 }
@@ -25,7 +24,7 @@ void NetworkCommunicator::Connect(const char* ip_addr, const String& nickname)
 	int rtv = connect(m_Socket, (SOCKADDR*)&server_addr, sizeof(server_addr));
 	if (SOCKET_ERROR == rtv);
 
-	login_packet::CS_Nickname packet;
+	login_packet::CS_Nickname packet{ };
 	
 	for (int i = 0; i < nickname.length(); ++i)
 		packet.buf[i] = nickname[i];
@@ -43,6 +42,8 @@ void NetworkCommunicator::SendChatting(const String& chatting)
 		packet.string[i] = chatting[i];
 	send(m_Socket, (char*)&packet, sizeof(packet), 0);	// 문자열 개수만큼만 보내기
 	// recv(m_Socket, )	 헤더를 먼저 받고
+
+
 	// recv(m_Socket, )  이후 맞는 데이터를 받는다.
 }
 

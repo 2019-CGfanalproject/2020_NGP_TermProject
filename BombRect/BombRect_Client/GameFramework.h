@@ -8,8 +8,6 @@ class GameFramework
 
 	SceneManager m_SceneManager;
 
-	bool instantiated = false;
-
 public:
 	GameFramework();
 	~GameFramework();

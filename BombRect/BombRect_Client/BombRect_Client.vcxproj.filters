@@ -14,9 +14,6 @@
     <Filter Include="Default\Source">
       <UniqueIdentifier>{ac665899-ff48-4444-8d5b-a22c28e75140}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene">
-      <UniqueIdentifier>{5f1bbc96-c403-4d72-bd14-dde780959588}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GameFramework">
       <UniqueIdentifier>{ad72d736-fbdb-4d83-b296-c3887524f367}</UniqueIdentifier>
     </Filter>
@@ -25,6 +22,9 @@
     </Filter>
     <Filter Include="GameObject">
       <UniqueIdentifier>{d9d36520-05de-47d4-8c98-21179f585638}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{5f1bbc96-c403-4d72-bd14-dde780959588}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scene\SceneManager">
       <UniqueIdentifier>{3dfc6c65-f37a-44ff-8b38-1ed49755b916}</UniqueIdentifier>
