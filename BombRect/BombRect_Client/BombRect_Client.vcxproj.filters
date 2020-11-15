@@ -32,6 +32,9 @@
     <Filter Include="Scene\Scenes">
       <UniqueIdentifier>{2f893943-6a5a-467f-b344-3043988f9e75}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{b221423a-5270-47a2-b814-67a77c8bbaf2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -65,6 +68,9 @@
     <ClInclude Include="packets.h">
       <Filter>NetworkCommunicator</Filter>
     </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -81,6 +87,9 @@
     </ClCompile>
     <ClCompile Include="NetworkCommunicator.cpp">
       <Filter>NetworkCommunicator</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

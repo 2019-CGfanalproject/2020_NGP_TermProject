@@ -15,10 +15,14 @@
 
 // C++ 런타임 헤더 파일입니다.
 #include <array>
-
 #include <string>
 #ifdef UNICODE
 typedef std::wstring String;
 #else
 typedef std::string String;
 #endif
+
+// DirectX
+#include <d2d1.h>
+#pragma comment(lib, "D2D1")
+#include <wincodec.h>

@@ -14,6 +14,8 @@ void GameFramework::Initialize(HINSTANCE instance, HWND wnd)
 {
 	m_Inst = instance;
 	m_Wnd = wnd;
+
+	m_Renderer.Initailize(wnd);
 }
 
 void GameFramework::Release()
@@ -27,6 +29,7 @@ void GameFramework::Update()
 
 void GameFramework::Render()
 {
+	m_Renderer.Render();
 	m_SceneManager.RenderCurrentScene();
 }
 
