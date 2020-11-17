@@ -35,6 +35,12 @@
     <Filter Include="Renderer">
       <UniqueIdentifier>{b221423a-5270-47a2-b814-67a77c8bbaf2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene\Scenes\Login">
+      <UniqueIdentifier>{f2b177b8-681c-4c6f-8a50-8813848b68be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Scenes\Game">
+      <UniqueIdentifier>{14a8bc3f-c7c8-4735-8335-2f1fbc6affc6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -71,6 +77,12 @@
     <ClInclude Include="Renderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="LoginScene.h">
+      <Filter>Scene\Scenes\Login</Filter>
+    </ClInclude>
+    <ClInclude Include="GameScene.h">
+      <Filter>Scene\Scenes\Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -90,6 +102,12 @@
     </ClCompile>
     <ClCompile Include="Renderer.cpp">
       <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="LoginScene.cpp">
+      <Filter>Scene\Scenes\Login</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScene.cpp">
+      <Filter>Scene\Scenes\Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

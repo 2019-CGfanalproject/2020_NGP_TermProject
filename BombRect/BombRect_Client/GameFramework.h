@@ -1,13 +1,16 @@
 #pragma once
 #include "SceneManager.h"
 #include "Renderer.h"
+#include "NetworkCommunicator.h"
+
 class GameFramework
 {
 	HINSTANCE m_Inst;
 	HWND m_Wnd;
 
-	Renderer m_Renderer;
-	SceneManager m_SceneManager;
+	Renderer			m_Renderer;
+	SceneManager		m_SceneManager;
+	NetworkCommunicator m_Communicator;
 
 public:
 	GameFramework();

@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "GameFramework.h"
-#include "SceneManager.h"
 
 GameFramework::GameFramework()
 {
@@ -16,6 +15,9 @@ void GameFramework::Initialize(HINSTANCE instance, HWND wnd)
 	m_Wnd = wnd;
 
 	m_Renderer.Initailize(wnd);
+	CreateThread(NULL, 0, NetworkCommunicator::ServerMain, (LPVOID)&m_Communicator, 0, NULL);
+
+	m_Communicator.PushMessage(NETWORK_MASSAGE::CONNECT);
 }
 
 void GameFramework::Release()

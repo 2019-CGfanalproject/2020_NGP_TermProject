@@ -7,6 +7,7 @@ Renderer::Renderer():
 	m_RenderTarget(NULL)
 { 
 	// Initialize COM 이라는데 왜 필요한지 정확히 모르겠음
+	// 이거 안 하면 IWICImagingFactory 사용할 때 에러난다
 	CoInitialize(NULL);		// wincodec.h
 }
 
@@ -89,6 +90,7 @@ void Renderer::Render()
 			0.5f
 		);
 	}
+
 
 	// Retrieve the size of the bitmap.
 	D2D1_SIZE_F size = m_TestBitmap->GetSize();

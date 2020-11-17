@@ -4,6 +4,26 @@
 
 #define SERVERPORT 9000
 
+DWORD __stdcall NetworkCommunicator::ServerMain(LPVOID network_communicator)
+{
+	NetworkCommunicator* communicator = (NetworkCommunicator*)network_communicator;
+	
+	communicator->Initialize();
+	OutputDebugString(L"Server Main\n");
+
+	while (true) {
+		if (communicator->m_MessageQueue.empty()) continue;
+		NETWORK_MASSAGE msg =  communicator->m_MessageQueue.front();
+		communicator->TranselateMessage(msg);
+		communicator->m_MessageQueue.pop();
+	}
+}
+
+void NetworkCommunicator::PushMessage(NETWORK_MASSAGE msg)
+{
+	m_MessageQueue.push(msg);
+}
+
 // 예외처리 어떻게 할 지 고민해보기
 void NetworkCommunicator::Initialize()
 {
@@ -30,6 +50,18 @@ void NetworkCommunicator::Connect(const char* ip_addr, const String& nickname)
 		packet.buf[i] = nickname[i];
 
 	send(m_Socket, (const char*)&packet, sizeof(packet), 0);
+}
+
+void NetworkCommunicator::TranselateMessage(NETWORK_MASSAGE msg)
+{
+	switch (msg) {
+	case NETWORK_MASSAGE::CONNECT:
+		OutputDebugString(L"test\n");
+		this->Connect("192.168.120.111", TEXT("혜리무"));
+		break;
+	default:
+		break;
+	}
 }
 
 void NetworkCommunicator::SendChatting(const String& chatting)
