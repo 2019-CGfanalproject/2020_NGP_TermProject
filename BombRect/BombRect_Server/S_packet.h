@@ -2,7 +2,7 @@
 namespace login_packet {
 #pragma pack(1)
 	struct CS_Nickname {
-		wchar_t buf[8];
+		TCHAR buf[16];
 	};
 #pragma pack()
 }

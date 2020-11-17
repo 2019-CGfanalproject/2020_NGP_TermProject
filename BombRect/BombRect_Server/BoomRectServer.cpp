@@ -1,20 +1,20 @@
 #include "S_global.h"
 #include "S_packet.h"
 
-void error_quit(char* msg)
-{
-	LPVOID lpMsgBuf;
-	FormatMessage(
-		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-		NULL,
-		WSAGetLastError(),
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPSTR)&lpMsgBuf, 0, NULL);
-	MessageBox(NULL, (LPCTSTR)lpMsgBuf, msg, MB_ICONERROR);
-	LocalFree(lpMsgBuf);
-	exit(1);
-
-}
+//void error_quit(char* msg)
+//{
+//	LPVOID lpMsgBuf;
+//	FormatMessage(
+//		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+//		NULL,
+//		WSAGetLastError(),
+//		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+//		(LPSTR)&lpMsgBuf, 0, NULL);
+//	MessageBox(NULL, (LPCTSTR)lpMsgBuf, msg, MB_ICONERROR);
+//	LocalFree(lpMsgBuf);
+//	exit(1);
+//
+//}
 
 void error_display(char* msg) {
 	LPVOID lpMsgBuf;
@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
 
 	//socket()
 	SOCKET listen_sock = socket(AF_INET, SOCK_STREAM, 0);
-	if (listen_sock == INVALID_SOCKET) error_quit("socket()");
+	if (listen_sock == INVALID_SOCKET);// error_quit("socket()");
 
 	//bind()
 	SOCKADDR_IN serveraddr;
@@ -67,20 +67,19 @@ int main(int argc, char* argv[])
 	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	serveraddr.sin_port = htons(SERVERPORT);
 	retval = bind(listen_sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
-	if (retval == SOCKET_ERROR) error_quit("bind()");
+	if (retval == SOCKET_ERROR);// error_quit("bind()");
 
 	//listen()
-
 	retval = listen(listen_sock, SOMAXCONN);
-	if (retval == SOCKET_ERROR) error_quit("listen()");
-	HANDLE hThread;
-	cout << "listen\n";
 
+	cout << "listen\n";
+	if (retval == SOCKET_ERROR); //error_quit("listen()");
+	HANDLE hThread;
+	
 	//데이터 통신에 사용할 변수
 	SOCKET client_sock;
 	SOCKADDR_IN clientaddr;
 	int addrlen;
-	char buf[BUFSIZE];
 	login_packet::CS_Nickname nicknamePacket;
 	while (1) {
 		//accept()
@@ -93,11 +92,9 @@ int main(int argc, char* argv[])
 			break;
 		}
 		
-		retval = recv(client_sock, buf, strlen((const char*)nicknamePacket.buf), 0);
-
-
-
-
+		retval = recv(client_sock, (char*)nicknamePacket.buf, sizeof(nicknamePacket.buf), 0);
+		
+		cout << nicknamePacket.buf << endl;
 	}
 
 
