@@ -125,7 +125,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_KEYDOWN:
     case WM_LBUTTONDOWN:
     case WM_LBUTTONUP:
-        g_GameFramework.HandleInput();
+        g_GameFramework.HandleInput(message, wParam, lParam);
         break;
     case WM_DESTROY:
         PostQuitMessage(0);

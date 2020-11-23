@@ -28,6 +28,10 @@ public:
 struct Vector2 {
 	int x;
 	int y;
+	Vector2(int x, int y) : x(x), y(y) { }
+	Vector2 operator+(const Vector2 rhs) {
+		return Vector2(x + rhs.x, y + rhs.y);
+	}
 };
 
 struct TilePos {

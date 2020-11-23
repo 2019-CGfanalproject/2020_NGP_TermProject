@@ -2,15 +2,17 @@
 #include "SceneManager.h"
 #include "Renderer.h"
 #include "NetworkCommunicator.h"
+#include "ObjectContainer.h"
 
 class GameFramework
 {
 	HINSTANCE m_Inst;
+public:
 	HWND m_Wnd;
 
-public:
 	Renderer			m_Renderer;
 	SceneManager		m_SceneManager;
+	ObjectContainer		m_Objects;
 	NetworkCommunicator m_Communicator;
 
 public:
@@ -22,5 +24,5 @@ public:
 
 	void Update();
 	void Render();
-	void HandleInput();
+	void HandleInput(UINT message, WPARAM wParam, LPARAM lParam);
 };

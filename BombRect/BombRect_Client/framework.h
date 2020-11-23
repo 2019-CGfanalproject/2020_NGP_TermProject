@@ -18,6 +18,7 @@
 #include <array>
 #include <list>
 #include <queue>
+#include <map>
 
 #include <string>
 #ifdef UNICODE

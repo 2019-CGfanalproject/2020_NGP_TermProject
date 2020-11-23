@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Renderer.h"
-#include "Scene.h"
+#include "ObjectContainer.h"
 #include "GameObject.h"
 
 Renderer::Renderer():
@@ -23,7 +23,6 @@ Renderer::~Renderer()
 void Renderer::Initailize(HINSTANCE hInst, HWND hWnd)
 {
 	m_Wnd = hWnd;
-
 
 	D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_Factory);
 
@@ -62,13 +61,27 @@ void Renderer::Initailize(HINSTANCE hInst, HWND hWnd)
 	//	&m_TestBitmap
 	//);
 
+	ID2D1Bitmap* tmp;
+
 	LoadBitmapFromFile(
 		m_RenderTarget,
 		m_WICFactory,
 		L"default_map.png",
 		800, 800,
-		&m_TestBitmap
+		&tmp
 	);
+
+	m_Bitmaps.emplace(BitmapKey::BACKGOURND, tmp);
+
+	LoadBitmapFromFile(
+		m_RenderTarget,
+		m_WICFactory,
+		L"closed_tile.png",
+		800, 800,
+		&tmp
+	);
+
+	m_Bitmaps.emplace(BitmapKey::CLOSED_TILE, tmp);
 
 	// Resource Test
 	/*
@@ -144,31 +157,33 @@ void Renderer::TestRender()
 	m_RenderTarget->EndDraw();
 }
 
-void Renderer::RenderScene(Scene* scene)
+void Renderer::Render(const ObjectContainer& objects)
 {
 	m_RenderTarget->BeginDraw();
 	m_RenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 	m_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
 
-	auto list = *(scene->GetObjectList());
 	
-	for (auto& object : list) {
-		object.GetRenderInfo();
-
+	for (auto& object : objects.m_StaticObjects) {
 		// 여기서 가져온 정보들을 이용해 렌더링한다!
+		DrawBitmap(object.GetBitmapKey(), object.GetPos());
 	}
 
-	float padding_x = 40;
-	float padding_y = 40;
-	D2D1_SIZE_F size = m_TestBitmap->GetSize();
+	m_RenderTarget->EndDraw();
+}
+
+void Renderer::DrawBitmap(BitmapKey key, Vector2 pos)
+{
+	auto bitmap = m_Bitmaps.find(key);
+	if (m_Bitmaps.end() == bitmap) return;
+
+	D2D1_SIZE_F size = (bitmap->second)->GetSize();
 
 	m_RenderTarget->DrawBitmap(
-		m_TestBitmap,
-		D2D1::RectF(padding_x, padding_y, 
-			padding_x + size.width, padding_y + size.height)
+		bitmap->second,
+		D2D1::RectF(pos.x, pos.y,
+			pos.x + size.width, pos.y + size.height)
 	);
-
-	m_RenderTarget->EndDraw();
 }
 
 HRESULT Renderer::LoadBitmapFromFile(

@@ -1,13 +1,11 @@
 #pragma once
 #include "Scene.h"
-
-class GameScene : public Scene
+class LoginScene : public Scene
 {
 public:
-	GameScene(GameFramework* framework);
-	virtual ~GameScene();
+	LoginScene(GameFramework* framework);
+	virtual ~LoginScene();
 
-public:
 	void Initialize() override;
 	void Update() override;
 	void HandleInput() override;

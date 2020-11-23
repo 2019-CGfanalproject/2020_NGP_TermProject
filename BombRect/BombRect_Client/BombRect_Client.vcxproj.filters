@@ -65,13 +65,7 @@
       <Filter>Scene\SceneManager</Filter>
     </ClInclude>
     <ClInclude Include="global.h" />
-    <ClInclude Include="Scene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="NetworkCommunicator.h">
-      <Filter>NetworkCommunicator</Filter>
-    </ClInclude>
-    <ClInclude Include="packets.h">
       <Filter>NetworkCommunicator</Filter>
     </ClInclude>
     <ClInclude Include="Renderer.h">
@@ -85,6 +79,12 @@
     </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectContainer.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scene\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -113,6 +113,9 @@
       <Filter>GameFramework</Filter>
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectContainer.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
   </ItemGroup>

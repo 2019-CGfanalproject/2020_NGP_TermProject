@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "NetworkCommunicator.h"
-#include "packets.h"
+#include "../packets.h"
 
 #define SERVERPORT 9000
 
@@ -44,12 +44,12 @@ void NetworkCommunicator::Connect(const char* ip_addr, const String& nickname)
 	int rtv = connect(m_Socket, (SOCKADDR*)&server_addr, sizeof(server_addr));
 	if (SOCKET_ERROR == rtv);
 
-	login_packet::CS_Nickname packet{ };
+	TCHAR buf[16] = { };
 	
 	for (int i = 0; i < nickname.length(); ++i)
-		packet.buf[i] = nickname[i];
+		buf[i] = nickname[i];
 
-	send(m_Socket, (const char*)&packet, sizeof(packet), 0);
+	send(m_Socket, (const char*)buf, sizeof(TCHAR) * 16, 0);
 }
 
 void NetworkCommunicator::TranselateMessage(NETWORK_MASSAGE msg)
