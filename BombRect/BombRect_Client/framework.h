@@ -16,6 +16,7 @@
 
 // C++ 런타임 헤더 파일입니다.
 #include <array>
+#include <list>
 #include <queue>
 
 #include <string>

@@ -8,6 +8,7 @@ class GameFramework
 	HINSTANCE m_Inst;
 	HWND m_Wnd;
 
+public:
 	Renderer			m_Renderer;
 	SceneManager		m_SceneManager;
 	NetworkCommunicator m_Communicator;

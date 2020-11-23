@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "Renderer.h"
+#include "Scene.h"
+#include "GameObject.h"
 
 Renderer::Renderer():
 	m_Wnd(NULL),
@@ -18,7 +20,7 @@ Renderer::~Renderer()
 	SafeRelease(&m_RenderTarget);
 }
 
-void Renderer::Initailize(HWND hWnd)
+void Renderer::Initailize(HINSTANCE hInst, HWND hWnd)
 {
 	m_Wnd = hWnd;
 
@@ -52,16 +54,45 @@ void Renderer::Initailize(HWND hWnd)
 		IID_PPV_ARGS(&m_WICFactory)
 	);
 
+	//LoadBitmapFromFile(
+	//	m_RenderTarget,
+	//	m_WICFactory,
+	//	L"test.bmp",
+	//	100, 100,
+	//	&m_TestBitmap
+	//);
+
 	LoadBitmapFromFile(
 		m_RenderTarget,
 		m_WICFactory,
-		L"test.bmp",
-		100, 100,
+		L"default_map.png",
+		800, 800,
 		&m_TestBitmap
 	);
+
+	// Resource Test
+	/*
+	LoadResourceBitmap(
+		m_RenderTarget,
+		m_WICFactory,
+		L"IDB_BITMAP1",
+		L"BITMAP",
+		200, 0,
+		&m_TestResourceBitmap
+	);
+
+	LoadResourceBitmap(
+		m_RenderTarget,
+		m_WICFactory,
+		L"SampleImage",
+		L"Image",
+		200, 0,
+		&m_TestResourceBitmap
+	);
+	*/
 }
 
-void Renderer::Render()
+void Renderer::TestRender()
 {
 	m_RenderTarget->BeginDraw();
 	m_RenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
@@ -91,7 +122,6 @@ void Renderer::Render()
 		);
 	}
 
-
 	// Retrieve the size of the bitmap.
 	D2D1_SIZE_F size = m_TestBitmap->GetSize();
 
@@ -100,7 +130,44 @@ void Renderer::Render()
 		m_TestBitmap,
 		D2D1::RectF(150, 150, 150 + 200, 150 + 200)
 	);
+
+	// Resource Test
+	/*
+	size = m_TestResourceBitmap->GetSize();
+
+	m_RenderTarget->DrawBitmap(
+		m_TestResourceBitmap,
+		D2D1::RectF(0, 0, size.width, size.height)
+	);
+	*/
 	
+	m_RenderTarget->EndDraw();
+}
+
+void Renderer::RenderScene(Scene* scene)
+{
+	m_RenderTarget->BeginDraw();
+	m_RenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+	m_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
+
+	auto list = *(scene->GetObjectList());
+	
+	for (auto& object : list) {
+		object.GetRenderInfo();
+
+		// 여기서 가져온 정보들을 이용해 렌더링한다!
+	}
+
+	float padding_x = 40;
+	float padding_y = 40;
+	D2D1_SIZE_F size = m_TestBitmap->GetSize();
+
+	m_RenderTarget->DrawBitmap(
+		m_TestBitmap,
+		D2D1::RectF(padding_x, padding_y, 
+			padding_x + size.width, padding_y + size.height)
+	);
+
 	m_RenderTarget->EndDraw();
 }
 
@@ -173,7 +240,130 @@ HRESULT Renderer::LoadBitmapFromFile(
 	return hr;
 }
 
-HRESULT Renderer::LoadResourceBitmap(ID2D1RenderTarget* pRenderTarget, IWICImagingFactory* pIWICFactory, PCWSTR resourceName, PCWSTR resourceType, UINT destinationWidth, UINT destinationHeight, ID2D1Bitmap** ppBitmap)
+
+// 게임에 사용되는 자원을 리소스로 추가시키면
+// 1. 앱을 배포할 때 사용되는 이미지 파일을 따로 보낼 필요 없다.
+// 2. 사용자가 이미지를 삭제하거나 훼손할 수 없다.
+// 어떻게 이런 일이 가능한지...?
+
+HRESULT Renderer::LoadResourceBitmap(
+	ID2D1RenderTarget* pRenderTarget,
+	IWICImagingFactory* pIWICFactory, 
+	PCWSTR resourceName, 
+	PCWSTR resourceType,
+	UINT destinationWidth, 
+	UINT destinationHeight, 
+	ID2D1Bitmap** ppBitmap
+)
 {
-	return S_OK;
+	IWICBitmapDecoder* pDecoder = NULL;
+	IWICBitmapFrameDecode* pSource = NULL;
+	IWICStream* pStream = NULL;
+	IWICFormatConverter* pConverter = NULL;
+	IWICBitmapScaler* pScaler = NULL;
+
+	HRSRC imageResHandle = NULL;
+	HGLOBAL imageResDataHandle = NULL;
+	void* pImageFile = NULL;
+	DWORD imageFileSize = 0;
+
+	// Locate the resource.
+	// typedef HANDLE HINSTANCE
+	// typedef HANDLE HMODULE
+	// 어쨌던 둘 다 핸들임
+
+	imageResHandle = FindResourceW(NULL, resourceName, resourceType);
+	HRESULT hr = imageResHandle ? S_OK : E_FAIL;
+	if (SUCCEEDED(hr))
+	{
+		// Load the resource.
+		imageResDataHandle = LoadResource(NULL, imageResHandle);
+
+		hr = imageResDataHandle ? S_OK : E_FAIL;
+	}
+
+	if (SUCCEEDED(hr))
+	{
+		// Lock it to get a system memory pointer.
+		pImageFile = LockResource(imageResDataHandle);
+
+		hr = pImageFile ? S_OK : E_FAIL;
+	}
+	if (SUCCEEDED(hr))
+	{
+		// Calculate the size.
+		imageFileSize = SizeofResource(NULL, imageResHandle);
+
+		hr = imageFileSize ? S_OK : E_FAIL;
+
+	}
+
+	if (SUCCEEDED(hr))
+	{
+		// Create a WIC stream to map onto the memory.
+		hr = pIWICFactory->CreateStream(&pStream);
+	}
+	if (SUCCEEDED(hr))
+	{
+		// Initialize the stream with the memory pointer and size.
+		hr = pStream->InitializeFromMemory(
+			reinterpret_cast<BYTE*>(pImageFile),
+			imageFileSize
+		);
+	}
+
+	if (SUCCEEDED(hr))
+	{
+		// Create a decoder for the stream.
+		hr = pIWICFactory->CreateDecoderFromStream(
+			pStream,
+			NULL,
+			WICDecodeMetadataCacheOnLoad,
+			&pDecoder
+		);
+	}
+
+	if (SUCCEEDED(hr))
+	{
+		// Create the initial frame.
+		hr = pDecoder->GetFrame(0, &pSource);
+	}
+
+	if (SUCCEEDED(hr))
+	{
+		// Convert the image format to 32bppPBGRA
+		// (DXGI_FORMAT_B8G8R8A8_UNORM + D2D1_ALPHA_MODE_PREMULTIPLIED).
+		hr = pIWICFactory->CreateFormatConverter(&pConverter);
+	}
+
+	if (SUCCEEDED(hr))
+	{
+		hr = pConverter->Initialize(
+			pSource,
+			GUID_WICPixelFormat32bppPBGRA,
+			WICBitmapDitherTypeNone,
+			NULL,
+			0.f,
+			WICBitmapPaletteTypeMedianCut
+		);
+
+		if (SUCCEEDED(hr))
+		{
+			//create a Direct2D bitmap from the WIC bitmap.
+			hr = pRenderTarget->CreateBitmapFromWicBitmap(
+				pConverter,
+				NULL,
+				ppBitmap
+			);
+
+		}
+
+		SafeRelease(&pDecoder);
+		SafeRelease(&pSource);
+		SafeRelease(&pStream);
+		SafeRelease(&pConverter);
+		SafeRelease(&pScaler);
+
+		return hr;
+	}
 }
