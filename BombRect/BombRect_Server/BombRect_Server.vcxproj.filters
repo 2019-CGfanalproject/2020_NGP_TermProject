@@ -15,16 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BoomRectServer.cpp">
-      <Filter>리소스 파일</Filter>
-    </ClCompile>
+    <ClInclude Include="S_global.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="S_global.h">
+    <ClCompile Include="BoomRectServer.cpp">
       <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="S_packet.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
+    </ClCompile>
   </ItemGroup>
 </Project>

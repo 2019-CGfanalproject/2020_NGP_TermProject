@@ -18,12 +18,16 @@ void error_display(char* msg);
 
 int recvn(SOCKET, char*, int, int);
 
+void GameCommunicate(LPVOID arg);
+
+void LobbyCummunicate(LPVOID arg);
 
 
 enum class SceneID : int {
-	LOGIN,
-	LOBBY,
-	GAME,
+	LOGIN, //1
+	LOBBY, //2
+	GAME,  //3
 	RESULT,
 	COUNT,
 };
+
