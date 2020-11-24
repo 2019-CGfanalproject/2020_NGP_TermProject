@@ -147,12 +147,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\global.h" />
+    <ClInclude Include="..\packets.h" />
     <ClInclude Include="BombRect_Client.h" />
+    <ClInclude Include="client_global.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GameFramework.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameScene.h" />
-    <ClInclude Include="global.h" />
     <ClInclude Include="LoginScene.h" />
     <ClInclude Include="NetworkCommunicator.h" />
     <ClInclude Include="ObjectContainer.h" />

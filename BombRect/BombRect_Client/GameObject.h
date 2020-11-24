@@ -1,4 +1,6 @@
 #pragma once
+
+
 class GameObject
 {
 protected:
@@ -16,6 +18,11 @@ public:
 	BitmapKey GetBitmapKey() const {
 		return m_Key;
 	}
+
+	void SetPos(TilePos pos) {
+		m_Pos.x = pos.r * 80;
+		m_Pos.y = pos.c * 80;
+	}
 };
 
 class StaticObject : public GameObject {
@@ -27,5 +34,47 @@ public:
 };
 
 class DynamicObject : public GameObject {
+public:
+	DynamicObject(BitmapKey key, Vector2 pos)
+		: GameObject(key, pos) { }
+};
 
+class Player {
+	DynamicObject* m_Object;
+
+public:
+	PlayerState state = PlayerState::IDLE;
+	bool m_InputControl[5];
+
+	Player(DynamicObject* object)
+		: m_Object(object),
+		state(PlayerState::IDLE)
+	{ 
+		for (int i = 0; i < (int)Input::_COUNT; ++i) {
+			m_InputControl[i] = false;
+		}
+	}
+
+	PlayerState CalcState(WPARAM cur_key) {
+		bool is_idle = true;
+		for (int i = 0; i < 4; ++i) {
+			if (m_InputControl[i]) is_idle = false;
+		}
+		if (is_idle) return PlayerState::IDLE;
+
+		switch (cur_key) {
+		case VK_LEFT:
+			return PlayerState::LEFT;
+		case VK_UP:
+			return PlayerState::UP;
+		case VK_RIGHT:
+			return PlayerState::RIGHT;
+		case VK_DOWN:
+			return PlayerState::DOWN;
+		}
+	}
+
+	void SetPos(TilePos& pos) {
+		m_Object->SetPos(pos);
+	}
 };

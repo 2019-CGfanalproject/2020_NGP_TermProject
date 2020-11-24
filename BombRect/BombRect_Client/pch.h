@@ -9,6 +9,7 @@
 
 // 여기에 미리 컴파일하려는 헤더 추가
 #include "framework.h"
-#include "global.h"
+#include "../global.h"
+#include "client_global.h"
 
 #endif //PCH_H

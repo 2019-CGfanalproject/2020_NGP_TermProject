@@ -32,16 +32,16 @@ void SceneManager::Initialize(GameFramework* framework)
 	m_CurScene->Initialize();
 }
 
-void SceneManager::UpdateCurrentScene()
+void SceneManager::UpdateCurrentScene(PlayerInfo& info)
 {
 	if (m_CurScene)
-		m_CurScene->Update();
+		m_CurScene->Update(info);
 }
 
-void SceneManager::HandleInput()
+void SceneManager::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (m_CurScene)
-		m_CurScene->HandleInput();
+		m_CurScene->HandleInput(message, wParam, lParam);
 }
 
 void SceneManager::StartScene(SceneID id)
@@ -56,5 +56,6 @@ void SceneManager::ChangeScene(SceneID id)
 {
 	// m_CurScene->Destroy();
 	m_CurScene = m_Scenes[(int)id];
+
 	m_CurScene->Initialize();
 }

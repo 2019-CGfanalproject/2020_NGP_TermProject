@@ -19,6 +19,7 @@
 #include <list>
 #include <queue>
 #include <map>
+#include <mutex>
 
 #include <string>
 #ifdef UNICODE
@@ -31,3 +32,6 @@ typedef std::string String;
 #include <d2d1.h>
 #pragma comment(lib, "D2D1")
 #include <wincodec.h>
+
+#include <dwrite.h>
+#pragma comment(lib, "Dwrite")

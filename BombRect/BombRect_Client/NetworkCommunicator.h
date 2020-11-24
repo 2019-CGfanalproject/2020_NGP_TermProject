@@ -1,18 +1,27 @@
 #pragma once
 
-// 너무 Window의 구조체스러움;;
 enum class NETWORK_MASSAGE {
 	CONNECT,
+	PLAYER_IDLE,
+	PLAYER_UP,
+	PLAYER_DOWN,
+	PLAYER_LEFT,
+	PLAYER_RIGHT,
+	UPDATE,
 };
 
+class GameFramework;
 class NetworkCommunicator
 {
+	GameFramework* m_Framework;
 	SOCKET m_Socket;
 	std::queue<NETWORK_MASSAGE> m_MessageQueue;
 
 public:
 	static DWORD WINAPI ServerMain(LPVOID communicator);
 	void PushMessage(NETWORK_MASSAGE msg);
+
+	void SetFramework(GameFramework* framework);
 
 private:
 	void Initialize();
@@ -22,9 +31,9 @@ private:
 
 	void SendChatting(const String& chatting);
 	void SendReady();
-	void SendPlayerState();
+	void SendPlayerState(PlayerState state);
 	void SendBomb();
 
 	void ReceiveRobbyPacket();
-	DWORD WINAPI ReceiveWorldData(LPVOID params);
+	void ReceiveWorldData();
 };

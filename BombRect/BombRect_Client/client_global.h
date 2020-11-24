@@ -1,19 +1,7 @@
 #pragma once
+
 constexpr LONG CLIENT_WIDTH = 800;
 constexpr LONG CLIENT_HEIGHT = 800;
-
-enum class SceneID : int {
-	LOGIN,
-	LOBBY,
-	GAME,
-	RESULT,
-	COUNT,
-};
-
-enum class BitmapKey {
-	BACKGOURND,
-	CLOSED_TILE,
-};
 
 class ClientRect : public RECT {
 public:
@@ -25,18 +13,22 @@ public:
 	}
 };
 
-struct Vector2 {
-	int x;
-	int y;
-	Vector2(int x, int y) : x(x), y(y) { }
-	Vector2 operator+(const Vector2 rhs) {
-		return Vector2(x + rhs.x, y + rhs.y);
-	}
+enum class BitmapKey {
+	BACKGOURND,
+	CLOSED_TILE,
+	CHARACTER_CYAN,
+	CHARACTER_GREEN,
+	CHARACTER_RED,
+	CHARACTER_YELLOW,
 };
 
-struct TilePos {
-	int r;
-	int c;
+enum class Input : int {
+	ARROW_UP,
+	ARROW_DOWN,
+	ARROW_LEFT,
+	ARROW_RIGHT,
+	SPACEBAR,
+	_COUNT,
 };
 
 template<class Interface>

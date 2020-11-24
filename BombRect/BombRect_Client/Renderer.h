@@ -1,6 +1,11 @@
 #pragma once
 class ObjectContainer;
 
+struct BitmapPair {
+	BitmapKey key;
+	std::wstring file_name;
+};
+
 class Renderer
 {
 public:
@@ -12,6 +17,8 @@ public:
 	void TestRender();
 	void Render(const ObjectContainer& objects);
 	void DrawBitmap(BitmapKey key, Vector2 pos);
+
+	HRESULT LoadGameBitmap();
 
 	HRESULT LoadBitmapFromFile(
 		ID2D1RenderTarget* pRenderTarget,
@@ -40,6 +47,9 @@ private:
 	IWICImagingFactory		* m_WICFactory;		// 이미지를 불러오기 위함
 
 	std::map<BitmapKey, ID2D1Bitmap*> m_Bitmaps;
+
+	IDWriteFactory			* m_WriteFactory;
+	IDWriteTextFormat		* m_TextFormat;
 
 	// for test
 	ID2D1SolidColorBrush	* m_TestBrush = nullptr;

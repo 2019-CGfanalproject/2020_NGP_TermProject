@@ -3,6 +3,16 @@
 #include "ObjectContainer.h"
 #include "GameObject.h"
 
+BitmapPair g_bitmapInfo[] = {
+	{ BitmapKey::BACKGOURND,		L"Assets/default_map.png"		},
+	{ BitmapKey::CLOSED_TILE,		L"Assets/closed_tile.png"		},
+	{ BitmapKey::CHARACTER_CYAN,	L"Assets/character_cyan.png"	},
+	{ BitmapKey::CHARACTER_GREEN,	L"Assets/character_green.png"	},
+	{ BitmapKey::CHARACTER_RED,		L"Assets/character_red.png"		},
+	{ BitmapKey::CHARACTER_YELLOW,	L"Assets/character_yellow.png"	},
+};
+
+
 Renderer::Renderer():
 	m_Wnd(NULL),
 	m_Factory(NULL),
@@ -40,12 +50,6 @@ void Renderer::Initailize(HINSTANCE hInst, HWND hWnd)
 		&m_RenderTarget
 	);
 
-	// for test
-	m_RenderTarget->CreateSolidColorBrush(
-		D2D1::ColorF(D2D1::ColorF::LightSlateGray),
-		&m_TestBrush
-	);
-
 	CoCreateInstance(
 		CLSID_WICImagingFactory,
 		NULL,
@@ -53,35 +57,48 @@ void Renderer::Initailize(HINSTANCE hInst, HWND hWnd)
 		IID_PPV_ARGS(&m_WICFactory)
 	);
 
+	DWriteCreateFactory(
+		DWRITE_FACTORY_TYPE_SHARED,
+		__uuidof(IDWriteFactory),
+		reinterpret_cast<IUnknown**>(&m_WriteFactory)
+	);
+
+	m_WriteFactory->CreateTextFormat(
+		L"Gabriola",                // Font family name.
+		NULL,                       // Font collection (NULL sets it to use the system font collection).
+		DWRITE_FONT_WEIGHT_REGULAR,
+		DWRITE_FONT_STYLE_NORMAL,
+		DWRITE_FONT_STRETCH_NORMAL,
+		72.0f,
+		L"en-us",
+		&m_TextFormat
+	);
+
+	
+
+	//ID2D1Bitmap* tmp;
+
 	//LoadBitmapFromFile(
 	//	m_RenderTarget,
 	//	m_WICFactory,
-	//	L"test.bmp",
-	//	100, 100,
-	//	&m_TestBitmap
+	//	L"Assets/default_map.png",
+	//	800, 800,
+	//	&tmp
 	//);
 
-	ID2D1Bitmap* tmp;
+	//m_Bitmaps.emplace(BitmapKey::BACKGOURND, tmp);
 
-	LoadBitmapFromFile(
-		m_RenderTarget,
-		m_WICFactory,
-		L"default_map.png",
-		800, 800,
-		&tmp
-	);
+	//LoadBitmapFromFile(
+	//	m_RenderTarget,
+	//	m_WICFactory,
+	//	L"Assets/closed_tile.png",
+	//	800, 800,
+	//	&tmp
+	//);
 
-	m_Bitmaps.emplace(BitmapKey::BACKGOURND, tmp);
+	//m_Bitmaps.emplace(BitmapKey::CLOSED_TILE, tmp);
 
-	LoadBitmapFromFile(
-		m_RenderTarget,
-		m_WICFactory,
-		L"closed_tile.png",
-		800, 800,
-		&tmp
-	);
-
-	m_Bitmaps.emplace(BitmapKey::CLOSED_TILE, tmp);
+	LoadGameBitmap();
 
 	// Resource Test
 	/*
@@ -103,6 +120,12 @@ void Renderer::Initailize(HINSTANCE hInst, HWND hWnd)
 		&m_TestResourceBitmap
 	);
 	*/
+
+	// for test
+	m_RenderTarget->CreateSolidColorBrush(
+		D2D1::ColorF(D2D1::ColorF::LightSlateGray),
+		&m_TestBrush
+	);
 }
 
 void Renderer::TestRender()
@@ -135,24 +158,17 @@ void Renderer::TestRender()
 		);
 	}
 
-	// Retrieve the size of the bitmap.
-	D2D1_SIZE_F size = m_TestBitmap->GetSize();
-
-	// Draw a bitmap.
-	m_RenderTarget->DrawBitmap(
-		m_TestBitmap,
-		D2D1::RectF(150, 150, 150 + 200, 150 + 200)
+	D2D1_RECT_F layoutRect = D2D1::RectF(
+		0, 0, 200, 100
 	);
 
-	// Resource Test
-	/*
-	size = m_TestResourceBitmap->GetSize();
-
-	m_RenderTarget->DrawBitmap(
-		m_TestResourceBitmap,
-		D2D1::RectF(0, 0, size.width, size.height)
+	m_RenderTarget->DrawTextW(
+		L"Hello World",
+		11,
+		m_TextFormat,
+		layoutRect,
+		m_TestBrush
 	);
-	*/
 	
 	m_RenderTarget->EndDraw();
 }
@@ -161,13 +177,19 @@ void Renderer::Render(const ObjectContainer& objects)
 {
 	m_RenderTarget->BeginDraw();
 	m_RenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-	m_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
+	m_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Cornsilk));
 
 	
 	for (auto& object : objects.m_StaticObjects) {
 		// 여기서 가져온 정보들을 이용해 렌더링한다!
 		DrawBitmap(object.GetBitmapKey(), object.GetPos());
 	}
+
+	for (auto& object : objects.m_DynamicObjects) {
+		DrawBitmap(object.GetBitmapKey(), object.GetPos());
+	}
+
+	// 글씨의 정보를 담는 컨테이너를 만든 후 가져와서 for문 돌리기
 
 	m_RenderTarget->EndDraw();
 }
@@ -184,6 +206,25 @@ void Renderer::DrawBitmap(BitmapKey key, Vector2 pos)
 		D2D1::RectF(pos.x, pos.y,
 			pos.x + size.width, pos.y + size.height)
 	);
+}
+
+HRESULT Renderer::LoadGameBitmap()
+{
+	for (auto& info : g_bitmapInfo) {
+		ID2D1Bitmap* i_bitmap;
+
+		LoadBitmapFromFile(
+			m_RenderTarget,
+			m_WICFactory,
+			info.file_name.c_str(),
+			800, 800,
+			&i_bitmap
+		);
+
+		m_Bitmaps.emplace(info.key, i_bitmap);
+	}
+
+	return S_OK;
 }
 
 HRESULT Renderer::LoadBitmapFromFile(

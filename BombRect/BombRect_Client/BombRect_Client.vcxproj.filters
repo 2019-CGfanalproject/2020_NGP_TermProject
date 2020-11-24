@@ -64,7 +64,6 @@
     <ClInclude Include="SceneManager.h">
       <Filter>Scene\SceneManager</Filter>
     </ClInclude>
-    <ClInclude Include="global.h" />
     <ClInclude Include="NetworkCommunicator.h">
       <Filter>NetworkCommunicator</Filter>
     </ClInclude>
@@ -86,6 +85,11 @@
     <ClInclude Include="Scene.h">
       <Filter>Scene\Scenes</Filter>
     </ClInclude>
+    <ClInclude Include="..\packets.h">
+      <Filter>NetworkCommunicator</Filter>
+    </ClInclude>
+    <ClInclude Include="client_global.h" />
+    <ClInclude Include="..\global.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">

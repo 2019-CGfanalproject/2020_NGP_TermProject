@@ -16,5 +16,6 @@ public:
 
 	virtual void Initialize() = 0;
 	virtual void Update() = 0;
-	virtual void HandleInput() = 0;
+	virtual void Update(PlayerInfo& info) = 0;
+	virtual void HandleInput(UINT message, WPARAM wParam, LPARAM lParam) = 0;
 };

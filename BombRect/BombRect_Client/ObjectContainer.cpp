@@ -6,3 +6,9 @@ void ObjectContainer::AddStaticObject(BitmapKey key, Vector2 pos)
 {
 	m_StaticObjects.emplace_back(key, pos);
 }
+
+DynamicObject* ObjectContainer::AddDynamicObject(BitmapKey key, Vector2 pos)
+{
+	m_DynamicObjects.emplace_back(key, pos);
+	return &m_DynamicObjects.back();
+}
