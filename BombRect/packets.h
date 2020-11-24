@@ -43,6 +43,7 @@ namespace game_packet {
 
 	struct CS_Bomb {
 		PacketType type;
+
 	};
 
 	struct SC_WorldState {

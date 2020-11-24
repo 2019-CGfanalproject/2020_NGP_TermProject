@@ -28,6 +28,8 @@ ClientInfo clients[4];
 
 PlayerInfo playerinfo[4];
 
+BombInfo bomb[12];
+
 int number_of_clients;
 int ReadyCount;
 int alivePlayer;
@@ -108,18 +110,18 @@ unsigned __stdcall ClinetsThread(LPVOID arg) {
 
 		case SceneID::GAME:
 			
-			playerinfo[0].pos.r = 0;
-			playerinfo[0].pos.c = 0;
+			playerinfo[0].pos.r = 1;
+			playerinfo[0].pos.c = 1;
 
 			playerinfo[1].pos.r = 8;
-			playerinfo[1].pos.c = 0;
+			playerinfo[1].pos.c = 1;
 
-			playerinfo[2].pos.r = 0;
+			playerinfo[2].pos.r = 1;
 			playerinfo[2].pos.c = 8;
 
 			playerinfo[3].pos.r = 8;
 			playerinfo[3].pos.c = 8;
-
+			
 			
 			GameCommunicate(arg);
 			break;
@@ -225,22 +227,28 @@ void GameCommunicate(LPVOID arg) {
 
 	GamePacketHeader Gameheader;
 
-	
-
-
 	while (true) {
 		// 너는 리시브만 받고 업데이트로(전역 변수 업데이트 해줘)
 		
 		retval = recvn(client->client, (char*)&Gameheader, sizeof(Gameheader), 0);
-		cout << " packet type:"<<(int)Gameheader.type << '\n' ;
+		if (retval == SOCKET_ERROR) {
+			error_display("recv");
+		}
+		//cout << " packet type:"<<(int)Gameheader.type << '\n' ;
 
 		if (Gameheader.type == game_packet::PacketType::PlayerState) {
 			retval = recvn(client->client, (char*)&PlayerPacket[client->index].state, sizeof(PlayerPacket[client->index].state), 0);
-			cout <<"player state: " <<(int)PlayerPacket[client->index].state << '\n';
+			//cout <<"player state: " <<(int)PlayerPacket[client->index].state << '\n';
 		}
 
 		if (Gameheader.type == game_packet::PacketType::Bomb) {
-
+			// bomb의 위치는 플레이어의 위치
+			if (playerinfo[client->index].bomb_count != 0) {
+				bomb[(client->index*3) + playerinfo[client->index].bomb_count].pos.r=playerinfo[client->index].pos.r;
+				bomb[(client->index*3) + playerinfo[client->index].bomb_count].pos.c=playerinfo[client->index].pos.c;
+				--playerinfo[client->index].bomb_count;
+				
+			}
 
 		}
 		// 충돌 처리
@@ -283,10 +291,9 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 				vel_x[i] = 1;
 				break;
 				
-
 			}
-			float t = 1 / 30;
-			playerinfo[i].pos.r = playerinfo[i].pos.r+  vel_x[i] * t;
+			float t = 1.f / 30.f;
+			playerinfo[i].pos.r = playerinfo[i].pos.r+ vel_x[i] * t;
 			playerinfo[i].pos.c = playerinfo[i].pos.c+ vel_y[i] * t;
 
 			
@@ -313,12 +320,16 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 
 		for (int i = 0; i < number_of_clients; ++i) {
 			send(clients[i].client, (char*)&WorldPacket, sizeof(WorldPacket), 0);
+			
+			cout << "플레이어 수:" << (int)WorldPacket.player_count << '\n'
+				<< "플레이어 정보c" << (int)playerinfo->pos.c << '\n'
+				<< "플레이어 정보r" << (int)playerinfo->pos.r << '\n';
 		}
 
-		if (alivePlayer == 0) { // 원래는 1
-			SceneCheck = SceneID::RESULT;
-			break;
-		}
+		//if (alivePlayer == 0) { // 원래는 1
+		//	SceneCheck = SceneID::RESULT;
+		//	break;
+		//}
 	}
 	return 0;
 }

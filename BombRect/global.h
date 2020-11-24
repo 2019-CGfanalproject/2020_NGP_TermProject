@@ -42,6 +42,15 @@ struct PlayerInfo {
 	TilePos pos;
 	unsigned int life_count;
 	unsigned int bomb_count;
-	unsigned int no_damage_count;
-	
+	unsigned int no_damage_count;	
+};
+
+struct BombInfo {
+	TilePos pos;
+	unsigned int bomb_count_down;
+};
+
+struct ExplosiveInfo {
+	TilePos pos;
+	unsigned int count_down;
 };
