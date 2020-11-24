@@ -46,9 +46,9 @@ namespace game_packet {
 	};
 
 	struct SC_WorldState {
-		unsigned short player;
-		unsigned short bomb;
-		unsigned short explosive;
+		unsigned short player_count; 
+		unsigned short bomb_count;  
+		unsigned short explosive_count; 
 		char buf[1024];
 	};
 #pragma pack()

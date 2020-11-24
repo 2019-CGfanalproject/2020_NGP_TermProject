@@ -12,6 +12,7 @@ struct Vector2 {
 struct TilePos {
 	float r;
 	float c;
+	TilePos() {};
 	TilePos(float r, float c) : r(r), c(c) { }
 	TilePos operator+(const TilePos rhs) {
 		return TilePos(r + rhs.r, c + rhs.c);
@@ -35,11 +36,12 @@ enum class PlayerState {
 	DEAD
 };
 
-class PlayerInfo {
+struct PlayerInfo {
 	int id;
 	PlayerState state;
 	TilePos pos;
 	unsigned int life_count;
 	unsigned int bomb_count;
 	unsigned int no_damage_count;
+	
 };
