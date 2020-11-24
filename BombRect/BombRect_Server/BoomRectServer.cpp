@@ -110,18 +110,6 @@ unsigned __stdcall ClinetsThread(LPVOID arg) {
 
 		case SceneID::GAME:
 			
-			playerinfo[0].pos.r = 1;
-			playerinfo[0].pos.c = 1;
-
-			playerinfo[1].pos.r = 8;
-			playerinfo[1].pos.c = 1;
-
-			playerinfo[2].pos.r = 1;
-			playerinfo[2].pos.c = 8;
-
-			playerinfo[3].pos.r = 8;
-			playerinfo[3].pos.c = 8;
-			
 			
 			GameCommunicate(arg);
 			break;
@@ -234,11 +222,14 @@ void GameCommunicate(LPVOID arg) {
 		if (retval == SOCKET_ERROR) {
 			error_display("recv");
 		}
-		//cout << " packet type:"<<(int)Gameheader.type << '\n' ;
+		cout << " packet type:"<<(int)Gameheader.type << '\n' ;
 
 		if (Gameheader.type == game_packet::PacketType::PlayerState) {
 			retval = recvn(client->client, (char*)&PlayerPacket[client->index].state, sizeof(PlayerPacket[client->index].state), 0);
-			//cout <<"player state: " <<(int)PlayerPacket[client->index].state << '\n';
+			if (retval == SOCKET_ERROR) {
+				error_display("recv");
+			}
+			cout <<"player state: " <<(int)PlayerPacket[client->index].state << '\n';
 		}
 
 		if (Gameheader.type == game_packet::PacketType::Bomb) {
@@ -265,14 +256,25 @@ void ResultCommunicate(LPVOID arg) {
 
 // 클라에서 사용하는 전역 변수 이용해서 업데이트하고 그걸 전부다 한테 send
 unsigned __stdcall UpdateAndSend(LPVOID arg) {
+	//1번
+	playerinfo[0].pos.r = 1.f;
+	playerinfo[0].pos.c = 1.f;
+	//2번
+	//playerinfo[1].pos.r = 8.f;
+	//playerinfo[1].pos.c = 1.f;
+	////3번
+	//playerinfo[2].pos.r = 1.f;
+	//playerinfo[2].pos.c = 8.f;
+	////4번
+	//playerinfo[3].pos.r = 8.f;
+	//playerinfo[3].pos.c = 8.f;
 
-	
 
 	while (SceneCheck == SceneID::GAME) {
 
-		auto  t0 = chrono::high_resolution_clock::now();
+		//auto  t0 = chrono::high_resolution_clock::now();
 
-		for (int i = 0; i < number_of_clients; ++i) {
+		/*for (int i = 0; i < number_of_clients; ++i) {
 			switch (PlayerPacket[i].state) {
 			case PlayerState::IDLE:
 				vel_x[i] = 0;
@@ -293,37 +295,36 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 				
 			}
 			float t = 1.f / 30.f;
-			playerinfo[i].pos.r = playerinfo[i].pos.r+ vel_x[i] * t;
 			playerinfo[i].pos.c = playerinfo[i].pos.c+ vel_y[i] * t;
 
 			
-		}
+		}*/
 
 		// 패킷 보내기전 
-		WorldPacket.player_count = alivePlayer;
+		WorldPacket.player_count = 1;
 		WorldPacket.bomb_count = 0;
 		WorldPacket.explosive_count = 0;
+		playerinfo[0].pos.r = playerinfo[0].pos.r+ 0.1f;
+		//for (int i = 0; i < number_of_clients; ++i) {
+		memcpy(WorldPacket.buf + 0* sizeof(playerinfo), &playerinfo[0], sizeof(playerinfo));
+		
 
-		for (int i = 0; i < number_of_clients; ++i) {
-			memcpy(WorldPacket.buf + i* sizeof(playerinfo), &playerinfo[i], sizeof(playerinfo));
-		}
 
-
-		auto t1 = chrono::high_resolution_clock::now();
+	/*	auto t1 = chrono::high_resolution_clock::now();
 		auto elpased = chrono::duration_cast<chrono::milliseconds>(t1 - t0).count();
-		// 프레임 30분의 1 
-		while (elpased < 32) {
+	*/	// 프레임 30분의 1 
+		/*while (elpased < 32) {
 
 			elpased = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - t0).count();
 			
-		}
+		}*/
 
 		for (int i = 0; i < number_of_clients; ++i) {
-			send(clients[i].client, (char*)&WorldPacket, sizeof(WorldPacket), 0);
-			
-			cout << "플레이어 수:" << (int)WorldPacket.player_count << '\n'
-				<< "플레이어 정보c" << (int)playerinfo->pos.c << '\n'
-				<< "플레이어 정보r" << (int)playerinfo->pos.r << '\n';
+			int retval=send(clients[0].client, (char*)&WorldPacket, sizeof(WorldPacket), 0);
+			if (retval == SOCKET_ERROR) {
+				error_display("send");
+			}
+			//cout << "플레이어 수r:" << (int)playerinfo[0].pos.r << '\n';
 		}
 
 		//if (alivePlayer == 0) { // 원래는 1
@@ -364,9 +365,8 @@ int main(int argc, char* argv[])
 
 	cout << "listen\n";
 	if (retval == SOCKET_ERROR) {
-		cout << "listen()\n";
-	} //error_quit("listen()");
 	
+	}
 	HANDLE hThread;
 	HANDLE hThread2;
 
@@ -374,7 +374,7 @@ int main(int argc, char* argv[])
 	SOCKET client_sock;
 	SOCKADDR_IN clientaddr;
 	int addrlen;
-
+	bool acceptflag = false;
 	while (1) {
 		//accept()
 		
@@ -394,16 +394,16 @@ int main(int argc, char* argv[])
 		hThread = (HANDLE)_beginthreadex(NULL, 0, ClinetsThread, (LPVOID)&clients[number_of_clients], 0, NULL);
 
 		++number_of_clients;
-		
-		hThread2 = (HANDLE)_beginthreadex(NULL, 0, UpdateAndSend, 0, 0, NULL);
-			
+		if (!acceptflag) {
+			cout << "업데이트 시작\n";
+			hThread2 = (HANDLE)_beginthreadex(NULL, 0, UpdateAndSend, 0, 0, NULL);
+			acceptflag = true;
+		}
 		if (hThread == NULL) { closesocket(client_sock); }
 		else {
 			CloseHandle(hThread);
 		}
-		if (hThread2 != NULL) {
-			CloseHandle(hThread2);
-		}
+		
 
 	}
 
