@@ -30,7 +30,6 @@ namespace lobby_packet {
 #pragma pack()
 }
 
-enum PlayerState;
 namespace game_packet {
 	enum class PacketType {
 		PlayerState,
