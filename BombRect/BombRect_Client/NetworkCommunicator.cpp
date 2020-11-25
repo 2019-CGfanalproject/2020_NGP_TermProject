@@ -6,6 +6,25 @@
 
 #define SERVERPORT 9000
 
+int recvn(SOCKET s, char* buf, int len, int flags) {
+	int received;
+	char* ptr = buf;
+	int left = len;
+
+	while (left > 0) {
+		received = recv(s, ptr, left, flags);
+		if (received == SOCKET_ERROR)
+			return SOCKET_ERROR;
+		else if (received == 0)
+			break;
+		left -= received;
+		ptr += received;
+	}
+
+	return (len - left);
+}
+
+
 DWORD __stdcall NetworkCommunicator::ServerMain(LPVOID network_communicator)
 {
 	NetworkCommunicator* communicator = (NetworkCommunicator*)network_communicator;
@@ -15,13 +34,14 @@ DWORD __stdcall NetworkCommunicator::ServerMain(LPVOID network_communicator)
 
 	while (true) {
 		if (communicator->m_MessageQueue.empty()) continue;
-		NETWORK_MASSAGE msg =  communicator->m_MessageQueue.front();
+		CommunicateMessage msg =  communicator->m_MessageQueue.front();
 		communicator->TranselateMessage(msg);
 		communicator->m_MessageQueue.pop();
 	}
 }
 
-void NetworkCommunicator::PushMessage(NETWORK_MASSAGE msg)
+// Main Thread에서만 호출해야 한다, Network Thread에서 부르면 queue 터짐
+void NetworkCommunicator::PushMessage(CommunicateMessage msg)
 {
 	m_MessageQueue.push(msg);
 }
@@ -61,29 +81,34 @@ void NetworkCommunicator::Connect(const char* ip_addr, const String& nickname)
 	// send(m_Socket, (const char*)buf, sizeof(TCHAR) * 16, 0);
 }
 
-void NetworkCommunicator::TranselateMessage(NETWORK_MASSAGE msg)
+void NetworkCommunicator::TranselateMessage(CommunicateMessage msg)
 {
 	switch (msg) {
-	case NETWORK_MASSAGE::CONNECT:
+	case CommunicateMessage::CONNECT: {
 		OutputDebugString(L"test\n");
-		this->Connect("192.168.43.216", TEXT("혜리무"));
+
+		std::string loopback{ "127.0.0.1" };
+		std::string shphone{ "192.168.43.216" };
+
+		this->Connect(shphone.c_str(), TEXT("혜리무"));
 		break;
-	case NETWORK_MASSAGE::PLAYER_UP:
+	}
+	case CommunicateMessage::PLAYER_UP:
 		this->SendPlayerState(PlayerState::UP);
 		break;
-	case NETWORK_MASSAGE::PLAYER_DOWN:
+	case CommunicateMessage::PLAYER_DOWN:
 		this->SendPlayerState(PlayerState::DOWN);
 		break;
-	case NETWORK_MASSAGE::PLAYER_LEFT:
+	case CommunicateMessage::PLAYER_LEFT:
 		this->SendPlayerState(PlayerState::LEFT);
 		break;
-	case NETWORK_MASSAGE::PLAYER_RIGHT:
+	case CommunicateMessage::PLAYER_RIGHT:
 		this->SendPlayerState(PlayerState::RIGHT);
 		break;
-	case NETWORK_MASSAGE::PLAYER_IDLE:
+	case CommunicateMessage::PLAYER_IDLE:
 		this->SendPlayerState(PlayerState::IDLE);
 		break;
-	case NETWORK_MASSAGE::UPDATE:
+	case CommunicateMessage::UPDATE:
 		this->ReceiveWorldData();
 		break;
 	default:
@@ -136,23 +161,46 @@ void NetworkCommunicator::ReceiveWorldData()
 {
 	PlayerInfo p[4];
 
-	WorldHeader world_header;
+	//WorldHeader world_header;
 
-	while (true) {
-		int rtv = recv(m_Socket, (char*)&world_header, sizeof(world_header), 0);
+	game_packet::SC_WorldState packet;
 
-		if (SOCKET_ERROR == rtv) {
-			OutputDebugString(L"recv 실패\n");
-		}
+	recvn(m_Socket, (char*)&packet, sizeof(packet), 0);
 
+	//memcpy(&p[0], packet.buf, sizeof(PlayerInfo));
 
-		for (int i = 0; i < world_header.player_count; ++i) {
-			recv(m_Socket, (char*)&p[i], sizeof(PlayerInfo), 0);
-		}
-
-		OutputDebugStringA(std::to_string(p[0].pos.r).c_str());
-		OutputDebugStringA("\n");
-
-		m_Framework->m_SceneManager.UpdateCurrentScene(p[0]);
+	OutputDebugString((LPCWSTR)std::to_wstring(packet.player_count).c_str());
+	if (packet.player_count != 1) {
+		OutputDebugString(L"이상한 값;\n");
 	}
+	for (int i = 0; i < packet.player_count; ++i) {
+		memcpy(&p[i], packet.buf + (i * sizeof(PlayerInfo)), sizeof(PlayerInfo));
+	}
+
+
+	//int rtv = recv(m_Socket, (char*)&world_header, sizeof(world_header), 0);
+
+	//if (SOCKET_ERROR == rtv) {
+	//	OutputDebugString(L"recv 실패\n");
+	//}
+
+	//char buf[1024];
+
+	//recv(m_Socket, (char*)buf, sizeof(buf), 0);
+
+	//// 플레이어 카운트에 이상한 값이 들어온다.
+	//for (int i = 0; i < world_header.player_count; ++i) {
+	//	memcpy(&p[i], buf + i * sizeof(PlayerInfo), sizeof(PlayerInfo));
+	//}
+
+
+	// 월드 패킷의 1024바이트를 모두 보낸다;;
+	// 그럼 여기서 무조건 1024바이트를 받은 다음 해석해야지 문제가 없다.
+	// 이건 낭비 아니냐??
+
+
+	OutputDebugStringA(std::to_string(p[0].pos.r).c_str());
+	OutputDebugStringA("\n");
+
+	m_Framework->m_SceneManager.UpdateCurrentScene(p[0]);
 }

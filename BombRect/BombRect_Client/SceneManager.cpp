@@ -28,7 +28,7 @@ void SceneManager::Initialize(GameFramework* framework)
 	m_Scenes[(int)SceneID::LOGIN] = new LoginScene{ framework };
 	m_Scenes[(int)SceneID::GAME] = new GameScene{ framework };
 
-	m_CurScene = m_Scenes[0];
+	m_CurScene = m_Scenes[(int)SceneID::LOGIN];
 	m_CurScene->Initialize();
 }
 
@@ -36,6 +36,12 @@ void SceneManager::UpdateCurrentScene(PlayerInfo& info)
 {
 	if (m_CurScene)
 		m_CurScene->Update(info);
+}
+
+void SceneManager::UpdateCurrentScene()
+{
+	if (m_CurScene)
+		m_CurScene->Update();
 }
 
 void SceneManager::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)

@@ -15,7 +15,7 @@ using namespace std;
 
 void error_quit(char* msg);
 
-void error_display(char* msg);
+void error_display(const char* msg);
 
 int recvn(SOCKET, char*, int, int);
 

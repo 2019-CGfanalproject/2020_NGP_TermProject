@@ -43,8 +43,6 @@ void GameScene::Initialize()
 	// 플레이어 세팅
 	auto player = m_Framework->m_Objects.AddDynamicObject(BitmapKey::CHARACTER_CYAN, Vector2(0, 0));
 	m_Player = new Player(player);
-
-	m_Framework->m_Communicator.PushMessage(NETWORK_MASSAGE::UPDATE);
 }
 
 //PlayerInfo g_lobby_state[4] = {
@@ -54,6 +52,7 @@ void GameScene::Initialize()
 
 void GameScene::Update()
 {
+	m_Framework->m_Communicator.PushMessage(CommunicateMessage::UPDATE);
 }
 
 void GameScene::Update(PlayerInfo& info)
@@ -109,17 +108,19 @@ void GameScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 
 		switch (cur_state) {
 		case PlayerState::UP:
-			m_Framework->m_Communicator.PushMessage(NETWORK_MASSAGE::PLAYER_UP);
+			m_Framework->m_Communicator.SendPlayerState(PlayerState::UP);
 			break;
 		case PlayerState::DOWN:
-			m_Framework->m_Communicator.PushMessage(NETWORK_MASSAGE::PLAYER_DOWN);
+			m_Framework->m_Communicator.SendPlayerState(PlayerState::DOWN);
 			break;
 		case PlayerState::LEFT:
-			m_Framework->m_Communicator.PushMessage(NETWORK_MASSAGE::PLAYER_LEFT);
+			m_Framework->m_Communicator.SendPlayerState(PlayerState::LEFT);
 			break;
 		case PlayerState::RIGHT:
-			m_Framework->m_Communicator.PushMessage(NETWORK_MASSAGE::PLAYER_RIGHT);
+			m_Framework->m_Communicator.SendPlayerState(PlayerState::RIGHT);
 			break;
+		case PlayerState::IDLE:
+			m_Framework->m_Communicator.SendPlayerState(PlayerState::IDLE);
 		}
 	}
 }

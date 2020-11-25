@@ -15,6 +15,7 @@ public:
 
 	void Initialize(GameFramework* framework);
 	void UpdateCurrentScene(PlayerInfo& info);
+	void UpdateCurrentScene();
 	void HandleInput(UINT message, WPARAM wParam, LPARAM lParam);
 
 	// Scene을 전환을 위한 메소드 제공
