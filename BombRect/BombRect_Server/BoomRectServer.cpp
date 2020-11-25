@@ -275,13 +275,15 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 	//playerinfo[3].pos.r = 8.f;
 	//playerinfo[3].pos.c = 8.f;
 
-	//int x;
 	while (true) {
 
-		//auto  t0 = chrono::high_resolution_clock::now();
+		g_m.lock();
+		PlayerState test = testState;
+		g_m.unlock();
 
-		//for (int i = 0; i < number_of_clients; ++i) {
-			/*switch (PlayerPacket[i].state) {
+		/*for (int i = 0; i < number_of_clients; ++i) {
+
+			switch (PlayerPacket[i].state) {
 			case PlayerState::IDLE:
 				vel_x[i] = 0;
 				vel_y[i] = 0;
@@ -304,14 +306,10 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 				vel_y[i] = 0;
 
 				break;
-				*/
-				//}
 
-		g_m.lock();
-		PlayerState test = testState;
-		g_m.unlock();
-
-		switch (/*PlayerPacket[0].state*/test) {
+			}
+		}*/
+		switch (test) {
 		case PlayerState::IDLE:
 			vel_x[0] = 0;
 			vel_y[0] = 0;
@@ -335,14 +333,14 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 
 			break;
 
-
 		}
-		game_packet::SC_WorldState WorldPacket;
+
+		game_packet::SC_WorldState WorldPacket{};
 		// 패킷 보내기전 
 		WorldPacket.player_count = 1;
 		WorldPacket.bomb_count = 0;
 		WorldPacket.explosive_count = 0;
-		float t = 1.f / 300.f;
+		float t = 1.f / 300.f *3.f;	
 		playerinfo[0].pos.r = playerinfo[0].pos.r + vel_x[0] * t;
 		playerinfo[0].pos.c = playerinfo[0].pos.c + vel_y[0] * t;
 
@@ -352,14 +350,6 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 		}
 
 
-		/*auto t1 = chrono::high_resolution_clock::now();
-		auto elpased = chrono::duration_cast<chrono::milliseconds>(t1 - t0).count();
-		*/// 프레임 30분의 1 
-		/*while (elpased < 32) {
-
-			elpased = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - t0).count();
-
-		}*/
 
 		for (int i = 0; i < number_of_clients; ++i) {
 			int retval = send(clients[0].client, (char*)&WorldPacket, sizeof(WorldPacket), 0);
@@ -368,13 +358,11 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 			}
 		}
 
-		//if (alivePlayer == 0) { // 원래는 1
-		//	SceneCheck = SceneID::RESULT;
-		//	break;
-		//}
+		::Sleep(32);
 	}
 	return 0;
 }
+
 
 
 
