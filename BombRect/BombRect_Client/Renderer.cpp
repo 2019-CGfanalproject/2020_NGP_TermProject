@@ -177,7 +177,7 @@ void Renderer::Render(const ObjectContainer& objects)
 {
 	m_RenderTarget->BeginDraw();
 	m_RenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-	m_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Cornsilk));
+	m_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::DimGray));
 
 	
 	for (auto& object : objects.m_StaticObjects) {

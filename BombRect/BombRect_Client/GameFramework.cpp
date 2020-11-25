@@ -19,7 +19,7 @@ void GameFramework::Initialize(HINSTANCE instance, HWND wnd)
 	CreateThread(NULL, 0, NetworkCommunicator::ServerMain, (LPVOID)&m_Communicator, 0, NULL);
 	m_Communicator.SetFramework(this);
 
-	m_Communicator.PushMessage(NETWORK_MASSAGE::CONNECT);
+	m_Communicator.PushMessage(CommunicateMessage::CONNECT);
 }
 
 void GameFramework::Release()
@@ -28,12 +28,13 @@ void GameFramework::Release()
 
 void GameFramework::Update()
 {
-	// m_SceneManager.UpdateCurrentScene();
+	m_SceneManager.UpdateCurrentScene();
 }
 
 void GameFramework::Render()
 {
 	// m_Renderer.TestRender();
+	Update();
 	m_Renderer.Render(m_Objects);
 }
 
