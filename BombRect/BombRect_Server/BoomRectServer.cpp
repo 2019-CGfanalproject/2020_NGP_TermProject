@@ -34,9 +34,8 @@ int number_of_clients;
 int ReadyCount;
 int alivePlayer;
 
-game_packet::CS_PlayerState PlayerPacket[4];
+game_packet::CS_PlayerState volatile PlayerPacket[4];
 game_packet::CS_Bomb BombPacket;
-game_packet::SC_WorldState WorldPacket;
 
 float vel_x[4], vel_y[4];
 
@@ -202,6 +201,8 @@ void LobbyCummunicate(LPVOID arg)
 
 }
 
+PlayerState testState;
+std::mutex g_m;
 
 void GameCommunicate(LPVOID arg) {
 	ClientInfo* client = (ClientInfo*)arg;
@@ -229,6 +230,9 @@ void GameCommunicate(LPVOID arg) {
 			if (retval == SOCKET_ERROR) {
 				error_display("recv");
 			}
+			g_m.lock();
+			testState = PlayerPacket[0].state;
+			g_m.unlock();
 			cout <<"player state: " <<(int)PlayerPacket[client->index].state << '\n';
 		}
 
@@ -256,6 +260,8 @@ void ResultCommunicate(LPVOID arg) {
 
 // 클라에서 사용하는 전역 변수 이용해서 업데이트하고 그걸 전부다 한테 send
 unsigned __stdcall UpdateAndSend(LPVOID arg) {
+
+	cout << "UpadteAndSend 실행\n";
 	//1번
 	playerinfo[0].pos.r = 1.f;
 	playerinfo[0].pos.c = 1.f;
@@ -269,62 +275,97 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 	//playerinfo[3].pos.r = 8.f;
 	//playerinfo[3].pos.c = 8.f;
 
-
-	while (SceneCheck == SceneID::GAME) {
+	//int x;
+	while (true) {
 
 		//auto  t0 = chrono::high_resolution_clock::now();
 
-		/*for (int i = 0; i < number_of_clients; ++i) {
-			switch (PlayerPacket[i].state) {
+		//for (int i = 0; i < number_of_clients; ++i) {
+			/*switch (PlayerPacket[i].state) {
 			case PlayerState::IDLE:
 				vel_x[i] = 0;
 				vel_y[i] = 0;
 				break;
 			case PlayerState::UP:
-				vel_y[i] = 1;
+				vel_x[i] = 0;
+				vel_y[i] = -1;
 				break;
 			case PlayerState::DOWN:
-				vel_y[i] = -1;
+				vel_x[i] = 0;
+				vel_y[i] = +1;
 				break;
 			case PlayerState::LEFT:
 				vel_x[i] = -1;
+				vel_y[i] = 0;
+
 				break;
 			case PlayerState::RIGHT:
 				vel_x[i] = 1;
+				vel_y[i] = 0;
+
 				break;
-				
-			}
-			float t = 1.f / 30.f;
-			playerinfo[i].pos.c = playerinfo[i].pos.c+ vel_y[i] * t;
+				*/
+				//}
 
-			
-		}*/
+		g_m.lock();
+		PlayerState test = testState;
+		g_m.unlock();
 
+		switch (/*PlayerPacket[0].state*/test) {
+		case PlayerState::IDLE:
+			vel_x[0] = 0;
+			vel_y[0] = 0;
+			break;
+		case PlayerState::UP:
+			vel_x[0] = 0;
+			vel_y[0] = -1;
+			break;
+		case PlayerState::DOWN:
+			vel_x[0] = 0;
+			vel_y[0] = +1;
+			break;
+		case PlayerState::LEFT:
+			vel_x[0] = -1;
+			vel_y[0] = 0;
+
+			break;
+		case PlayerState::RIGHT:
+			vel_x[0] = 1;
+			vel_y[0] = 0;
+
+			break;
+
+
+		}
+		game_packet::SC_WorldState WorldPacket;
 		// 패킷 보내기전 
 		WorldPacket.player_count = 1;
 		WorldPacket.bomb_count = 0;
 		WorldPacket.explosive_count = 0;
-		playerinfo[0].pos.r = playerinfo[0].pos.r+ 0.1f;
-		//for (int i = 0; i < number_of_clients; ++i) {
-		memcpy(WorldPacket.buf + 0* sizeof(playerinfo), &playerinfo[0], sizeof(playerinfo));
-		
+		float t = 1.f / 300.f;
+		playerinfo[0].pos.r = playerinfo[0].pos.r + vel_x[0] * t;
+		playerinfo[0].pos.c = playerinfo[0].pos.c + vel_y[0] * t;
 
 
-	/*	auto t1 = chrono::high_resolution_clock::now();
+		for (int i = 0; i < number_of_clients; ++i) {
+			memcpy(WorldPacket.buf + 0 * sizeof(playerinfo), &playerinfo[0], sizeof(PlayerInfo));
+		}
+
+
+		/*auto t1 = chrono::high_resolution_clock::now();
 		auto elpased = chrono::duration_cast<chrono::milliseconds>(t1 - t0).count();
-	*/	// 프레임 30분의 1 
+		*/// 프레임 30분의 1 
 		/*while (elpased < 32) {
 
 			elpased = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - t0).count();
-			
+
 		}*/
 
 		for (int i = 0; i < number_of_clients; ++i) {
-			int retval=send(clients[0].client, (char*)&WorldPacket, sizeof(WorldPacket), 0);
+			int retval = send(clients[0].client, (char*)&WorldPacket, sizeof(WorldPacket), 0);
 			if (retval == SOCKET_ERROR) {
 				error_display("send");
 			}
-			//cout << "플레이어 수r:" << (int)playerinfo[0].pos.r << '\n';
 		}
 
 		//if (alivePlayer == 0) { // 원래는 1
@@ -334,6 +375,7 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 	}
 	return 0;
 }
+
 
 
 int main(int argc, char* argv[])
