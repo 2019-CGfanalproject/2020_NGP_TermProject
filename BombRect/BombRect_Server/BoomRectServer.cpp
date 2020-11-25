@@ -1,21 +1,7 @@
 #include "pch.h"
 #include <chrono>
+#include <list>
 
-
-//void error_quit(char* msg)
-//{
-//	LPVOID lpMsgBuf;
-//	FormatMessage(
-//		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-//		NULL,
-//		WSAGetLastError(),
-//		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-//		(LPSTR)&lpMsgBuf, 0, NULL);
-//	MessageBox(NULL, (LPCTSTR)lpMsgBuf, msg, MB_ICONERROR);
-//	LocalFree(lpMsgBuf);
-//	exit(1);
-//
-//}
 
 SceneID SceneCheck;
 
@@ -23,12 +9,30 @@ struct ClientInfo {
 	SOCKET client;
 	int		index;
 };
+HANDLE hThread2;
+
 
 ClientInfo clients[4];
 
 PlayerInfo playerinfo[4];
 
-BombInfo bomb[12];
+
+struct S_Bombinfo {
+	SendBombInfo bombinfo;
+	int id;
+
+	S_Bombinfo(SendBombInfo i_bombinfo,int i_id) {
+		bombinfo.pos.r = i_bombinfo.pos.r;
+		bombinfo.pos.c = i_bombinfo.pos.c;
+		bombinfo.bomb_count_down = i_bombinfo.bomb_count_down;
+		id = i_id;
+
+	}
+};
+
+
+
+list<S_Bombinfo> bombs;
 
 int number_of_clients;
 int ReadyCount;
@@ -94,7 +98,7 @@ int recvn(SOCKET s, char* buf, int len, int flags) {
 
 
 unsigned __stdcall ClinetsThread(LPVOID arg) {
-	SceneCheck = SceneID::GAME;
+	SceneCheck = SceneID::LOBBY;
 	HANDLE hThread;
 	while (true) {
 
@@ -135,11 +139,13 @@ void LobbyCummunicate(LPVOID arg)
 	bool ReadyPressed = false; 
 	lobby_packet::CS_Nickname nicknamePacket{};
 	
-		retval = recvn(client->client, (char*)nicknamePacket.buf, sizeof(nicknamePacket.buf), 0);
+	// 닉네임 받는 부분
+
+	/*	retval = recvn(client->client, (char*)nicknamePacket.buf, sizeof(nicknamePacket.buf), 0);
 		for (int i = 0; i < number_of_clients; ++i) {
 			send(clients[i].client, (const char*)&nicknamePacket, sizeof(nicknamePacket), 0);
 		}
-	
+	*/
 	LobbyPacketHeader header;
 	
 	// 레디 패킷이랑 채팅 구분;
@@ -148,6 +154,7 @@ void LobbyCummunicate(LPVOID arg)
 
 		//레디
 		if (header.type == lobby_packet::PacketType::READY) {
+			cout << "Ready 받음\n";
 			lobby_packet::Ready readyPacket{};
 			readyPacket.type = lobby_packet::PacketType::READY;
 
@@ -168,20 +175,23 @@ void LobbyCummunicate(LPVOID arg)
 			}
 			if (number_of_clients == ReadyCount) {
 				// 게임 시작 패킷 보내기
-				lobby_packet::SC_GameStart startPacket;
+
+				lobby_packet::SC_GameStart startPacket{};
 				startPacket.type = lobby_packet::PacketType::GAME_START;
 				for (int i = 0; i < number_of_clients; ++i) {
 					send(clients[i].client, (char*)&startPacket, sizeof(startPacket), 0);
+					cout << "strat packet send\n";
 				}
-
 				break;
 			}
 
 
 		}
+
 		//채팅
 		if (header.type == lobby_packet::PacketType::CHATING) {
 			//채팅 패킷 보내기
+
 			char ChattingBuf[256]{};
 			lobby_packet::Chatting chattingPacket;
 			chattingPacket.type = lobby_packet::PacketType::CHATING;
@@ -196,8 +206,8 @@ void LobbyCummunicate(LPVOID arg)
 	}
 
 	
-	closesocket(client->client);
 	SceneCheck = SceneID::GAME;
+	ResumeThread(hThread2);
 
 }
 
@@ -230,19 +240,13 @@ void GameCommunicate(LPVOID arg) {
 			if (retval == SOCKET_ERROR) {
 				error_display("recv");
 			}
-			g_m.lock();
-			testState = PlayerPacket[0].state;
-			g_m.unlock();
 			cout <<"player state: " <<(int)PlayerPacket[client->index].state << '\n';
 		}
 
 		if (Gameheader.type == game_packet::PacketType::Bomb) {
 			// bomb의 위치는 플레이어의 위치
 			if (playerinfo[client->index].bomb_count != 0) {
-				bomb[(client->index*3) + playerinfo[client->index].bomb_count].pos.r=playerinfo[client->index].pos.r;
-				bomb[(client->index*3) + playerinfo[client->index].bomb_count].pos.c=playerinfo[client->index].pos.c;
-				--playerinfo[client->index].bomb_count;
-				
+				//bombs.emplace_back(TilePos(playerinfo[client->index].pos), 3, (int)client->index);
 			}
 
 		}
@@ -277,11 +281,8 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 
 	while (true) {
 
-		g_m.lock();
-		PlayerState test = testState;
-		g_m.unlock();
-
-		/*for (int i = 0; i < number_of_clients; ++i) {
+		
+		for (int i = 0; i < number_of_clients; ++i) {
 
 			switch (PlayerPacket[i].state) {
 			case PlayerState::IDLE:
@@ -308,46 +309,27 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 				break;
 
 			}
-		}*/
-		switch (test) {
-		case PlayerState::IDLE:
-			vel_x[0] = 0;
-			vel_y[0] = 0;
-			break;
-		case PlayerState::UP:
-			vel_x[0] = 0;
-			vel_y[0] = -1;
-			break;
-		case PlayerState::DOWN:
-			vel_x[0] = 0;
-			vel_y[0] = +1;
-			break;
-		case PlayerState::LEFT:
-			vel_x[0] = -1;
-			vel_y[0] = 0;
-
-			break;
-		case PlayerState::RIGHT:
-			vel_x[0] = 1;
-			vel_y[0] = 0;
-
-			break;
-
 		}
-
+		
 		game_packet::SC_WorldState WorldPacket{};
 		// 패킷 보내기전 
-		WorldPacket.player_count = 1;
-		WorldPacket.bomb_count = 0;
+		WorldPacket.player_count = alivePlayer;
+		WorldPacket.bomb_count = bombs.size();
 		WorldPacket.explosive_count = 0;
 		float t = 1.f / 300.f *3.f;	
 		playerinfo[0].pos.r = playerinfo[0].pos.r + vel_x[0] * t;
 		playerinfo[0].pos.c = playerinfo[0].pos.c + vel_y[0] * t;
 
-
+		char* cur_ptr = WorldPacket.buf;
 		for (int i = 0; i < number_of_clients; ++i) {
-			memcpy(WorldPacket.buf + 0 * sizeof(playerinfo), &playerinfo[0], sizeof(PlayerInfo));
+			memcpy(cur_ptr, &playerinfo[0], sizeof(PlayerInfo));
+			cur_ptr += i * sizeof(PlayerInfo);
 		}
+		
+		/*for (int i = 0; i < bombs.size(); ++i) {
+			memcpy(cur_ptr ,  , sizeof(BombInfo));
+			cur_ptr += i * sizeof(BombInfo);
+		}*/
 
 
 
@@ -398,8 +380,7 @@ int main(int argc, char* argv[])
 	
 	}
 	HANDLE hThread;
-	HANDLE hThread2;
-
+	
 	//데이터 통신에 사용할 변수
 	SOCKET client_sock;
 	SOCKADDR_IN clientaddr;
@@ -426,7 +407,7 @@ int main(int argc, char* argv[])
 		++number_of_clients;
 		if (!acceptflag) {
 			cout << "업데이트 시작\n";
-			hThread2 = (HANDLE)_beginthreadex(NULL, 0, UpdateAndSend, 0, 0, NULL);
+			hThread2 = (HANDLE)_beginthreadex(NULL, 0, UpdateAndSend, 0,CREATE_SUSPENDED, NULL);
 			acceptflag = true;
 		}
 		if (hThread == NULL) { closesocket(client_sock); }

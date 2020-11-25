@@ -45,7 +45,7 @@ struct PlayerInfo {
 	unsigned int no_damage_count;	
 };
 
-struct BombInfo {
+struct SendBombInfo {
 	TilePos pos;
 	unsigned int bomb_count_down;
 };
