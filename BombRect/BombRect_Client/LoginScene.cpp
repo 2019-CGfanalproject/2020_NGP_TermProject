@@ -15,6 +15,9 @@ LoginScene::~LoginScene()
 
 void LoginScene::Initialize()
 {
+    m_Framework->m_Objects.AddStaticObject(BitmapKey::TITLE,
+        Vector2(0, 0));
+
     //HWND hwndEdit = CreateWindowEx(
     //    0, L"EDIT",   // predefined class 
     //    NULL,         // no window title 

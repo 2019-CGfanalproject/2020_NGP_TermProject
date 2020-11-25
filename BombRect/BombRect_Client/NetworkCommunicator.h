@@ -17,6 +17,8 @@ class NetworkCommunicator
 	SOCKET m_Socket;
 	std::queue<CommunicateMessage> m_MessageQueue;
 
+	SceneID m_CurScene;
+
 public:
 	static DWORD WINAPI ServerMain(LPVOID communicator);
 	void PushMessage(CommunicateMessage msg);
@@ -26,13 +28,13 @@ public:
 	void SendChatting(const String& chatting);
 	void SendReady();
 	void SendBomb();
+	void Connect(const char* ip_addr, const String& nickname);
 
 private:
 	void Initialize();
-	void Connect(const char* ip_addr, const String& nickname);
 
 	void TranselateMessage(CommunicateMessage msg);
 
 	void ReceiveRobbyPacket();
-	void ReceiveWorldData();
+	void ReceiveGameData();
 };

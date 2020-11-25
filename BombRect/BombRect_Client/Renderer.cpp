@@ -10,6 +10,7 @@ BitmapPair g_bitmapInfo[] = {
 	{ BitmapKey::CHARACTER_GREEN,	L"Assets/character_green.png"	},
 	{ BitmapKey::CHARACTER_RED,		L"Assets/character_red.png"		},
 	{ BitmapKey::CHARACTER_YELLOW,	L"Assets/character_yellow.png"	},
+	{ BitmapKey::TITLE,				L"Assets/title.png"	},
 };
 
 
@@ -73,30 +74,6 @@ void Renderer::Initailize(HINSTANCE hInst, HWND hWnd)
 		L"en-us",
 		&m_TextFormat
 	);
-
-	
-
-	//ID2D1Bitmap* tmp;
-
-	//LoadBitmapFromFile(
-	//	m_RenderTarget,
-	//	m_WICFactory,
-	//	L"Assets/default_map.png",
-	//	800, 800,
-	//	&tmp
-	//);
-
-	//m_Bitmaps.emplace(BitmapKey::BACKGOURND, tmp);
-
-	//LoadBitmapFromFile(
-	//	m_RenderTarget,
-	//	m_WICFactory,
-	//	L"Assets/closed_tile.png",
-	//	800, 800,
-	//	&tmp
-	//);
-
-	//m_Bitmaps.emplace(BitmapKey::CLOSED_TILE, tmp);
 
 	LoadGameBitmap();
 

@@ -19,7 +19,11 @@ void GameFramework::Initialize(HINSTANCE instance, HWND wnd)
 	CreateThread(NULL, 0, NetworkCommunicator::ServerMain, (LPVOID)&m_Communicator, 0, NULL);
 	m_Communicator.SetFramework(this);
 
-	m_Communicator.PushMessage(CommunicateMessage::CONNECT);
+	//std::string loopback{ "127.0.0.1" };
+	//std::string shphone{ "192.168.43.216" };
+
+	//m_Communicator.Connect(shphone.c_str(), TEXT("Çý¸®¹«"));
+	//m_Communicator.PushMessage(CommunicateMessage::CONNECT);
 }
 
 void GameFramework::Release()
@@ -43,12 +47,14 @@ void GameFramework::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 	// for test
 	switch (message) {
 	case WM_KEYUP:
-	case WM_KEYDOWN:
 		switch (wParam) {
 		case VK_RETURN:
-			m_SceneManager.ChangeScene(SceneID::GAME);
+			m_Communicator.SendReady();
+			// m_SceneManager.ChangeScene(SceneID::GAME);
 			break;
 		}
+		break;
+	case WM_KEYDOWN:
 		break;
 	case WM_LBUTTONDOWN:
 	case WM_LBUTTONUP:

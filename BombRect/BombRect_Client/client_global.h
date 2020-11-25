@@ -20,6 +20,7 @@ enum class BitmapKey {
 	CHARACTER_GREEN,
 	CHARACTER_RED,
 	CHARACTER_YELLOW,
+	TITLE,
 };
 
 enum class Input : int {
