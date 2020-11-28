@@ -1,8 +1,11 @@
 #include "pch.h"
 #include "SceneManager.h"
 #include "GameFramework.h"
-#include "GameScene.h"
+
 #include "LoginScene.h"
+#include "LobbyScene.h"
+#include "GameScene.h"
+// #include "ResultScene.h"
 
 SceneManager::SceneManager()
 {
@@ -26,6 +29,7 @@ void SceneManager::Initialize(GameFramework* framework)
 	// Scene들을 생성한다.
 	m_Framework = framework;
 	m_Scenes[(int)SceneID::LOGIN] = new LoginScene{ framework };
+	m_Scenes[(int)SceneID::LOBBY] = new LobbyScene{ framework };
 	m_Scenes[(int)SceneID::GAME] = new GameScene{ framework };
 
 	m_CurScene = m_Scenes[(int)SceneID::LOGIN];
@@ -36,6 +40,16 @@ void SceneManager::UpdateCurrentScene(PlayerInfo& info)
 {
 	if (m_CurScene)
 		m_CurScene->Update(info);
+}
+
+void SceneManager::UpdateCurrentScene(game_packet::SC_WorldState world)
+{
+
+}
+
+void SceneManager::UpdateCurrentScene(PlayerInfo players[], SendBombInfo bombs[])
+{
+
 }
 
 void SceneManager::UpdateCurrentScene()
@@ -60,6 +74,8 @@ void SceneManager::StopScene()
 
 void SceneManager::ChangeScene(SceneID id)
 {
+	if (m_CurScene->GetID() == id) return;
+	
 	// m_CurScene->Destroy();
 	m_CurScene = m_Scenes[(int)id];
 

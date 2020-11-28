@@ -45,6 +45,10 @@ void GameScene::Initialize()
 	m_Player = new Player(player);
 }
 
+void GameScene::Destroy()
+{
+}
+
 //PlayerInfo g_lobby_state[4] = {
 //	{0, nullptr},{1, nullptr},
 //	{2, nullptr},{3, nullptr},
@@ -52,12 +56,23 @@ void GameScene::Initialize()
 
 void GameScene::Update()
 {
-	m_Framework->m_Communicator.PushMessage(CommunicateMessage::UPDATE);
 }
 
 void GameScene::Update(PlayerInfo& info)
 {
 	m_Player->SetPos(info.pos);
+}
+
+// 함수에 인자로 넘겨주는 건 좀...
+void GameScene::Update(PlayerInfo players[], SendBombInfo bombs[])
+{
+	m_Player->SetPos(players[0].pos);
+	for (int i = 0; i < 12; ++i) {
+		if (-1 == bombs[i].bomb_count_down) break;
+
+		Vector2 pos{ (int)bombs[i].pos.r * 80, (int)bombs[i].pos.c * 80 };
+		m_Framework->m_Objects.AddDynamicObject(BitmapKey::BOMB, pos);
+	}
 }
 
 void GameScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
@@ -83,6 +98,9 @@ void GameScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	case WM_KEYDOWN:
 		switch (wParam) {
+		case VK_SPACE:
+			m_Framework->m_Communicator.SendBomb();
+			break;
 		case VK_LEFT:
 			m_Player->m_InputControl[(int)Input::ARROW_LEFT] = true;
 			break;

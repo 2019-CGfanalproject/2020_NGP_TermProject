@@ -23,53 +23,11 @@ int recvn(SOCKET s, char* buf, int len, int flags) {
 	return (len - left);
 }
 
-DWORD __stdcall NetworkCommunicator::ServerMain(LPVOID network_communicator)
-{
-	NetworkCommunicator* communicator = (NetworkCommunicator*)network_communicator;
-	
-	communicator->Initialize();
-	OutputDebugString(L"Server Main\n");
-
-	communicator->m_CurScene = SceneID::LOGIN;
-
-	std::string loopback{ "127.0.0.1" };
-	std::string shphone{ "192.168.43.216" };
-
-	communicator->Connect(shphone.c_str(), TEXT("혜리무"));
-
-	while (true) {
-		switch (communicator->m_CurScene) {
-		case SceneID::LOGIN:
-			communicator->ReceiveRobbyPacket();
-			break;
-		case SceneID::GAME:
-			communicator->ReceiveGameData();
-			break;
-		}
-	}
-
-	//while (true) {
-	//	if (communicator->m_MessageQueue.empty()) continue;
-	//	CommunicateMessage msg =  communicator->m_MessageQueue.front();
-	//	communicator->TranselateMessage(msg);
-	//	communicator->m_MessageQueue.pop();
-	//}
-}
-
-// Main Thread에서만 호출해야 한다, Network Thread에서 부르면 queue 터짐
-void NetworkCommunicator::PushMessage(CommunicateMessage msg)
-{
-	m_MessageQueue.push(msg);
-}
-
-void NetworkCommunicator::SetFramework(GameFramework* framework)
+// 예외처리 어떻게 할 지 고민해보기
+void NetworkCommunicator::Initialize(GameFramework* framework)
 {
 	m_Framework = framework;
-}
 
-// 예외처리 어떻게 할 지 고민해보기
-void NetworkCommunicator::Initialize()
-{
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0);
 
@@ -77,8 +35,37 @@ void NetworkCommunicator::Initialize()
 	if (INVALID_SOCKET == m_Socket);
 }
 
-void NetworkCommunicator::Connect(const char* ip_addr, const String& nickname)
+DWORD WINAPI NetworkCommunicator::ReceiveProc(LPVOID params)
+{	
+	NetworkCommunicator* communicator = (NetworkCommunicator*)params;
+
+	OutputDebugString(L"ReceiveProc\n");
+
+	// 이것보다는 씬을 전환할 때 인터럽트를 걸 수 있으면 좋겠다.
+	SceneManager& scene = communicator->m_Framework->m_SceneManager;
+
+	communicator->m_CurScene = SceneID::LOBBY;
+
+	while (true) {
+		switch (communicator->m_CurScene) {
+		case SceneID::LOBBY:
+			communicator->ReceiveRobbyPacket();
+			communicator->m_CurScene = SceneID::GAME;
+			break;
+		case SceneID::GAME:
+			communicator->ReceiveGameData();
+			communicator->m_CurScene = SceneID::RESULT;
+		case SceneID::RESULT:
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+bool NetworkCommunicator::Connect(const char* ip_addr, const String& nickname)
 {
+	// 1. 서버와 연결
     SOCKADDR_IN server_addr{ };
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = inet_addr(ip_addr);
@@ -87,49 +74,15 @@ void NetworkCommunicator::Connect(const char* ip_addr, const String& nickname)
 	int rtv = connect(m_Socket, (SOCKADDR*)&server_addr, sizeof(server_addr));
 	if (SOCKET_ERROR == rtv) {
 		OutputDebugString(L"connect 실패\n");
+		return false;
 	}
 
-	//TCHAR buf[16] = { };
-	//
-	//for (int i = 0; i < nickname.length(); ++i)
-	//	buf[i] = nickname[i];
+	// 2. nickname 보내기
+	
 
-	// send(m_Socket, (const char*)buf, sizeof(TCHAR) * 16, 0);
-}
-
-void NetworkCommunicator::TranselateMessage(CommunicateMessage msg)
-{
-	switch (msg) {
-	case CommunicateMessage::CONNECT: {
-		OutputDebugString(L"test\n");
-
-		std::string loopback{ "127.0.0.1" };
-		std::string shphone{ "192.168.43.216" };
-
-		this->Connect(shphone.c_str(), TEXT("혜리무"));
-		break;
-	}
-	case CommunicateMessage::PLAYER_UP:
-		this->SendPlayerState(PlayerState::UP);
-		break;
-	case CommunicateMessage::PLAYER_DOWN:
-		this->SendPlayerState(PlayerState::DOWN);
-		break;
-	case CommunicateMessage::PLAYER_LEFT:
-		this->SendPlayerState(PlayerState::LEFT);
-		break;
-	case CommunicateMessage::PLAYER_RIGHT:
-		this->SendPlayerState(PlayerState::RIGHT);
-		break;
-	case CommunicateMessage::PLAYER_IDLE:
-		this->SendPlayerState(PlayerState::IDLE);
-		break;
-	case CommunicateMessage::UPDATE:
-		this->ReceiveGameData();
-		break;
-	default:
-		break;
-	}
+	// 3. ReceiveThread 돌리기
+	CreateThread(NULL, 0, ReceiveProc, (LPVOID)this, NULL, NULL);
+	return true;
 }
 
 void NetworkCommunicator::SendChatting(const String& chatting)
@@ -154,17 +107,7 @@ void NetworkCommunicator::SendReady()
 	packet.size = 0;
 	
 	send(m_Socket, (const char*)&packet, sizeof(packet), 0);
-	OutputDebugStringA("ready 보냄");
-
-	//recvn(m_Socket, (char*)&packet, sizeof(packet), 0);
-	//OutputDebugStringA("ready 받음");
-
-	//{
-	//	lobby_packet::SC_GameStart packet;
-
-	//	recvn(m_Socket, (char*)&packet, sizeof(packet), 0);
-	//	OutputDebugStringA("game start 받음");
-	//}
+	OutputDebugString(TEXT("ready 보냄\n"));
 }
 
 void NetworkCommunicator::SendPlayerState(PlayerState state)
@@ -177,6 +120,10 @@ void NetworkCommunicator::SendPlayerState(PlayerState state)
 
 void NetworkCommunicator::SendBomb()
 {
+	game_packet::CS_Bomb packet;
+	packet.type = game_packet::PacketType::Bomb;
+
+	send(m_Socket, (char*)&packet, sizeof(packet), 0);
 }
 
 struct LobbyHeader {
@@ -204,7 +151,6 @@ void NetworkCommunicator::ReceiveRobbyPacket()
 			break;
 		}
 		case PacketType::GAME_START: {
-			m_CurScene = SceneID::GAME;
 			m_Framework->m_SceneManager.ChangeScene(SceneID::GAME);
 			OutputDebugStringA("게임씬 시작~!");
 			return;
@@ -222,47 +168,41 @@ struct WorldHeader {
 void NetworkCommunicator::ReceiveGameData()
 {
 	PlayerInfo p[4];
+	SendBombInfo b[12];
+
 
 	game_packet::SC_WorldState packet;
 
 	while (true) {
+
+		// 패킷 받기
 		recvn(m_Socket, (char*)&packet, sizeof(packet), 0);
 
-
-		//memcpy(&p[0], packet.buf, sizeof(PlayerInfo));
-
-		OutputDebugString((LPCWSTR)std::to_wstring(packet.player_count).c_str());
+		// OutputDebugString((LPCWSTR)std::to_wstring(packet.player_count).c_str());
 		if (packet.player_count != 1) {
-			// OutputDebugString(L"이상한 값;\n");
+			OutputDebugString(L"이상한 값;\n");
 		}
+
+		// 패킷 해석
+		char* ptr = packet.buf;
 		for (int i = 0; i < packet.player_count; ++i) {
-			memcpy(&p[i], packet.buf + (i * sizeof(PlayerInfo)), sizeof(PlayerInfo));
+			memcpy(&p[i], ptr, sizeof(PlayerInfo));
+			ptr += sizeof(PlayerInfo);
+		}
+		for (int i = 0; i < packet.bomb_count; ++i) {
+			memcpy(&b[i], ptr, sizeof(SendBombInfo));
+			ptr += sizeof(SendBombInfo);
 		}
 
-		//int rtv = recv(m_Socket, (char*)&world_header, sizeof(world_header), 0);
-
-		//if (SOCKET_ERROR == rtv) {
-		//	OutputDebugString(L"recv 실패\n");
-		//}
-
-		//char buf[1024];
-
-		//recv(m_Socket, (char*)buf, sizeof(buf), 0);
-
-		//// 플레이어 카운트에 이상한 값이 들어온다.
-		//for (int i = 0; i < world_header.player_count; ++i) {
-		//	memcpy(&p[i], buf + i * sizeof(PlayerInfo), sizeof(PlayerInfo));
-		//}
-
-
-		// 월드 패킷의 1024바이트를 모두 보낸다;;
-		// 그럼 여기서 무조건 1024바이트를 받은 다음 해석해야지 문제가 없다.
-		// 이건 낭비 아니냐??
-
-
-		OutputDebugStringA(std::to_string(p[0].pos.r).c_str());
-		OutputDebugStringA("\n");
+		//OutputDebugStringA(std::to_string(p[0].pos.r).c_str());
+		//OutputDebugStringA("\n");
 
 		m_Framework->m_SceneManager.UpdateCurrentScene(p[0]);
+
+		// auto scene = m_Framework->m_SceneManager.GetCurrScene();
+		// scene->
+
+		// 월드 state를 어떻게 업데이트 할 것이냐...
+		// m_Framework->m_SceneManager.UpdateCurrentScene(packet);
 	}
 }

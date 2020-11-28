@@ -1,5 +1,6 @@
 #pragma once
 #include "Scene.h"
+#include "../packets.h"
 
 class GameFramework;
 class SceneManager
@@ -15,6 +16,8 @@ public:
 
 	void Initialize(GameFramework* framework);
 	void UpdateCurrentScene(PlayerInfo& info);
+	void UpdateCurrentScene(game_packet::SC_WorldState world);
+	void UpdateCurrentScene(PlayerInfo players[], SendBombInfo bombs[]);
 	void UpdateCurrentScene();
 	void HandleInput(UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -25,5 +28,9 @@ public:
 
 	Scene* GetCurrScene() {
 		return m_CurScene;
+	}
+
+	SceneID GetCurrSceneID() {
+		return m_CurScene->GetID();
 	}
 };

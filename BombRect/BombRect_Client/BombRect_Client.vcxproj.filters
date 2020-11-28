@@ -35,11 +35,17 @@
     <Filter Include="Scene\Scenes">
       <UniqueIdentifier>{2f893943-6a5a-467f-b344-3043988f9e75}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\Scenes\Login">
-      <UniqueIdentifier>{f2b177b8-681c-4c6f-8a50-8813848b68be}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Scene\Scenes\Game">
       <UniqueIdentifier>{14a8bc3f-c7c8-4735-8335-2f1fbc6affc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Scenes\Lobby">
+      <UniqueIdentifier>{bdca38a0-3a4f-4237-9f51-2c58422b460a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Scenes\Result">
+      <UniqueIdentifier>{d621e65a-029e-42ca-ad67-94b07304aa92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Scenes\Login">
+      <UniqueIdentifier>{f2b177b8-681c-4c6f-8a50-8813848b68be}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -90,6 +96,12 @@
     </ClInclude>
     <ClInclude Include="client_global.h" />
     <ClInclude Include="..\global.h" />
+    <ClInclude Include="LobbyScene.h">
+      <Filter>Scene\Scenes\Lobby</Filter>
+    </ClInclude>
+    <ClInclude Include="ResultScene.h">
+      <Filter>Scene\Scenes\Result</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -121,6 +133,12 @@
     </ClCompile>
     <ClCompile Include="ObjectContainer.cpp">
       <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="LobbyScene.cpp">
+      <Filter>Scene\Scenes\Lobby</Filter>
+    </ClCompile>
+    <ClCompile Include="ResultScene.cpp">
+      <Filter>Scene\Scenes\Result</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

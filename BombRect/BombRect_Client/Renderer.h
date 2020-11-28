@@ -15,6 +15,7 @@ public:
 public:
 	void Initailize(HINSTANCE hInst, HWND hWnd);
 	void TestRender();
+	void DrawLobbyLayout();
 	void Render(const ObjectContainer& objects);
 	void DrawBitmap(BitmapKey key, Vector2 pos);
 

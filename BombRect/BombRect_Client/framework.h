@@ -19,6 +19,7 @@
 #include <list>
 #include <queue>
 #include <map>
+#include <thread>
 #include <mutex>
 
 #include <string>

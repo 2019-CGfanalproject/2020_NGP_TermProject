@@ -1,21 +1,27 @@
 #pragma once
 
-// 泅犁 纠俊辑狼 按眉 积己苞 家戈 包府甫 窃
 class GameFramework;
+
+// 按眉 积己苞 家戈 包府
 class Scene abstract
 {
 protected:
 	// Scene Interface class
-	SceneID m_ID;
 	GameFramework* m_Framework;
+	const SceneID m_ID;
 
 public:
+
 	Scene(GameFramework* framework, SceneID id) 
 		: m_Framework(framework), m_ID(id) { }
 	virtual ~Scene() { }
 
 	virtual void Initialize() = 0;
+	virtual void Destroy() = 0;
 	virtual void Update() = 0;
 	virtual void Update(PlayerInfo& info) = 0;
 	virtual void HandleInput(UINT message, WPARAM wParam, LPARAM lParam) = 0;
+	virtual const SceneID GetID() const { 
+		return m_ID;
+	}
 };

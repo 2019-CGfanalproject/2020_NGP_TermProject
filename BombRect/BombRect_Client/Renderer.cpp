@@ -11,6 +11,10 @@ BitmapPair g_bitmapInfo[] = {
 	{ BitmapKey::CHARACTER_RED,		L"Assets/character_red.png"		},
 	{ BitmapKey::CHARACTER_YELLOW,	L"Assets/character_yellow.png"	},
 	{ BitmapKey::TITLE,				L"Assets/title.png"	},
+	{ BitmapKey::IPADDR_EDITBAR,	L"Assets/ipaddr_editbar.png"	},
+	{ BitmapKey::READY_BUTTON,		L"Assets/ready_button.png"	},
+	{ BitmapKey::BOMB,				L"Assets/bomb.png"	},
+	{ BitmapKey::BOMB_WHITE,		L"Assets/bomb_white.png"	},
 };
 
 
@@ -147,6 +151,27 @@ void Renderer::TestRender()
 		m_TestBrush
 	);
 	
+	m_RenderTarget->EndDraw();
+}
+
+void Renderer::DrawLobbyLayout()
+{
+	m_RenderTarget->BeginDraw();
+	m_RenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+	m_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::DimGray));
+
+	m_RenderTarget->DrawLine(
+		D2D1_POINT_2F{ 300.f, 0.f },
+		D2D1_POINT_2F{ 300.f, 800.f },
+		m_TestBrush
+	);
+
+	m_RenderTarget->DrawLine(
+		D2D1_POINT_2F{ 300.f, 600.f },
+		D2D1_POINT_2F{ 800.f, 600.f },
+		m_TestBrush
+	);
+
 	m_RenderTarget->EndDraw();
 }
 
