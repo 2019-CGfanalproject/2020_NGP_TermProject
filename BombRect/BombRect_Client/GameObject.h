@@ -1,6 +1,5 @@
 #pragma once
 
-
 class GameObject
 {
 protected:
@@ -37,6 +36,17 @@ class DynamicObject : public GameObject {
 public:
 	DynamicObject(BitmapKey key, Vector2 pos)
 		: GameObject(key, pos) { }
+
+	virtual void Update(Vector2 pos) { };
+};
+
+class Character : public DynamicObject {
+	int m_UserID;
+
+public:
+	Character(int id, BitmapKey key, Vector2 pos);
+	void Update(Vector2 pos) override;
+
 };
 
 class Player {

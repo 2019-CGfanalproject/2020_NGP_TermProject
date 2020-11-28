@@ -32,6 +32,9 @@ void LoginScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message) {
 	case WM_KEYUP:
 		switch (wParam) {
+		case VK_SPACE:
+			m_Framework->m_SceneManager.ChangeScene(SceneID::LOBBY);
+			break;
 		case VK_RETURN:
 			TryConnecting();
 			m_Framework->m_SceneManager.ChangeScene(SceneID::LOBBY);

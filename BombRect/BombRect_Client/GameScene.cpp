@@ -40,6 +40,8 @@ void GameScene::Initialize()
 			);
 	}
 
+	// m_Framework->m_Objects.AddCharater()
+
 	// 플레이어 세팅
 	auto player = m_Framework->m_Objects.AddDynamicObject(BitmapKey::CHARACTER_CYAN, Vector2(0, 0));
 	m_Player = new Player(player);

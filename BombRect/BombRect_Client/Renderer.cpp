@@ -10,11 +10,11 @@ BitmapPair g_bitmapInfo[] = {
 	{ BitmapKey::CHARACTER_GREEN,	L"Assets/character_green.png"	},
 	{ BitmapKey::CHARACTER_RED,		L"Assets/character_red.png"		},
 	{ BitmapKey::CHARACTER_YELLOW,	L"Assets/character_yellow.png"	},
-	{ BitmapKey::TITLE,				L"Assets/title.png"	},
+	{ BitmapKey::TITLE,				L"Assets/title.png"				},
 	{ BitmapKey::IPADDR_EDITBAR,	L"Assets/ipaddr_editbar.png"	},
-	{ BitmapKey::READY_BUTTON,		L"Assets/ready_button.png"	},
-	{ BitmapKey::BOMB,				L"Assets/bomb.png"	},
-	{ BitmapKey::BOMB_WHITE,		L"Assets/bomb_white.png"	},
+	{ BitmapKey::READY_BUTTON,		L"Assets/ready_button.png"		},
+	{ BitmapKey::BOMB,				L"Assets/bomb.png"				},
+	{ BitmapKey::BOMB_WHITE,		L"Assets/bomb_white.png"		},
 };
 
 

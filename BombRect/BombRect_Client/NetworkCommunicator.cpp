@@ -169,7 +169,7 @@ void NetworkCommunicator::ReceiveGameData()
 {
 	PlayerInfo p[4];
 	SendBombInfo b[12];
-
+	TilePos e[100];
 
 	game_packet::SC_WorldState packet;
 
@@ -185,19 +185,36 @@ void NetworkCommunicator::ReceiveGameData()
 
 		// 패킷 해석
 		char* ptr = packet.buf;
+	
+		m_Framework->m_Objects.lock.lock();
 		for (int i = 0; i < packet.player_count; ++i) {
 			memcpy(&p[i], ptr, sizeof(PlayerInfo));
 			ptr += sizeof(PlayerInfo);
 		}
+		m_Framework->m_Objects.lock.unlock();
+
 		for (int i = 0; i < packet.bomb_count; ++i) {
 			memcpy(&b[i], ptr, sizeof(SendBombInfo));
 			ptr += sizeof(SendBombInfo);
+		}
+
+		for (int i = 0; i < packet.explosive_count; ++i) {
+			memcpy(&e[i], ptr, sizeof(TilePos));
+			ptr += sizeof(TilePos);
+
+			OutputDebugStringA(std::to_string(e[i].r).c_str());
+			OutputDebugStringA(", ");
+			OutputDebugStringA(std::to_string(e[i].c).c_str());
+			OutputDebugStringA("\n");
 		}
 
 		//OutputDebugStringA(std::to_string(p[0].pos.r).c_str());
 		//OutputDebugStringA("\n");
 
 		m_Framework->m_SceneManager.UpdateCurrentScene(p[0]);
+		//for (int i = 0; i < packet; ++i) {
+		//	m_Framework->m_Objects.players[i] = p[i];
+		//}
 
 		// auto scene = m_Framework->m_SceneManager.GetCurrScene();
 		// scene->
