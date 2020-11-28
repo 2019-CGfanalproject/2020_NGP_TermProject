@@ -41,7 +41,7 @@ struct PlayerInfo {
 	PlayerState state;
 	TilePos pos;
 	unsigned int life_count;
-	unsigned int bomb_count;
+	unsigned int bomb_count{ 3 };
 	unsigned int no_damage_count;	
 };
 
@@ -50,7 +50,10 @@ struct SendBombInfo {
 	unsigned int bomb_count_down;
 };
 
-struct ExplosiveInfo {
+struct SendExplosiveInfo {
 	TilePos pos;
-	unsigned int count_down;
+	SendExplosiveInfo(TilePos& pos)  {
+		this->pos = pos;
+	}
+
 };
