@@ -259,14 +259,29 @@ void GameCommunicate(LPVOID arg) {
 		if (retval == SOCKET_ERROR) {
 			error_display("recv");
 		}
-		cout << " packet type:"<<(int)Gameheader.type << '\n' ;
 
 		if (Gameheader.type == game_packet::PacketType::PlayerState) {
 			retval = recvn(client->client, (char*)&PlayerPacket[client->index].state, sizeof(PlayerPacket[client->index].state), 0);
 			if (retval == SOCKET_ERROR) {
 				error_display("recv");
 			}
-			cout <<"player state: " <<(int)PlayerPacket[client->index].state << '\n';
+			switch (PlayerPacket[client->index].state) {
+			case PlayerState::IDLE:
+				cout << "player state: 기본 \n";
+				break;
+			case PlayerState::UP:
+				cout <<"player state:상 \n";
+				break;
+			case PlayerState::DOWN:
+				cout << "player state:하 \n";
+				break;
+			case PlayerState::RIGHT:
+				cout << "player state:우 \n";
+				break;
+			case PlayerState::LEFT:
+				cout << "player state:좌 \n";
+				break;
+			}
 		}
 
 		if (Gameheader.type == game_packet::PacketType::Bomb) {
@@ -315,7 +330,7 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 
 	while (true) {
 
-		// 이동 방향
+		// 이동 및 충돌 처리
 		for (int i = 0; i < number_of_clients; ++i) {
 
 			switch (PlayerPacket[i].state) {
@@ -324,25 +339,58 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 				vel_y[i] = 0;
 				break;
 			case PlayerState::UP:
-				vel_x[i] = 0;
-				vel_y[i] = -1;
-				break;
+				
+				if ((1.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 2.9) || (3.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 4.9) ||
+					(5.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 6.9)) {
+
+					break;
+				}
+				else {
+
+					vel_x[i] = 0;
+					vel_y[i] = -1;
+					playerinfo[i].pos.r = std::round(playerinfo[i].pos.r);
+					break;
+				}
 			case PlayerState::DOWN:
+
+				if ((1.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 2.9) || (3.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 4.9) ||
+					(5.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 6.9)) {
+					
+					break;
+				}
+				else {
+
+				playerinfo[i].pos.r = std::round(playerinfo[i].pos.r);
 				vel_x[i] = 0;
 				vel_y[i] = +1;
 				break;
+				}
 			case PlayerState::LEFT:
-				vel_x[i] = -1;
-				vel_y[i] = 0;
-
-				break;
+				if ((1.1 < playerinfo[i].pos.c && playerinfo[i].pos.c < 2.9) || (3.1 < playerinfo[i].pos.c && playerinfo[i].pos.c < 4.9) ||
+					(5.1 < playerinfo[i].pos.c && playerinfo[i].pos.c < 6.9)) {
+					break;
+				}
+				else {
+					playerinfo[i].pos.c = std::round(playerinfo[i].pos.c);
+					vel_x[i] = -1;
+					vel_y[i] = 0;
+					break;
+				}
 			case PlayerState::RIGHT:
-				vel_x[i] = 1;
-				vel_y[i] = 0;
-
-				break;
+				if ((1.1 < playerinfo[i].pos.c && playerinfo[i].pos.c < 2.9) || (3.1 < playerinfo[i].pos.c && playerinfo[i].pos.c < 4.9) ||
+					(5.1 < playerinfo[i].pos.c && playerinfo[i].pos.c < 6.9)) {
+					break;
+				}
+				else {
+					playerinfo[i].pos.c = std::round(playerinfo[i].pos.c);
+					vel_x[i] = 1;
+					vel_y[i] = 0;
+					break;
+				}
 
 			}
+<<<<<<< Updated upstream
 			float t = 1.f / 50.f;
 			playerinfo[i].pos.r = playerinfo[i].pos.r + vel_x[i] * t;
 			playerinfo[i].pos.c = playerinfo[i].pos.c + vel_y[i] * t;
@@ -354,6 +402,31 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 		S_Bombinfo* zero_bomb = nullptr;
 		for (auto& bomb : bombs) {
 			//bomb.bombinfo.bomb_count_down--;
+=======
+		float t = 1.f / 50.f;
+		playerinfo[i].pos.r = playerinfo[i].pos.r + vel_x[i] * t;
+		playerinfo[i].pos.c = playerinfo[i].pos.c + vel_y[i] * t;
+		if (playerinfo[i].pos.r <= 1) {
+			playerinfo[i].pos.r = 1;
+		}
+		if (playerinfo[i].pos.c <= 1) {
+			playerinfo[i].pos.c = 1;
+		}
+		if (7 <= playerinfo[i].pos.c) {
+			playerinfo[i].pos.c = 7;
+		}
+		if (7 <= playerinfo[i].pos.r) {
+			playerinfo[i].pos.r = 7;
+		}
+
+	}
+
+	//	// 폭탄 폭발 후 범위	
+		//if (CountDown % 31 == 0) { // 1초 마다 카운트 감소
+			S_Bombinfo* zero_bomb = nullptr;
+			for (auto& bomb : bombs) {
+				//bomb.bombinfo.bomb_count_down--;
+>>>>>>> Stashed changes
 
 			if (bomb.bombinfo.bomb_count_down == 0) {
 				zero_bomb = &bomb;
@@ -374,6 +447,7 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 					eptmp.c = zero_bomb->bombinfo.pos.c;
 					explosions.emplace_back(eptmp);
 				}
+<<<<<<< Updated upstream
 				else break;
 			}
 			for (int i = zero_bomb->bombinfo.pos.r; i > 0; --i) {
@@ -404,6 +478,31 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 				}
 				else break;
 			}
+=======
+		
+	
+	for (const auto& explosion : explosions) {
+		for (int i = 0; i < number_of_clients; ++i) {
+			if ((explosion.pos.r == playerinfo[i].pos.r) && (std::abs(explosion.pos.c - playerinfo[i].pos.c) < 1)) {
+				playerinfo[i].life_count--;
+				cout << playerinfo[i].life_count << '\n';
+			}
+			if ((explosion.pos.c == playerinfo[i].pos.c) && (std::abs(explosion.pos.r - playerinfo[i].pos.r) < 1)) {
+				playerinfo[i].life_count--;
+				cout << playerinfo[i].life_count << '\n';
+			}
+			
+			if (playerinfo[i].life_count == 0) {
+				playerinfo[i].state = PlayerState::DEAD;
+			}
+		}
+		
+	}
+
+
+	//충돌체크 
+
+>>>>>>> Stashed changes
 
 
 		}

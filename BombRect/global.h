@@ -40,7 +40,7 @@ struct PlayerInfo {
 	int id;
 	PlayerState state;
 	TilePos pos;
-	unsigned int life_count;
+	unsigned int life_count{ 3 };
 	unsigned int bomb_count{ 3 };
 	unsigned int no_damage_count;	
 };
