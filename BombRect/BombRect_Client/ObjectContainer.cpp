@@ -44,6 +44,13 @@ DynamicObject* ObjectContainer::AddCharater(int id, Vector2 pos)
 
 void ObjectContainer::Update()
 {
+	lock.lock();
+	for (int i = 0; i < 100; ++i) {
+		if (explo_info[i].r == -1) break;
+		AddDynamicObject(BitmapKey::EXPLOSION,
+			Vector2{ (int)explo_info[i].r * 80 + 40, (int)explo_info[i].c * 80  + 40});
+	}
+	lock.unlock();
 }
 
 void ObjectContainer::Reset()

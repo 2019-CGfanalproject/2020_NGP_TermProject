@@ -26,6 +26,7 @@ enum class BitmapKey {
 	
 	BOMB,
 	BOMB_WHITE,
+	EXPLOSION,
 };
 
 enum class Input : int {

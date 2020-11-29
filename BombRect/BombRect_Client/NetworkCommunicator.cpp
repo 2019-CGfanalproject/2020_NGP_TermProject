@@ -94,10 +94,6 @@ void NetworkCommunicator::SendChatting(const String& chatting)
 	for (int i = 0; i < chatting.length(); ++i)
 		packet.string[i] = chatting[i];
 	send(m_Socket, (char*)&packet, sizeof(packet), 0);	// 문자열 개수만큼만 보내기
-	// recv(m_Socket, )	 헤더를 먼저 받고
-
-
-	// recv(m_Socket, )  이후 맞는 데이터를 받는다.
 }
 
 void NetworkCommunicator::SendReady()
@@ -208,18 +204,14 @@ void NetworkCommunicator::ReceiveGameData()
 			OutputDebugStringA("\n");
 		}
 
-		//OutputDebugStringA(std::to_string(p[0].pos.r).c_str());
-		//OutputDebugStringA("\n");
 
 		m_Framework->m_SceneManager.UpdateCurrentScene(p[0]);
-		//for (int i = 0; i < packet; ++i) {
-		//	m_Framework->m_Objects.players[i] = p[i];
-		//}
-
-		// auto scene = m_Framework->m_SceneManager.GetCurrScene();
-		// scene->
-
-		// 월드 state를 어떻게 업데이트 할 것이냐...
-		// m_Framework->m_SceneManager.UpdateCurrentScene(packet);
+		
+		m_Framework->m_Objects.lock.lock();
+		for (int i = 0; i < packet.explosive_count; ++i) {
+			memcpy(&m_Framework->m_Objects.explo_info[i], 
+				&e[i], sizeof(TilePos));
+		}
+		m_Framework->m_Objects.lock.unlock();
 	}
 }

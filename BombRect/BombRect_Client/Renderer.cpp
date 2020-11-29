@@ -15,6 +15,7 @@ BitmapPair g_bitmapInfo[] = {
 	{ BitmapKey::READY_BUTTON,		L"Assets/ready_button.png"		},
 	{ BitmapKey::BOMB,				L"Assets/bomb.png"				},
 	{ BitmapKey::BOMB_WHITE,		L"Assets/bomb_white.png"		},
+	{ BitmapKey::EXPLOSION,			L"Assets/explosion.png"		},
 };
 
 
@@ -188,6 +189,9 @@ void Renderer::Render(const ObjectContainer& objects)
 	}
 
 	for (auto& object : objects.m_DynamicObjects) {
+		Vector2 pos{ object.GetPos() };
+		pos.x += 40;
+		pos.y += 40;
 		DrawBitmap(object.GetBitmapKey(), object.GetPos());
 	}
 
@@ -206,7 +210,7 @@ void Renderer::DrawBitmap(BitmapKey key, Vector2 pos)
 	m_RenderTarget->DrawBitmap(
 		bitmap->second,
 		D2D1::RectF(pos.x, pos.y,
-			pos.x + size.width, pos.y + size.height)
+			pos.x + size.width, pos.y + size.height )
 	);
 }
 

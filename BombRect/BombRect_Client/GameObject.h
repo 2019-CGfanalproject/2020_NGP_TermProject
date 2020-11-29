@@ -19,17 +19,15 @@ public:
 	}
 
 	void SetPos(TilePos pos) {
-		m_Pos.x = pos.r * 80;
-		m_Pos.y = pos.c * 80;
+		m_Pos.x = pos.r * 80 + 40;
+		m_Pos.y = pos.c * 80 + 40;
 	}
 };
 
 class StaticObject : public GameObject {
 public:
-	StaticObject(BitmapKey key, Vector2 pos) 
+	StaticObject(BitmapKey key, Vector2 pos)   
 		: GameObject(key, pos) { }
-
-
 };
 
 class DynamicObject : public GameObject {
@@ -44,7 +42,7 @@ class Character : public DynamicObject {
 	int m_UserID;
 
 public:
-	Character(int id, BitmapKey key, Vector2 pos);
+	Character(int id, BitmapKey key, Vector2 pos);        
 	void Update(Vector2 pos) override;
 
 };
@@ -57,7 +55,7 @@ public:
 	bool m_InputControl[5];
 
 	Player(DynamicObject* object)
-		: m_Object(object),
+		: m_Object(object),                          
 		state(PlayerState::IDLE)
 	{ 
 		for (int i = 0; i < (int)Input::_COUNT; ++i) {

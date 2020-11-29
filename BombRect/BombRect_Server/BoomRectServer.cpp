@@ -343,74 +343,70 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 				break;
 
 			}
-		float t = 1.f / 50.f;
-		playerinfo[i].pos.r = playerinfo[i].pos.r + vel_x[i] * t;
-		playerinfo[i].pos.c = playerinfo[i].pos.c + vel_y[i] * t;
+			float t = 1.f / 50.f;
+			playerinfo[i].pos.r = playerinfo[i].pos.r + vel_x[i] * t;
+			playerinfo[i].pos.c = playerinfo[i].pos.c + vel_y[i] * t;
 		}
 
-	//	// 폭탄 폭발 후 범위
-	//	
-		//if (CountDown % 31 == 0) { // 1초 마다 카운트 감소
-			S_Bombinfo* zero_bomb = nullptr;
-			for (auto& bomb : bombs) {
-				//bomb.bombinfo.bomb_count_down--;
+		//	// 폭탄 폭발 후 범위
+		//	
+			//if (CountDown % 31 == 0) { // 1초 마다 카운트 감소
+		S_Bombinfo* zero_bomb = nullptr;
+		for (auto& bomb : bombs) {
+			//bomb.bombinfo.bomb_count_down--;
 
-				if (bomb.bombinfo.bomb_count_down == 0) {
-					zero_bomb = &bomb;
-					break;
-				}
-
-				// 폭발
-
+			if (bomb.bombinfo.bomb_count_down == 0) {
+				zero_bomb = &bomb;
+				break;
 			}
-		
-	if (zero_bomb) {
 
-					// y값 고정 x값 범위로 폭발 확장
-					for (int i = zero_bomb->bombinfo.pos.r; i < 9; ++i) {
-						if (!ClosedTiles[i][(int)zero_bomb->bombinfo.pos.c]) {
-							TilePos eptmp;
-							eptmp.r = i;
-							eptmp.c = zero_bomb->bombinfo.pos.c;
-							explosions.emplace_back(eptmp);
-						}
-						else break;
-					}
-					for (int i = zero_bomb->bombinfo.pos.r; i > 0; --i) {
-						if (!ClosedTiles[i][(int)zero_bomb->bombinfo.pos.c]) {
-							TilePos eptmp;
-							eptmp.r = i;
-							eptmp.c = zero_bomb->bombinfo.pos.c;
-							explosions.emplace_back(eptmp);
-						}
-						else break;
-					}
-					//x값 고정 y값 범위로 폭발 확장
-					for (int i = zero_bomb->bombinfo.pos.c; i < 9; ++i) {
-						if (!ClosedTiles[(int)zero_bomb->bombinfo.pos.r][i]) {
-							TilePos eptmp;
-							eptmp.r = zero_bomb->bombinfo.pos.r;
-							eptmp.c = i;
-							explosions.emplace_back(eptmp);
-						}
-						else break;
-					}
-					for (int i = zero_bomb->bombinfo.pos.c; i >= 0; --i) {
-						if (!ClosedTiles[(int)zero_bomb->bombinfo.pos.r][i]) {
-							TilePos eptmp;
-							eptmp.r = zero_bomb->bombinfo.pos.r;
-							eptmp.c = i;
-							explosions.emplace_back(eptmp);
-						}
-						else break;
-					}
+			// 폭발
 
-			
+		}
+
+		if (zero_bomb) {
+
+			// y값 고정 x값 범위로 폭발 확장
+			for (int i = zero_bomb->bombinfo.pos.r; i < 9; ++i) {
+				if (!ClosedTiles[i][(int)zero_bomb->bombinfo.pos.c]) {
+					TilePos eptmp;
+					eptmp.r = i;
+					eptmp.c = zero_bomb->bombinfo.pos.c;
+					explosions.emplace_back(eptmp);
 				}
-		
-	
+				else break;
+			}
+			for (int i = zero_bomb->bombinfo.pos.r; i > 0; --i) {
+				if (!ClosedTiles[i][(int)zero_bomb->bombinfo.pos.c]) {
+					TilePos eptmp;
+					eptmp.r = i;
+					eptmp.c = zero_bomb->bombinfo.pos.c;
+					explosions.emplace_back(eptmp);
+				}
+				else break;
+			}
+			//x값 고정 y값 범위로 폭발 확장
+			for (int i = zero_bomb->bombinfo.pos.c; i < 9; ++i) {
+				if (!ClosedTiles[(int)zero_bomb->bombinfo.pos.r][i]) {
+					TilePos eptmp;
+					eptmp.r = zero_bomb->bombinfo.pos.r;
+					eptmp.c = i;
+					explosions.emplace_back(eptmp);
+				}
+				else break;
+			}
+			for (int i = zero_bomb->bombinfo.pos.c; i >= 0; --i) {
+				if (!ClosedTiles[(int)zero_bomb->bombinfo.pos.r][i]) {
+					TilePos eptmp;
+					eptmp.r = zero_bomb->bombinfo.pos.r;
+					eptmp.c = i;
+					explosions.emplace_back(eptmp);
+				}
+				else break;
+			}
 
 
+		}
 
 		game_packet::SC_WorldState WorldPacket{};
 		// 패킷 보내기전 
@@ -426,7 +422,7 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 		}
 
 		//폭탄 정보 복사
-		for (auto& bomb: bombs) {
+		for (auto& bomb : bombs) {
 			memcpy(cur_ptr, &bomb.bombinfo, sizeof(SendBombInfo));
 			cur_ptr += sizeof(SendBombInfo);
 		}
@@ -436,9 +432,6 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 			memcpy(cur_ptr, &explosion, sizeof(SendExplosiveInfo));
 			cur_ptr += sizeof(SendExplosiveInfo);
 		}
-		
-
-
 
 		for (int i = 0; i < number_of_clients; ++i) {
 			int retval = send(clients[i].client, (char*)&WorldPacket, sizeof(WorldPacket), 0);
