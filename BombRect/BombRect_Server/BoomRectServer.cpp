@@ -339,7 +339,6 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 				vel_y[i] = 0;
 				break;
 			case PlayerState::UP:
-				
 				if ((1.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 2.9) || (3.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 4.9) ||
 					(5.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 6.9)) {
 
@@ -353,18 +352,17 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 					break;
 				}
 			case PlayerState::DOWN:
-
 				if ((1.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 2.9) || (3.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 4.9) ||
 					(5.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 6.9)) {
-					
+
 					break;
 				}
 				else {
 
-				playerinfo[i].pos.r = std::round(playerinfo[i].pos.r);
-				vel_x[i] = 0;
-				vel_y[i] = +1;
-				break;
+					playerinfo[i].pos.r = std::round(playerinfo[i].pos.r);
+					vel_x[i] = 0;
+					vel_y[i] = +1;
+					break;
 				}
 			case PlayerState::LEFT:
 				if ((1.1 < playerinfo[i].pos.c && playerinfo[i].pos.c < 2.9) || (3.1 < playerinfo[i].pos.c && playerinfo[i].pos.c < 4.9) ||
@@ -389,162 +387,158 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 					break;
 				}
 
+
+				float t = 1.f / 50.f;
+				playerinfo[i].pos.r = playerinfo[i].pos.r + vel_x[i] * t;
+				playerinfo[i].pos.c = playerinfo[i].pos.c + vel_y[i] * t;
 			}
-<<<<<<< Updated upstream
-			float t = 1.f / 50.f;
-			playerinfo[i].pos.r = playerinfo[i].pos.r + vel_x[i] * t;
-			playerinfo[i].pos.c = playerinfo[i].pos.c + vel_y[i] * t;
-		}
 
-		//	// 폭탄 폭발 후 범위
-		//	
-			//if (CountDown % 31 == 0) { // 1초 마다 카운트 감소
-		S_Bombinfo* zero_bomb = nullptr;
-		for (auto& bomb : bombs) {
-			//bomb.bombinfo.bomb_count_down--;
-=======
-		float t = 1.f / 50.f;
-		playerinfo[i].pos.r = playerinfo[i].pos.r + vel_x[i] * t;
-		playerinfo[i].pos.c = playerinfo[i].pos.c + vel_y[i] * t;
-		if (playerinfo[i].pos.r <= 1) {
-			playerinfo[i].pos.r = 1;
-		}
-		if (playerinfo[i].pos.c <= 1) {
-			playerinfo[i].pos.c = 1;
-		}
-		if (7 <= playerinfo[i].pos.c) {
-			playerinfo[i].pos.c = 7;
-		}
-		if (7 <= playerinfo[i].pos.r) {
-			playerinfo[i].pos.r = 7;
-		}
-
-	}
-
-	//	// 폭탄 폭발 후 범위	
-		//if (CountDown % 31 == 0) { // 1초 마다 카운트 감소
+			//	// 폭탄 폭발 후 범위
+			//	
+				//if (CountDown % 31 == 0) { // 1초 마다 카운트 감소
 			S_Bombinfo* zero_bomb = nullptr;
 			for (auto& bomb : bombs) {
 				//bomb.bombinfo.bomb_count_down--;
->>>>>>> Stashed changes
 
-			if (bomb.bombinfo.bomb_count_down == 0) {
-				zero_bomb = &bomb;
-				break;
-			}
-
-			// 폭발
-
-		}
-
-		if (zero_bomb) {
-
-			// y값 고정 x값 범위로 폭발 확장
-			for (int i = zero_bomb->bombinfo.pos.r; i < 9; ++i) {
-				if (!ClosedTiles[i][(int)zero_bomb->bombinfo.pos.c]) {
-					TilePos eptmp;
-					eptmp.r = i;
-					eptmp.c = zero_bomb->bombinfo.pos.c;
-					explosions.emplace_back(eptmp);
+				float t = 1.f / 50.f;
+				playerinfo[i].pos.r = playerinfo[i].pos.r + vel_x[i] * t;
+				playerinfo[i].pos.c = playerinfo[i].pos.c + vel_y[i] * t;
+				if (playerinfo[i].pos.r <= 1) {
+					playerinfo[i].pos.r = 1;
 				}
-<<<<<<< Updated upstream
-				else break;
-			}
-			for (int i = zero_bomb->bombinfo.pos.r; i > 0; --i) {
-				if (!ClosedTiles[i][(int)zero_bomb->bombinfo.pos.c]) {
-					TilePos eptmp;
-					eptmp.r = i;
-					eptmp.c = zero_bomb->bombinfo.pos.c;
-					explosions.emplace_back(eptmp);
+				if (playerinfo[i].pos.c <= 1) {
+					playerinfo[i].pos.c = 1;
 				}
-				else break;
-			}
-			//x값 고정 y값 범위로 폭발 확장
-			for (int i = zero_bomb->bombinfo.pos.c; i < 9; ++i) {
-				if (!ClosedTiles[(int)zero_bomb->bombinfo.pos.r][i]) {
-					TilePos eptmp;
-					eptmp.r = zero_bomb->bombinfo.pos.r;
-					eptmp.c = i;
-					explosions.emplace_back(eptmp);
+				if (7 <= playerinfo[i].pos.c) {
+					playerinfo[i].pos.c = 7;
 				}
-				else break;
-			}
-			for (int i = zero_bomb->bombinfo.pos.c; i >= 0; --i) {
-				if (!ClosedTiles[(int)zero_bomb->bombinfo.pos.r][i]) {
-					TilePos eptmp;
-					eptmp.r = zero_bomb->bombinfo.pos.r;
-					eptmp.c = i;
-					explosions.emplace_back(eptmp);
+				if (7 <= playerinfo[i].pos.r) {
+					playerinfo[i].pos.r = 7;
 				}
-				else break;
-			}
-=======
-		
-	
-	for (const auto& explosion : explosions) {
-		for (int i = 0; i < number_of_clients; ++i) {
-			if ((explosion.pos.r == playerinfo[i].pos.r) && (std::abs(explosion.pos.c - playerinfo[i].pos.c) < 1)) {
-				playerinfo[i].life_count--;
-				cout << playerinfo[i].life_count << '\n';
-			}
-			if ((explosion.pos.c == playerinfo[i].pos.c) && (std::abs(explosion.pos.r - playerinfo[i].pos.r) < 1)) {
-				playerinfo[i].life_count--;
-				cout << playerinfo[i].life_count << '\n';
-			}
-			
-			if (playerinfo[i].life_count == 0) {
-				playerinfo[i].state = PlayerState::DEAD;
+
 			}
 		}
-		
-	}
+			//	// 폭탄 폭발 후 범위	
+				//if (CountDown % 31 == 0) { // 1초 마다 카운트 감소
+			S_Bombinfo* zero_bomb = nullptr;
+			for (auto& bomb : bombs) {
+				//bomb.bombinfo.bomb_count_down--;
 
+				if (bomb.bombinfo.bomb_count_down == 0) {
+					zero_bomb = &bomb;
+					break;
+				}
 
-	//충돌체크 
+				// 폭발
 
->>>>>>> Stashed changes
-
-
-		}
-
-		game_packet::SC_WorldState WorldPacket{};
-		// 패킷 보내기전 
-		WorldPacket.player_count = alivePlayer;
-		WorldPacket.bomb_count = bombs.size();
-		WorldPacket.explosive_count = explosions.size();
-
-		char* cur_ptr = WorldPacket.buf;
-		//플레이어 정보 복사
-		for (int i = 0; i < number_of_clients; ++i) {
-			memcpy(cur_ptr, &playerinfo[i], sizeof(PlayerInfo));
-			cur_ptr += sizeof(PlayerInfo);
-		}
-
-		//폭탄 정보 복사
-		for (auto& bomb : bombs) {
-			memcpy(cur_ptr, &bomb.bombinfo, sizeof(SendBombInfo));
-			cur_ptr += sizeof(SendBombInfo);
-		}
-
-		//폭발 범위 복사
-		for (auto& explosion : explosions) {
-			memcpy(cur_ptr, &explosion, sizeof(SendExplosiveInfo));
-			cur_ptr += sizeof(SendExplosiveInfo);
-		}
-
-		for (int i = 0; i < number_of_clients; ++i) {
-			int retval = send(clients[i].client, (char*)&WorldPacket, sizeof(WorldPacket), 0);
-			if (retval == SOCKET_ERROR) {
-				error_display("send");
 			}
-		}
 
-		bombs.clear();
-		::Sleep(32);
 
-	}
-	return 0;
-}
+			if (zero_bomb) {
+
+				// y값 고정 x값 범위로 폭발 확장
+				for (int i = zero_bomb->bombinfo.pos.r; i < 9; ++i) {
+					if (!ClosedTiles[i][(int)zero_bomb->bombinfo.pos.c]) {
+						TilePos eptmp;
+						eptmp.r = i;
+						eptmp.c = zero_bomb->bombinfo.pos.c;
+						explosions.emplace_back(eptmp);
+					}
+					else break;
+				}
+				for (int i = zero_bomb->bombinfo.pos.r; i > 0; --i) {
+					if (!ClosedTiles[i][(int)zero_bomb->bombinfo.pos.c]) {
+						TilePos eptmp;
+						eptmp.r = i;
+						eptmp.c = zero_bomb->bombinfo.pos.c;
+						explosions.emplace_back(eptmp);
+					}
+					else break;
+				}
+				//x값 고정 y값 범위로 폭발 확장
+				for (int i = zero_bomb->bombinfo.pos.c; i < 9; ++i) {
+					if (!ClosedTiles[(int)zero_bomb->bombinfo.pos.r][i]) {
+						TilePos eptmp;
+						eptmp.r = zero_bomb->bombinfo.pos.r;
+						eptmp.c = i;
+						explosions.emplace_back(eptmp);
+					}
+					else break;
+				}
+				for (int i = zero_bomb->bombinfo.pos.c; i >= 0; --i) {
+					if (!ClosedTiles[(int)zero_bomb->bombinfo.pos.r][i]) {
+						TilePos eptmp;
+						eptmp.r = zero_bomb->bombinfo.pos.r;
+						eptmp.c = i;
+						explosions.emplace_back(eptmp);
+					}
+					else break;
+				}
+
+
+				for (const auto& explosion : explosions) {
+					for (int i = 0; i < number_of_clients; ++i) {
+						if ((explosion.pos.r == playerinfo[i].pos.r) && (std::abs(explosion.pos.c - playerinfo[i].pos.c) < 1)) {
+							playerinfo[i].life_count--;
+							cout << playerinfo[i].life_count << '\n';
+						}
+						if ((explosion.pos.c == playerinfo[i].pos.c) && (std::abs(explosion.pos.r - playerinfo[i].pos.r) < 1)) {
+							playerinfo[i].life_count--;
+							cout << playerinfo[i].life_count << '\n';
+						}
+
+						if (playerinfo[i].life_count == 0) {
+							playerinfo[i].state = PlayerState::DEAD;
+						}
+					}
+
+				}
+			}
+
+			//충돌체크 
+
+
+
+
+
+			game_packet::SC_WorldState WorldPacket{};
+			// 패킷 보내기전 
+			WorldPacket.player_count = alivePlayer;
+			WorldPacket.bomb_count = bombs.size();
+			WorldPacket.explosive_count = explosions.size();
+
+			char* cur_ptr = WorldPacket.buf;
+			//플레이어 정보 복사
+			for (int i = 0; i < number_of_clients; ++i) {
+				memcpy(cur_ptr, &playerinfo[i], sizeof(PlayerInfo));
+				cur_ptr += sizeof(PlayerInfo);
+			}
+
+			//폭탄 정보 복사
+			for (auto& bomb : bombs) {
+				memcpy(cur_ptr, &bomb.bombinfo, sizeof(SendBombInfo));
+				cur_ptr += sizeof(SendBombInfo);
+			}
+
+			//폭발 범위 복사
+			for (auto& explosion : explosions) {
+				memcpy(cur_ptr, &explosion, sizeof(SendExplosiveInfo));
+				cur_ptr += sizeof(SendExplosiveInfo);
+			}
+
+			for (int i = 0; i < number_of_clients; ++i) {
+				int retval = send(clients[i].client, (char*)&WorldPacket, sizeof(WorldPacket), 0);
+				if (retval == SOCKET_ERROR) {
+					error_display("send");
+				}
+			}
+
+			bombs.clear();
+			::Sleep(32);
+
+		} //while
+		return 0;
+} // 끝
 
 
 
