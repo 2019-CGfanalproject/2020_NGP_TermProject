@@ -37,7 +37,6 @@ void LoginScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		case VK_RETURN:
 			TryConnecting();
-			m_Framework->m_SceneManager.ChangeScene(SceneID::LOBBY);
 			break;
 		default:
 			break;
@@ -60,10 +59,10 @@ void LoginScene::TryConnecting()
 {
 	// ip 체크
 	// nickname 체크
-	bool connected = m_Framework->m_Communicator.Connect(loopback.c_str(), TEXT("혜리무"));
+	bool connected = m_Framework->m_Communicator.Connect(wireless.c_str(), TEXT("혜리무"));
 
 	if (connected) {
-		m_Framework->m_SceneManager.ChangeScene(SceneID::GAME);
+		m_Framework->m_SceneManager.ChangeScene(SceneID::LOBBY);
 	}
 	else {
 		// 연결이 실패했다는 것을 사용자에게 알려준다

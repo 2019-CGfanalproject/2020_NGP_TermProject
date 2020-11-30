@@ -140,6 +140,7 @@ void NetworkCommunicator::ReceiveRobbyPacket()
 		switch (header.type) {
 		case PacketType::READY: {
 			OutputDebugStringA("ready 받음");
+
 			break;
 		}
 		case PacketType::CHATING: {
@@ -147,6 +148,11 @@ void NetworkCommunicator::ReceiveRobbyPacket()
 			break;
 		}
 		case PacketType::GAME_START: {
+			SC_GameStart packet;
+			packet.type = PacketType::GAME_START;
+			packet.size = 0;
+			send(m_Socket, (const char*)&packet, sizeof(packet), 0);
+
 			m_Framework->m_SceneManager.ChangeScene(SceneID::GAME);
 			OutputDebugStringA("게임씬 시작~!");
 			return;

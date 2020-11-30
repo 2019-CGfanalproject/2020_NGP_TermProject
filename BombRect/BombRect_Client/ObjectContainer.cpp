@@ -48,7 +48,7 @@ void ObjectContainer::Update()
 	SendExplosiveInfo explosion_info;
 
 	// for debug : print count
-	/*
+	
 	OutputDebugString(L"player count: ");
 	OutputDebugString(std::to_wstring(m_WorldState.player_count).c_str());
 	OutputDebugString(L"\n");
@@ -60,7 +60,7 @@ void ObjectContainer::Update()
 	OutputDebugString(L"explosive count: ");
 	OutputDebugString(std::to_wstring(m_WorldState.explosive_count).c_str());
 	OutputDebugString(L"\n");
-	*/
+	
 
 	int map_padding = 40;
 
