@@ -55,7 +55,7 @@ struct PlayerInfo {
 
 struct SendBombInfo {
 	TilePos pos;
-	unsigned int bomb_count_down;
+	unsigned int bomb_count_down{ 3 };
 };
 
 struct SendExplosiveInfo {
