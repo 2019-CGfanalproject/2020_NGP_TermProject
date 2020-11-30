@@ -53,7 +53,7 @@ void LoginScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 
 std::string loopback{ "127.0.0.1" };
 std::string shphone{ "192.168.43.216" };
-std::string wireless{ "192.168.123.90" };
+std::string wireless{ "192.168.120.23" };
 
 
 void LoginScene::TryConnecting()

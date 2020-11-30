@@ -38,6 +38,12 @@ void GameScene::Initialize()
 			padding + Vector2(pos.r * 80, pos.c * 80)
 			);
 	}
+
+	// 여기서 플레이어 UI 만들어주고 싶다.
+	m_Framework->m_Objects.AddStaticObject(BitmapKey::UI_RED, Vector2(10, 10));
+	m_Framework->m_Objects.AddStaticObject(BitmapKey::UI_YELLOW, Vector2(790 - 50, 10));
+	m_Framework->m_Objects.AddStaticObject(BitmapKey::UI_GREEN, Vector2(10, 790 - 60));
+	m_Framework->m_Objects.AddStaticObject(BitmapKey::UI_CYAN, Vector2(790 - 50, 790 - 60));
 }
 
 void GameScene::Destroy()
@@ -58,11 +64,11 @@ void GameScene::Update(PlayerInfo& info)
 {
 }
 
-// input hander가 호출할거야
 void GameScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 {
 }
 
+// InputHandler가 호출함
 void GameScene::HandleInput(InputHandler* inputHandler)
 {
 	if (inputHandler->CheckSpace()) 

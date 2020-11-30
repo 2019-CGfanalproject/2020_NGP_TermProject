@@ -27,6 +27,12 @@ enum class BitmapKey {
 	BOMB,
 	BOMB_WHITE,
 	EXPLOSION,
+
+	UI_HEART,
+	UI_RED,
+	UI_YELLOW,
+	UI_GREEN,
+	UI_CYAN,
 };
 
 template<class Interface>

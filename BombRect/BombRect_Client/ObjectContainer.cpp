@@ -28,6 +28,13 @@ DynamicObject* ObjectContainer::AddDynamicObject(BitmapKey key, Vector2 pos)
 	return &m_DynamicObjects.back();
 }
 
+Vector2 ui_pos[4] = {
+	{70,	10	},
+	{680,	10	},
+	{70,	730	},
+	{680,	730	},
+};
+
 void ObjectContainer::Update()
 {
 	m_DynamicObjects.clear();
@@ -40,38 +47,54 @@ void ObjectContainer::Update()
 	SendBombInfo bomb_info;
 	SendExplosiveInfo explosion_info;
 
+	// for debug : print count
+	/*
+	OutputDebugString(L"player count: ");
+	OutputDebugString(std::to_wstring(m_WorldState.player_count).c_str());
+	OutputDebugString(L"\n");
+
+	OutputDebugString(L"bomb count: ");
+	OutputDebugString(std::to_wstring(m_WorldState.bomb_count).c_str());
+	OutputDebugString(L"\n");
+
+	OutputDebugString(L"explosive count: ");
+	OutputDebugString(std::to_wstring(m_WorldState.explosive_count).c_str());
+	OutputDebugString(L"\n");
+	*/
+
+	int map_padding = 40;
+
 	for (int i = 0; i < m_WorldState.player_count; ++i) {
 		memcpy(&player_info, ptr, sizeof(PlayerInfo));
 		ptr += sizeof(PlayerInfo);
 
-		AddDynamicObject(GetBitmapKeyFrom(player_info.id), Vector2(player_info.pos) + 40);
-		OutputDebugString(std::to_wstring(player_info.pos.r).c_str());
-		OutputDebugString(L"\n");
+		AddDynamicObject(GetBitmapKeyFrom(player_info.id), Vector2(player_info.pos) + map_padding);
+
+		for (int life = 0; life < player_info.life_count; ++life) {
+
+			Vector2 pos{ ui_pos[i].x + (60 * life * ((i % 2) ? -1 : 1)) , ui_pos[i].y };
+			AddDynamicObject(BitmapKey::UI_HEART, pos);
+		}
+
+		//OutputDebugString(std::to_wstring(player_info.pos.r).c_str());
+		//OutputDebugString(L"\n");
 	}
 
 	for (int i = 0; i < m_WorldState.bomb_count; ++i) {
-		memcpy(&bomb_info, ptr, sizeof(player_info));
+		memcpy(&bomb_info, ptr, sizeof(SendBombInfo));
 		ptr += sizeof(SendBombInfo);
 
-		AddDynamicObject(BitmapKey::BOMB, Vector2(bomb_info.pos));
+		AddDynamicObject(BitmapKey::BOMB, Vector2(bomb_info.pos) + map_padding);
 	}
 
 	for (int i = 0; i < m_WorldState.explosive_count; ++i) {
 		memcpy(&explosion_info, ptr, sizeof(TilePos));
 		ptr += sizeof(TilePos);
 
-		AddDynamicObject(BitmapKey::EXPLOSION, Vector2(explosion_info.pos));
+		AddDynamicObject(BitmapKey::EXPLOSION, Vector2(explosion_info.pos) + map_padding);
 	}
 
 	lock.unlock();
-
-	//lock.lock();
-	//for (int i = 0; i < 100; ++i) {
-	//	if (explo_info[i].r == -1) break;
-	//	AddDynamicObject(BitmapKey::EXPLOSION,
-	//		Vector2{ (int)explo_info[i].r * 80 + 40, (int)explo_info[i].c * 80  + 40});
-	//}
-	//lock.unlock();
 }
 
 void ObjectContainer::Reset()
