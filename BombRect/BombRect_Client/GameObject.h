@@ -48,15 +48,11 @@ public:
 };
 
 class Player {
-	DynamicObject* m_Object;
-
 public:
 	PlayerState state = PlayerState::IDLE;
 	bool m_InputControl[5];
 
-	Player(DynamicObject* object)
-		: m_Object(object),                          
-		state(PlayerState::IDLE)
+	Player() : state(PlayerState::IDLE)
 	{ 
 		for (int i = 0; i < (int)Input::_COUNT; ++i) {
 			m_InputControl[i] = false;
@@ -80,9 +76,5 @@ public:
 		case VK_DOWN:
 			return PlayerState::DOWN;
 		}
-	}
-
-	void SetPos(TilePos& pos) {
-		m_Object->SetPos(pos);
 	}
 };

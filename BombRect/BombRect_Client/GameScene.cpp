@@ -43,8 +43,8 @@ void GameScene::Initialize()
 	// m_Framework->m_Objects.AddCharater()
 
 	// 플레이어 세팅
-	auto player = m_Framework->m_Objects.AddDynamicObject(BitmapKey::CHARACTER_RED, Vector2(0, 0));
-	m_Player = new Player(player);
+	// auto player = m_Framework->m_Objects.AddDynamicObject(BitmapKey::CHARACTER_RED, Vector2(0, 0));
+	m_Player = new Player();
 }
 
 void GameScene::Destroy()
@@ -58,23 +58,11 @@ void GameScene::Destroy()
 
 void GameScene::Update()
 {
+	m_Framework->m_Objects.Update();
 }
 
 void GameScene::Update(PlayerInfo& info)
 {
-	m_Player->SetPos(info.pos);
-}
-
-// 함수에 인자로 넘겨주는 건 좀...
-void GameScene::Update(PlayerInfo players[], SendBombInfo bombs[])
-{
-	m_Player->SetPos(players[0].pos);
-	for (int i = 0; i < 12; ++i) {
-		if (-1 == bombs[i].bomb_count_down) break;
-
-		Vector2 pos{ (int)bombs[i].pos.r * 80, (int)bombs[i].pos.c * 80 };
-		m_Framework->m_Objects.AddDynamicObject(BitmapKey::BOMB, pos);
-	}
 }
 
 void GameScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)

@@ -1,10 +1,13 @@
 #pragma once
 #include <chrono>
 #include "GameObject.h"
+#include "../packets.h"
 
 class ObjectContainer
 {
 public:
+	game_packet::SC_WorldState m_WorldState;
+
 	PlayerInfo playerInfo[4];
 	TilePos explo_info[100];
 	std::mutex lock;
@@ -26,6 +29,12 @@ public:
 	void AddStaticObject(BitmapKey key, Vector2 pos);
 	DynamicObject* AddDynamicObject(BitmapKey key, Vector2 pos);
 	DynamicObject* AddCharater(int id, Vector2 pos);
+
+	inline void SetWorldState(game_packet::SC_WorldState& world_state) {
+		lock.lock();
+		m_WorldState = world_state;
+		lock.unlock();
+	}
 
 	void Update();
 	

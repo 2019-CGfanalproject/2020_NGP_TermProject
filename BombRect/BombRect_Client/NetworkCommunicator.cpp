@@ -170,24 +170,26 @@ void NetworkCommunicator::ReceiveGameData()
 	game_packet::SC_WorldState packet;
 
 	while (true) {
-
 		// 패킷 받기
+
 		recvn(m_Socket, (char*)&packet, sizeof(packet), 0);
 
-		// OutputDebugString((LPCWSTR)std::to_wstring(packet.player_count).c_str());
-		if (packet.player_count != 1) {
-			OutputDebugString(L"이상한 값;\n");
-		}
+		m_Framework->m_Objects.SetWorldState(packet);
+
+
+		//	OutputDebugString(L"이상한 값;\n");
+		//}
 
 		// 패킷 해석
 		char* ptr = packet.buf;
 	
-		m_Framework->m_Objects.lock.lock();
 		for (int i = 0; i < packet.player_count; ++i) {
 			memcpy(&p[i], ptr, sizeof(PlayerInfo));
 			ptr += sizeof(PlayerInfo);
+
+			OutputDebugString(std::to_wstring(p[i].pos.r).c_str());
 		}
-		m_Framework->m_Objects.lock.unlock();
+		continue;
 
 		for (int i = 0; i < packet.bomb_count; ++i) {
 			memcpy(&b[i], ptr, sizeof(SendBombInfo));
