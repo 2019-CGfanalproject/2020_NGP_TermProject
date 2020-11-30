@@ -3,7 +3,10 @@
 #include "GameObject.h"
 #include "../packets.h"
 
-class ObjectContainer
+
+// 게임 월드의 상태를 저장하고 해석한다.
+// 렌더링을 위한 정보를 담은 오브젝트를 관리한다.
+class ObjectContainer	// GameDatamanager
 {
 public:
 	game_packet::SC_WorldState m_WorldState;
@@ -28,7 +31,6 @@ public:
 
 	void AddStaticObject(BitmapKey key, Vector2 pos);
 	DynamicObject* AddDynamicObject(BitmapKey key, Vector2 pos);
-	DynamicObject* AddCharater(int id, Vector2 pos);
 
 	inline void SetWorldState(game_packet::SC_WorldState& world_state) {
 		lock.lock();

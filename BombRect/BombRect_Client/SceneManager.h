@@ -1,11 +1,14 @@
 #pragma once
 #include "Scene.h"
-#include "../packets.h"
+#include "InputHandler.h"
 
 class GameFramework;
+class InputHandler;
+
 class SceneManager
 {
 	GameFramework* m_Framework;
+	InputHandler m_InputHandler;
 
 	Scene* m_CurScene;
 	std::array<Scene*, (int)SceneID::COUNT> m_Scenes;
@@ -15,9 +18,6 @@ public:
 	~SceneManager();
 
 	void Initialize(GameFramework* framework);
-	void UpdateCurrentScene(PlayerInfo& info);
-	void UpdateCurrentScene(game_packet::SC_WorldState world);
-	void UpdateCurrentScene(PlayerInfo players[], SendBombInfo bombs[]);
 	void UpdateCurrentScene();
 	void HandleInput(UINT message, WPARAM wParam, LPARAM lParam);
 

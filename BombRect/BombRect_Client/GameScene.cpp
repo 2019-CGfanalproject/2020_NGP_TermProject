@@ -2,6 +2,7 @@
 #include "GameScene.h"
 #include "GameFramework.h"
 #include "GameObject.h"
+#include "InputHandler.h"
 
 const TilePos CLOSED_TILE_POS[] = {
 	{0, 0}, {1, 0}, {2, 0}, {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}, {8, 0},
@@ -26,8 +27,6 @@ GameScene::~GameScene()
 
 void GameScene::Initialize()
 {
-	// 맵 만들고
-	// closed tile 만들고
 	Vector2 padding{ 40, 40 };
 
 	m_Framework->m_Objects.AddStaticObject(BitmapKey::BACKGOURND, padding);
@@ -39,12 +38,6 @@ void GameScene::Initialize()
 			padding + Vector2(pos.r * 80, pos.c * 80)
 			);
 	}
-
-	// m_Framework->m_Objects.AddCharater()
-
-	// 플레이어 세팅
-	// auto player = m_Framework->m_Objects.AddDynamicObject(BitmapKey::CHARACTER_RED, Vector2(0, 0));
-	m_Player = new Player();
 }
 
 void GameScene::Destroy()
@@ -65,70 +58,43 @@ void GameScene::Update(PlayerInfo& info)
 {
 }
 
+// input hander가 호출할거야
 void GameScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	// 인풋으로 플레이어의 state를 결정하고 네트워크 메시지를 보냄
-	switch (message) {
-	case WM_KEYUP: {
-		switch (wParam) {
-		case VK_LEFT:
-			m_Player->m_InputControl[(int)Input::ARROW_LEFT] = false;
-			break;
-		case VK_UP:
-			m_Player->m_InputControl[(int)Input::ARROW_UP] = false;
-			break;
-		case VK_RIGHT:
-			m_Player->m_InputControl[(int)Input::ARROW_RIGHT] = false;
-			break;
-		case VK_DOWN:
-			m_Player->m_InputControl[(int)Input::ARROW_DOWN] = false;
-			break;
-		}
-		break;
-	}
-	case WM_KEYDOWN:
-		switch (wParam) {
-		case VK_SPACE:
-			m_Framework->m_Communicator.SendBomb();
-			break;
-		case VK_LEFT:
-			m_Player->m_InputControl[(int)Input::ARROW_LEFT] = true;
-			break;
-		case VK_UP:
-			m_Player->m_InputControl[(int)Input::ARROW_UP] = true;
-			break;
-		case VK_RIGHT:
-			m_Player->m_InputControl[(int)Input::ARROW_RIGHT] = true;
-			break;
-		case VK_DOWN:
-			m_Player->m_InputControl[(int)Input::ARROW_DOWN] = true;
-			break;
-		}
-		break;
-	case WM_LBUTTONDOWN:
-	case WM_LBUTTONUP:
-		break;
-	}
+}
 
-	PlayerState cur_state = m_Player->CalcState(wParam);
-	if (m_Player->state != cur_state) {
-		m_Player->state = cur_state;
+void GameScene::HandleInput(InputHandler* inputHandler)
+{
+	if (inputHandler->CheckSpace()) 
+		m_Framework->m_Communicator.SendBomb();
 
-		switch (cur_state) {
+	PlayerState state = inputHandler->CalcPlayerState();
+
+	if (m_PlayerState != state) {
+		m_PlayerState = state;
+
+		// 상태가 변했다면 패킷을 보낸다.
+		switch (m_PlayerState) {
 		case PlayerState::UP:
 			m_Framework->m_Communicator.SendPlayerState(PlayerState::UP);
+			OutputDebugString(TEXT("UP\n"));
 			break;
 		case PlayerState::DOWN:
 			m_Framework->m_Communicator.SendPlayerState(PlayerState::DOWN);
+			OutputDebugString(TEXT("DOWN\n"));
 			break;
 		case PlayerState::LEFT:
 			m_Framework->m_Communicator.SendPlayerState(PlayerState::LEFT);
+			OutputDebugString(TEXT("LEFT\n"));
 			break;
 		case PlayerState::RIGHT:
 			m_Framework->m_Communicator.SendPlayerState(PlayerState::RIGHT);
+			OutputDebugString(TEXT("RIGHT\n"));
 			break;
 		case PlayerState::IDLE:
 			m_Framework->m_Communicator.SendPlayerState(PlayerState::IDLE);
+			OutputDebugString(TEXT("IDLE\n"));
+			break;
 		}
 	}
 }

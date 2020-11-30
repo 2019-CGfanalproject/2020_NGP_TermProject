@@ -8,6 +8,7 @@
 // #include "ResultScene.h"
 
 SceneManager::SceneManager()
+	: m_InputHandler(this)
 {
 	m_Framework = nullptr;
 	m_CurScene = nullptr;
@@ -36,22 +37,6 @@ void SceneManager::Initialize(GameFramework* framework)
 	m_CurScene->Initialize();
 }
 
-void SceneManager::UpdateCurrentScene(PlayerInfo& info)
-{
-	if (m_CurScene)
-		m_CurScene->Update(info);
-}
-
-void SceneManager::UpdateCurrentScene(game_packet::SC_WorldState world)
-{
-
-}
-
-void SceneManager::UpdateCurrentScene(PlayerInfo players[], SendBombInfo bombs[])
-{
-
-}
-
 void SceneManager::UpdateCurrentScene()
 {
 	if (m_CurScene)
@@ -60,8 +45,12 @@ void SceneManager::UpdateCurrentScene()
 
 void SceneManager::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if (m_CurScene)
+	m_InputHandler.HandleInput(message, wParam, lParam);
+	
+	if (m_CurScene) {
+		m_CurScene->HandleInput(&m_InputHandler);
 		m_CurScene->HandleInput(message, wParam, lParam);
+	}
 }
 
 void SceneManager::StartScene(SceneID id)

@@ -29,15 +29,6 @@ enum class BitmapKey {
 	EXPLOSION,
 };
 
-enum class Input : int {
-	ARROW_UP,
-	ARROW_DOWN,
-	ARROW_LEFT,
-	ARROW_RIGHT,
-	SPACEBAR,
-	_COUNT,
-};
-
 template<class Interface>
 inline void SafeRelease(Interface** ppInterfaceToRelease) {
 	if (*ppInterfaceToRelease != NULL) {

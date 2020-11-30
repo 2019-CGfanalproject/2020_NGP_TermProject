@@ -47,6 +47,9 @@
     <Filter Include="Scene\Scenes\Login">
       <UniqueIdentifier>{f2b177b8-681c-4c6f-8a50-8813848b68be}</UniqueIdentifier>
     </Filter>
+    <Filter Include="InputHandler">
+      <UniqueIdentifier>{a7e91e5d-41d5-42e2-be74-8ea114f793a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -102,6 +105,9 @@
     <ClInclude Include="ResultScene.h">
       <Filter>Scene\Scenes\Result</Filter>
     </ClInclude>
+    <ClInclude Include="InputHandler.h">
+      <Filter>InputHandler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -139,6 +145,9 @@
     </ClCompile>
     <ClCompile Include="ResultScene.cpp">
       <Filter>Scene\Scenes\Result</Filter>
+    </ClCompile>
+    <ClCompile Include="InputHandler.cpp">
+      <Filter>InputHandler</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

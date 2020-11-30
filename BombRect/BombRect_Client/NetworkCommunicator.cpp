@@ -175,10 +175,8 @@ void NetworkCommunicator::ReceiveGameData()
 		recvn(m_Socket, (char*)&packet, sizeof(packet), 0);
 
 		m_Framework->m_Objects.SetWorldState(packet);
-
-
-		//	OutputDebugString(L"이상한 값;\n");
-		//}
+		 
+		continue;
 
 		// 패킷 해석
 		char* ptr = packet.buf;
@@ -187,33 +185,34 @@ void NetworkCommunicator::ReceiveGameData()
 			memcpy(&p[i], ptr, sizeof(PlayerInfo));
 			ptr += sizeof(PlayerInfo);
 
-			OutputDebugString(std::to_wstring(p[i].pos.r).c_str());
+			//OutputDebugString(std::to_wstring(p[i].pos.r).c_str());
+			//OutputDebugString(L"\n");
 		}
 		continue;
 
-		for (int i = 0; i < packet.bomb_count; ++i) {
-			memcpy(&b[i], ptr, sizeof(SendBombInfo));
-			ptr += sizeof(SendBombInfo);
-		}
+		//for (int i = 0; i < packet.bomb_count; ++i) {
+		//	memcpy(&b[i], ptr, sizeof(SendBombInfo));
+		//	ptr += sizeof(SendBombInfo);
+		//}
 
-		for (int i = 0; i < packet.explosive_count; ++i) {
-			memcpy(&e[i], ptr, sizeof(TilePos));
-			ptr += sizeof(TilePos);
+		//for (int i = 0; i < packet.explosive_count; ++i) {
+		//	memcpy(&e[i], ptr, sizeof(TilePos));
+		//	ptr += sizeof(TilePos);
 
-			OutputDebugStringA(std::to_string(e[i].r).c_str());
-			OutputDebugStringA(", ");
-			OutputDebugStringA(std::to_string(e[i].c).c_str());
-			OutputDebugStringA("\n");
-		}
+		//	OutputDebugStringA(std::to_string(e[i].r).c_str());
+		//	OutputDebugStringA(", ");
+		//	OutputDebugStringA(std::to_string(e[i].c).c_str());
+		//	OutputDebugStringA("\n");
+		//}
 
 
-		m_Framework->m_SceneManager.UpdateCurrentScene(p[0]);
-		
-		m_Framework->m_Objects.lock.lock();
-		for (int i = 0; i < packet.explosive_count; ++i) {
-			memcpy(&m_Framework->m_Objects.explo_info[i], 
-				&e[i], sizeof(TilePos));
-		}
-		m_Framework->m_Objects.lock.unlock();
+		//m_Framework->m_SceneManager.UpdateCurrentScene(p[0]);
+		//
+		//m_Framework->m_Objects.lock.lock();
+		//for (int i = 0; i < packet.explosive_count; ++i) {
+		//	memcpy(&m_Framework->m_Objects.explo_info[i], 
+		//		&e[i], sizeof(TilePos));
+		//}
+		//m_Framework->m_Objects.lock.unlock();
 	}
 }

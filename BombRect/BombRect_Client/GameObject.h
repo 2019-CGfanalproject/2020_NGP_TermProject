@@ -47,34 +47,3 @@ public:
 
 };
 
-class Player {
-public:
-	PlayerState state = PlayerState::IDLE;
-	bool m_InputControl[5];
-
-	Player() : state(PlayerState::IDLE)
-	{ 
-		for (int i = 0; i < (int)Input::_COUNT; ++i) {
-			m_InputControl[i] = false;
-		}
-	}
-
-	PlayerState CalcState(WPARAM cur_key) {
-		bool is_idle = true;
-		for (int i = 0; i < 4; ++i) {
-			if (m_InputControl[i]) is_idle = false;
-		}
-		if (is_idle) return PlayerState::IDLE;
-
-		switch (cur_key) {
-		case VK_LEFT:
-			return PlayerState::LEFT;
-		case VK_UP:
-			return PlayerState::UP;
-		case VK_RIGHT:
-			return PlayerState::RIGHT;
-		case VK_DOWN:
-			return PlayerState::DOWN;
-		}
-	}
-};

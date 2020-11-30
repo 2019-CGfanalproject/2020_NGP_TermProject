@@ -21,6 +21,10 @@ struct Vector2 {
 		return Vector2(x + rhs.x, y + rhs.y);
 	}
 
+	Vector2 operator+(const int value) {
+		return Vector2(x + value, y + value);
+	}
+
 };
 
 enum class SceneID : int {
