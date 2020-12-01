@@ -59,7 +59,7 @@ void LoginScene::TryConnecting()
 {
 	// ip 眉农
 	// nickname 眉农
-	bool connected = m_Framework->m_Communicator.Connect(wireless.c_str(), TEXT("驱府公"));
+	bool connected = m_Framework->m_Communicator.Connect(loopback.c_str(), TEXT("驱府公"));
 
 	if (connected) {
 		m_Framework->m_SceneManager.ChangeScene(SceneID::LOBBY);
