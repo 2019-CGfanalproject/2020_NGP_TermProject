@@ -158,6 +158,21 @@ unsigned __stdcall ClinetsThread(LPVOID arg) {
 }
 
 
+void SetBomb(SendBombInfo bomb_tmp, ClientInfo* client) {
+
+	for (auto bomb : bombs) {
+		if (((bomb.bombinfo.pos.r == bomb_tmp.pos.r)
+			&& (bomb.bombinfo.pos.c == bomb_tmp.pos.c))) {
+			return;
+		}
+	}
+	if (playerinfo[client->index].bomb_count > 0) {
+		bombs.emplace_back(bomb_tmp, (int)client->index);
+		playerinfo[client->index].bomb_count--;
+	}
+
+}
+
 void LobbyCummunicate(LPVOID arg)
 {
 	ClientInfo* client = (ClientInfo *)arg;
@@ -268,7 +283,7 @@ void GameCommunicate(LPVOID arg) {
 
 	while (true) {
 		// 너는 리시브만 받고 업데이트로(전역 변수 업데이트 해줘)
-		
+
 		retval = recvn(client->client, (char*)&Gameheader, sizeof(Gameheader), 0);
 		if (retval == SOCKET_ERROR) {
 			error_display("recv");
@@ -278,7 +293,7 @@ void GameCommunicate(LPVOID arg) {
 
 		if (Gameheader.type == game_packet::PacketType::PlayerState) {
 			retval = recvn(client->client, (char*)&player_state, sizeof(PlayerPacket[client->index].state), 0);
-			
+
 			g_lock.lock();
 			PlayerPacket[client->index].state = player_state;
 			g_lock.unlock();
@@ -291,7 +306,7 @@ void GameCommunicate(LPVOID arg) {
 				cout << "player state: 기본 \n";
 				break;
 			case PlayerState::UP:
-				cout <<"player state:상 \n";
+				cout << "player state:상 \n";
 				break;
 			case PlayerState::DOWN:
 				cout << "player state:하 \n";
@@ -307,32 +322,17 @@ void GameCommunicate(LPVOID arg) {
 
 		if (Gameheader.type == game_packet::PacketType::Bomb) {
 			// bomb의 위치는 플레이어의 위치
-			if (playerinfo[client->index].bomb_count != 0) {
+			if (playerinfo[client->index].bomb_count > 0) {
 				SendBombInfo bomb_tmp;
 				bomb_tmp.bomb_count_down = 3000;
 				bomb_tmp.pos.r = std::round(playerinfo[client->index].pos.r);
 				bomb_tmp.pos.c = std::round(playerinfo[client->index].pos.c);
-				if (bombs.size() != 0) {
-					for (auto bomb : bombs) {
-						if (!((bomb.bombinfo.pos.r == bomb_tmp.pos.r)
-							&& (bomb.bombinfo.pos.c == bomb_tmp.pos.c))) {
-							bombs.emplace_back(bomb_tmp, (int)client->index);
-							playerinfo[client->index].bomb_count--;
-						}
 
-					}
-				}
-				else {
-					bombs.emplace_back(bomb_tmp, (int)client->index);
-					playerinfo[client->index].bomb_count--;
 
-				}
-
-			
-			
+				SetBomb(bomb_tmp, client);
 
 			}
-			
+
 		}
 		// 충돌 처리
 
@@ -340,7 +340,6 @@ void GameCommunicate(LPVOID arg) {
 
 
 }
-
 
 void ResultCommunicate(LPVOID arg) {
 
@@ -370,7 +369,7 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 		PlayerState player_state[4];
 
 		for (int i = 0; i < number_of_clients; ++i) {
-
+			if (playerinfo[i].state == PlayerState::DEAD)continue;
 			g_lock.lock();
 			player_state[i] = PlayerPacket[i].state;
 			g_lock.unlock();
@@ -488,7 +487,7 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 					else break;
 				}
 				// 자신 부터 왼쪽
-				for (int i = bomb.bombinfo.pos.r -1 ; i > 0; --i) {
+				for (int i = bomb.bombinfo.pos.r - 1; i > 0; --i) {
 					if (!ClosedTiles[i][(int)bomb.bombinfo.pos.c]) {
 						SendExplosiveInfo tmp;
 						tmp.pos.r = i;
@@ -526,8 +525,11 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 
 
 		// 폭발 범위와 캐릭터 충돌 체크
-		for (const auto& explosion : explosions) {
-			for (int i = 0; i < number_of_clients; ++i) {
+
+		for (int i = 0; i < number_of_clients; ++i) {
+			if (playerinfo[i].state == PlayerState::DEAD)continue;
+			for (const auto& explosion : explosions) {
+
 				if ((std::abs(explosion.explosiveinfo.pos.r - playerinfo[i].pos.r) < 1)
 					&& (std::abs(explosion.explosiveinfo.pos.c - playerinfo[i].pos.c) < 1)) {
 
@@ -558,7 +560,9 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 
 		// 무적 시간 존재 시 감소
 		for (int i = 0; i < number_of_clients; ++i) {
-			// 예외 처리 
+			if (playerinfo[i].state == PlayerState::DEAD)continue;
+			// 예외 처리
+
 			if (3000 < playerinfo[i].no_damage_count)
 				playerinfo[i].no_damage_count = 0;
 
@@ -569,6 +573,7 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 
 		//폭탄 시간초 감소
 		for (auto& bomb : bombs) {
+			
 			//예외 처리
 			if (3000 < bomb.bombinfo.bomb_count_down) {
 				bomb.bombinfo.bomb_count_down = 0;
@@ -623,13 +628,11 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 		WorldPacket.explosive_count = explosions.size();
 
 		char* cur_ptr = WorldPacket.buf;
-		//플레이어 정보 복사
-		for (int i = 0; i < number_of_clients; ++i) {
-			if (playerinfo[i].state == PlayerState::DEAD) continue;
-			playerinfo[i].id = i;
-			memcpy(cur_ptr, &playerinfo[i], sizeof(PlayerInfo));
-			cur_ptr += sizeof(PlayerInfo);
 
+		//폭발 범위 복사
+		for (auto& explosion : explosions) {
+			memcpy(cur_ptr, &explosion, sizeof(SendExplosiveInfo));
+			cur_ptr += sizeof(SendExplosiveInfo);
 		}
 
 		//폭탄 정보 복사
@@ -639,11 +642,15 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 		}
 
 
-		//폭발 범위 복사
-		for (auto& explosion : explosions) {
-			memcpy(cur_ptr, &explosion, sizeof(SendExplosiveInfo));
-			cur_ptr += sizeof(SendExplosiveInfo);
+		//플레이어 정보 복사
+		for (int i = 0; i < number_of_clients; ++i) {
+			if (playerinfo[i].state == PlayerState::DEAD) continue;
+			playerinfo[i].id = i;
+			memcpy(cur_ptr, &playerinfo[i], sizeof(PlayerInfo));
+			cur_ptr += sizeof(PlayerInfo);
+
 		}
+
 
 		for (int i = 0; i < number_of_clients; ++i) {
 			int retval = send(clients[i].client, (char*)&WorldPacket, sizeof(WorldPacket), 0);
