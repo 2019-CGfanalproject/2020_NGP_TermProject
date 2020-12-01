@@ -91,10 +91,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    HWND hWnd = CreateWindowW(
        szWindowClass, 
        szTitle, 
-       WS_POPUP,
+       WS_OVERLAPPEDWINDOW,
        (desktop_rect.right - CLIENT_WIDTH) / 2,
        (desktop_rect.bottom - CLIENT_HEIGHT) / 2,
-       CLIENT_WIDTH, CLIENT_HEIGHT,
+       CLIENT_WIDTH + 15, CLIENT_HEIGHT + 40,       // add title bar size
        nullptr, 
        nullptr, 
        hInstance, 
