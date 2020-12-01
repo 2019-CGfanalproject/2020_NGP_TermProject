@@ -54,12 +54,11 @@ std::string loopback{ "127.0.0.1" };
 std::string shphone{ "192.168.43.216" };
 std::string wireless{ "192.168.120.23" };
 
-
 void LoginScene::TryConnecting()
 {
 	// ip 眉农
 	// nickname 眉农
-	bool connected = m_Framework->m_Communicator.Connect(loopback.c_str(), TEXT("驱府公"));
+	bool connected = m_Framework->m_Communicator.Connect(shphone.c_str(), TEXT("驱府公"));
 
 	if (connected) {
 		m_Framework->m_SceneManager.ChangeScene(SceneID::LOBBY);

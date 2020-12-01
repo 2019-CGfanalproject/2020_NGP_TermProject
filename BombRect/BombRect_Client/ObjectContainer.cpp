@@ -125,7 +125,10 @@ void ObjectContainer::Update()
 		);
 
 		for (int life = 0; life < player_info.life_count; ++life) {
-			Vector2 pos{ ui_pos[i].x + (60 * life * ((i % 2) ? -1 : 1)) , ui_pos[i].y };
+			Vector2 pos{ ui_pos[player_info.id].x 
+				+ (60 * life * ((player_info.id % 2) ? -1 : 1)) ,
+				ui_pos[player_info.id].y 
+			};
 			AddDynamicObject(BitmapKey::UI_HEART, pos);
 		}
 	}
