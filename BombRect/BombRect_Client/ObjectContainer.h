@@ -11,16 +11,15 @@ class ObjectContainer	// GameDatamanager
 public:
 	game_packet::SC_WorldState m_WorldState;
 
-	PlayerInfo playerInfo[4];
-	TilePos explo_info[100];
+	float degree[4];
 	std::mutex lock;
 
 public:
 	ObjectContainer() {
-		for (int i = 0; i < 100; ++i) {
-			explo_info[i].r = -1;
-			explo_info[i].c = -1;
-		}
+		degree[0] = 0.f;
+		degree[1] = 180.f;
+		degree[2] = 0.f;
+		degree[3] = 180.f;
 	};
 	~ObjectContainer() {};
 
@@ -31,6 +30,9 @@ public:
 
 	void AddStaticObject(BitmapKey key, Vector2 pos);
 	DynamicObject* AddDynamicObject(BitmapKey key, Vector2 pos);
+	DynamicObject* AddDynamicObject(
+		BitmapKey key, Vector2 pos, 
+		float degree, float opacity);
 
 	inline void SetWorldState(game_packet::SC_WorldState& world_state) {
 		lock.lock();

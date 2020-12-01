@@ -1,5 +1,7 @@
 #pragma once
+
 class ObjectContainer;
+class DynamicObject;
 
 struct BitmapPair {
 	BitmapKey key;
@@ -18,6 +20,7 @@ public:
 	void DrawLobbyLayout();
 	void Render(const ObjectContainer& objects);
 	void DrawBitmap(BitmapKey key, Vector2 pos);
+	void DrawBitmap(const DynamicObject& object);
 
 	HRESULT LoadGameBitmap();
 

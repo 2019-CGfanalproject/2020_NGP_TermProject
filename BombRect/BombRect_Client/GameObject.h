@@ -32,10 +32,24 @@ public:
 
 class DynamicObject : public GameObject {
 public:
+	float m_Degree;
+	float m_Opacity;
+
 	DynamicObject(BitmapKey key, Vector2 pos)
-		: GameObject(key, pos) { }
+		: GameObject(key, pos),
+		m_Degree(0),
+		m_Opacity(1.0)
+	{ }
 
 	virtual void Update(Vector2 pos) { };
+
+	void SetDegree(float degree) {
+		m_Degree = degree;
+	}
+
+	void SetOpacity(float opacity) {
+		m_Opacity = opacity;
+	}
 };
 
 class Character : public DynamicObject {
@@ -44,6 +58,4 @@ class Character : public DynamicObject {
 public:
 	Character(int id, BitmapKey key, Vector2 pos);        
 	void Update(Vector2 pos) override;
-
 };
-
