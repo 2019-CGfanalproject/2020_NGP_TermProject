@@ -14,7 +14,7 @@ const TilePos CLOSED_TILE_POS[] = {
    {0, 8}, {1, 8}, {2, 8}, {3, 8}, {4, 8}, {5, 8}, {6, 8}, {7, 8},  {8, 8},
 };
 
-const bool ClosedTiles[9][9] = {
+bool ClosedTiles[9][9] = {
 	{true,	true,	 true,	  true,	  true,	  true,	  true,	  true,	  true},
 	{true,	false,   false,   false , false,  false,  false,  false , true},
 	{true,	false,   true,    false , true,   false,  true,   false , true},
@@ -66,7 +66,10 @@ list<S_Bombinfo> bombs;
 int number_of_clients;
 int ReadyCount;
 int alivePlayer;
+result_packet::TimeOver timeoverPacket;
 unsigned int CountDown{ 0 };
+
+lobby_packet::LobbyInfo nicknamePacket{};
 
 game_packet::CS_PlayerState volatile PlayerPacket[4];
 game_packet::CS_Bomb BombPacket;
@@ -89,10 +92,6 @@ struct GamePacketHeader {
 
 };
 
-//lobby_info{
-//	{0,nullptr},{0,nullptr}
-//	{0,nullptr},{0,nullptr}
-//}
 
 void error_display(const char* msg) {
 	LPVOID lpMsgBuf;
@@ -148,6 +147,7 @@ unsigned __stdcall ClinetsThread(LPVOID arg) {
 
 		case SceneID::RESULT:
 
+			ResultCommunicate(arg);
 			break;
 
 		}
@@ -157,7 +157,7 @@ unsigned __stdcall ClinetsThread(LPVOID arg) {
 
 }
 
-
+mutex bombLock;
 void SetBomb(SendBombInfo bomb_tmp, ClientInfo* client) {
 
 	for (auto bomb : bombs) {
@@ -167,13 +167,15 @@ void SetBomb(SendBombInfo bomb_tmp, ClientInfo* client) {
 		}
 	}
 	if (playerinfo[client->index].bomb_count > 0) {
+		//bombLock.lock();
+		//ClosedTiles[][]
 		bombs.emplace_back(bomb_tmp, (int)client->index);
+		//bombLock.unlock();
 		playerinfo[client->index].bomb_count--;
 	}
 
 }
 
-lobby_packet::LobbyInfo nicknamePacket{};
 
 void LobbyCummunicate(LPVOID arg)
 {
@@ -204,12 +206,12 @@ void LobbyCummunicate(LPVOID arg)
 		//레디
 		if (header.type == lobby_packet::PacketType::READY) {
 			cout << "Ready 받음\n";
+			if (number_of_clients <= 1) continue;
+			
 			lobby_packet::Ready readyPacket{};
 			readyPacket.type = lobby_packet::PacketType::READY;
-
 			readyPacket.size = client->index;
-			
-			if (!ReadyPressed) {
+			if (!ReadyPressed ) {
 				cout << "레디\n";
 				++ReadyCount;
 				ReadyPressed = true;
@@ -224,7 +226,6 @@ void LobbyCummunicate(LPVOID arg)
 			for (int i = 0; i < number_of_clients; ++i) {
 				//레디 정보 패킷 보내기
 				send(clients[i].client, (char*)&readyPacket , sizeof(readyPacket), 0);
-
 			}
 			if (number_of_clients == ReadyCount) {
 				// 게임 시작 패킷 보내기
@@ -270,8 +271,6 @@ void LobbyCummunicate(LPVOID arg)
 
 }
 
-PlayerState testState;
-std::mutex g_m;
 
 void GameCommunicate(LPVOID arg) {
 	ClientInfo* client = (ClientInfo*)arg;
@@ -338,16 +337,29 @@ void GameCommunicate(LPVOID arg) {
 			}
 
 		}
-		// 충돌 처리
 
+		if (Gameheader.type == game_packet::PacketType::GameOver) {
+
+			SceneCheck = SceneID::RESULT;
+			break;
+		}
+
+
+		
 	}
 
 
 }
 
-void ResultCommunicate(LPVOID arg) {
 
+void ResultCommunicate(LPVOID arg) {
+	ClientInfo* client = (ClientInfo*)arg;
+	timeoverPacket.time_over = true;
+	Sleep(2000);
+	send(clients[client->index].client, (const char*)&timeoverPacket, sizeof(result_packet::TimeOver), 0);
+	SceneCheck = SceneID::LOBBY;
 }
+
 
 // 클라에서 사용하는 전역 변수 이용해서 업데이트하고 그걸 전부다 한테 send
 unsigned __stdcall UpdateAndSend(LPVOID arg) {
@@ -391,7 +403,7 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 					(5.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 6.9)) {
 					vel_x[i] = 0;
 					vel_y[i] = 0;
-				}
+				}//  폭탄 충돌 처리 0.2 -0.1;
 				else {
 					vel_x[i] = 0;
 					vel_y[i] = -1;
@@ -405,7 +417,7 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 					(5.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 6.9)) {
 					vel_x[i] = 0;
 					vel_y[i] = 0;
-				}
+				}//  폭탄 충돌 처리 0.99 +0.1;
 				else {
 					playerinfo[i].pos.r = std::round(playerinfo[i].pos.r);
 					vel_x[i] = 0;
@@ -419,7 +431,7 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 					(5.1 < playerinfo[i].pos.c && playerinfo[i].pos.c < 6.9)) {
 					vel_x[i] = 0;
 					vel_y[i] = 0;
-				}
+				}//  폭탄 충돌 처리 -0.1 0.2;
 				else {
 					playerinfo[i].pos.c = std::round(playerinfo[i].pos.c);
 					vel_x[i] = -1;
@@ -433,7 +445,7 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 					(5.1 < playerinfo[i].pos.c && playerinfo[i].pos.c < 6.9)) {
 					vel_x[i] = 0;
 					vel_y[i] = 0;
-				}
+				}//  폭탄 충돌 처리  +0.1 0.99;
 				else {
 					playerinfo[i].pos.c = std::round(playerinfo[i].pos.c);
 					vel_x[i] = 1;
@@ -622,9 +634,6 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 		}
 		zero_explosions = 0;
 
-
-
-
 		game_packet::SC_WorldState WorldPacket{};
 		// 패킷 보내기전 
 		WorldPacket.player_count = alivePlayer;
@@ -669,10 +678,14 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 			}
 		}
 
+		if (alivePlayer <= 1) {
+			return 0 ;
+		}
+
 
 		::Sleep(32);
 
-	} //while
+	}
 	return 0;
 }
 

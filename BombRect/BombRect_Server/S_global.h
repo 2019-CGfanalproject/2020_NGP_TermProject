@@ -24,3 +24,5 @@ int recvn(SOCKET, char*, int, int);
 void GameCommunicate(LPVOID arg);
 
 void LobbyCummunicate(LPVOID arg);
+
+void ResultCommunicate(LPVOID arg);
