@@ -42,6 +42,7 @@ namespace game_packet {
 	enum class PacketType {
 		PlayerState,
 		Bomb,
+		GameOver,
 	};
 #pragma pack(1)
 	struct CS_PlayerState {
@@ -50,6 +51,10 @@ namespace game_packet {
 	};
 
 	struct CS_Bomb {
+		PacketType type;
+	};
+
+	struct CS_GameOver {
 		PacketType type;
 	};
 
