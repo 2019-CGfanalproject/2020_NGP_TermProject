@@ -22,6 +22,9 @@ BitmapPair g_bitmapInfo[] = {
 	{ BitmapKey::UI_YELLOW,			L"Assets/ui_yellow.png"			},
 	{ BitmapKey::UI_GREEN,			L"Assets/ui_green.png"			},
 	{ BitmapKey::UI_CYAN,			L"Assets/ui_cyan.png"			},
+
+
+	{ BitmapKey::TEAM_ICON,			L"Assets/team_icon.png"			},
 };
 
 

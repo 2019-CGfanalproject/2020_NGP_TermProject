@@ -52,10 +52,8 @@ public:
 	}
 };
 
-class Character : public DynamicObject {
-	int m_UserID;
+class TextEditor : public GameObject {
+	// 프레임은 포함하지 않는다. 따로 그려줘야함
 
-public:
-	Character(int id, BitmapKey key, Vector2 pos);        
-	void Update(Vector2 pos) override;
+	std::wstring m_Text;
 };

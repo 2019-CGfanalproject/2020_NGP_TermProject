@@ -16,6 +16,7 @@ namespace lobby_packet {
 
 	struct LobbyInfo {
 		PacketType type;
+		unsigned short size;
 		Nickname users[4];
 	};
 

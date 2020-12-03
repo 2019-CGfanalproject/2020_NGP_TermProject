@@ -116,8 +116,28 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    static int len;
+    static wchar_t str[1024];
     switch (message)
     {
+    case WM_IME_COMPOSITION: {
+        // 한글 입력을 받았을 때 발생하는 메세지
+        HIMC hIMC = ImmGetContext(hWnd);
+        if (lParam & GCS_COMPSTR) {         // 자모 단위로 가져온다
+            len = ImmGetCompositionStringW(hIMC, GCS_COMPSTR, NULL, 0);
+            ImmGetCompositionString(hIMC, GCS_COMPSTR, str, len);
+
+            OutputDebugString(str);
+        }
+        if (lParam & GCS_RESULTSTR) {       // 완성된 글자만 가져온다
+            len = ImmGetCompositionString(hIMC, GCS_RESULTSTR, NULL, 0);
+            ImmGetCompositionString(hIMC, GCS_RESULTSTR, str, len);
+
+            OutputDebugString(str);
+        }
+        ImmReleaseContext(hWnd, hIMC); str[len] = '\0';
+        break;
+    }
     case WM_PAINT:
         g_GameFramework.Render();
         break;

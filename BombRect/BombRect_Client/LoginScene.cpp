@@ -14,8 +14,12 @@ LoginScene::~LoginScene()
 
 void LoginScene::Initialize()
 {
-    m_Framework->m_Objects.AddStaticObject(BitmapKey::TITLE, Vector2(0, 80));
-    m_Framework->m_Objects.AddStaticObject(BitmapKey::IPADDR_EDITBAR, Vector2(150, 600));
+    m_Framework->m_Objects.AddStaticObject(BitmapKey::TITLE, Vector2(0, 40));
+    // m_Framework->m_Objects.AddStaticObject(BitmapKey::IPADDR_EDITBAR, Vector2(150, 50));
+
+    m_Framework->m_Objects.AddStaticObject(BitmapKey::TEAM_ICON,
+		Vector2(CLIENT_WIDTH / 2 - 92, 440)
+	);
 }
 
 void LoginScene::Destroy()
@@ -52,7 +56,7 @@ void LoginScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 
 std::string loopback{ "127.0.0.1" };
 std::string shphone{ "192.168.43.216" };
-std::string wireless{ "192.168.120.23" };
+std::string wireless{ "192.168.122.264" };
 
 void LoginScene::TryConnecting()
 {

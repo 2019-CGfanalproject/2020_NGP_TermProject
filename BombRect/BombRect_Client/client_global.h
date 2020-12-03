@@ -33,6 +33,8 @@ enum class BitmapKey {
 	UI_YELLOW,
 	UI_GREEN,
 	UI_CYAN,
+
+	TEAM_ICON,
 };
 
 template<class Interface>

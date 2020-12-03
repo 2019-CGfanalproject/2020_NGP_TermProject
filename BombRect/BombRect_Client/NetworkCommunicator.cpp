@@ -78,7 +78,11 @@ bool NetworkCommunicator::Connect(const char* ip_addr, const String& nickname)
 	}
 
 	// 2. nickname 보내기
-	
+	lobby_packet::Nickname packet;
+	packet.id = 0;
+	ZeroMemory(packet.name, sizeof(TCHAR) * 16);
+	memcpy(packet.name, nickname.c_str(), nickname.size() * sizeof(TCHAR));
+	send(m_Socket, (const char*)&packet, sizeof(packet), 0);
 
 	// 3. ReceiveThread 돌리기
 	CreateThread(NULL, 0, ReceiveProc, (LPVOID)this, NULL, NULL);
@@ -138,9 +142,18 @@ void NetworkCommunicator::ReceiveRobbyPacket()
 		recvn(m_Socket, (char*)&header, sizeof(header), 0);
 
 		switch (header.type) {
+		case PacketType::LOBBY_INFO: {
+			OutputDebugStringA("info\n");
+
+			LobbyInfo packet;
+			recvn(m_Socket, (char*)&packet.users, sizeof(Nickname) * 4, 0);
+
+			for(int i = 0; i < 4; ++i)
+				OutputDebugString(packet.users[i].name);
+			break;
+		}
 		case PacketType::READY: {
 			OutputDebugStringA("ready 받음");
-
 			break;
 		}
 		case PacketType::CHATING: {

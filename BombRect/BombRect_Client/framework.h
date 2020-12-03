@@ -8,6 +8,9 @@
 #include <WinSock2.h>
 #pragma comment(lib, "ws2_32")
 
+// 한글 입력 처리를 위한 라이브러리
+#pragma comment(lib, "imm32.lib")
+
 // C 런타임 헤더 파일입니다.
 #include <stdlib.h>
 #include <malloc.h>
