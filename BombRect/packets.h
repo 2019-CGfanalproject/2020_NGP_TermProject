@@ -4,7 +4,8 @@ namespace lobby_packet {
 	enum class PacketType : char {
 		READY,
 		CHATING,
-		GAME_START
+		GAME_START,
+		LOBBY_INFO,
 	};
 
 #pragma pack(1)
@@ -14,6 +15,7 @@ namespace lobby_packet {
 	};
 
 	struct LobbyInfo {
+		PacketType type;
 		Nickname users[4];
 	};
 
@@ -48,7 +50,6 @@ namespace game_packet {
 
 	struct CS_Bomb {
 		PacketType type;
-
 	};
 
 	struct SC_WorldState {
