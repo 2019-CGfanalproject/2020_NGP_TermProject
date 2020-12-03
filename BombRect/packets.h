@@ -8,8 +8,13 @@ namespace lobby_packet {
 	};
 
 #pragma pack(1)
-	struct CS_Nickname {
-		TCHAR buf[16];
+	struct Nickname {
+		unsigned int id;
+		TCHAR name[16];
+	};
+
+	struct LobbyInfo {
+		Nickname users[4];
 	};
 
 	struct Ready {
