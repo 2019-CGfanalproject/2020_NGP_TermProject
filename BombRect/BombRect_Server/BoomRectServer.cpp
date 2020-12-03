@@ -173,6 +173,8 @@ void SetBomb(SendBombInfo bomb_tmp, ClientInfo* client) {
 
 }
 
+lobby_packet::LobbyInfo nicknamePacket{};
+
 void LobbyCummunicate(LPVOID arg)
 {
 	ClientInfo* client = (ClientInfo *)arg;
@@ -182,15 +184,17 @@ void LobbyCummunicate(LPVOID arg)
 	addrlen = sizeof(clientaddr);
 	getpeername(client->client, (SOCKADDR*)&clientaddr, &addrlen);
 	bool ReadyPressed = false; 
-	lobby_packet::CS_Nickname nicknamePacket{};
 	
 	// 닉네임 받는 부분
 
-	/*	retval = recvn(client->client, (char*)nicknamePacket.buf, sizeof(nicknamePacket.buf), 0);
+		retval = recvn(client->client, (char*)&nicknamePacket.users[client->index], sizeof(lobby_packet::Nickname), 0);
+		nicknamePacket.users[client->index].id = client->index;
+		nicknamePacket.type = lobby_packet::PacketType::LOBBY_INFO;
+		nicknamePacket.size = 0;
 		for (int i = 0; i < number_of_clients; ++i) {
-			send(clients[i].client, (const char*)&nicknamePacket, sizeof(nicknamePacket), 0);
+			send(clients[i].client, (const char*)&nicknamePacket, sizeof(lobby_packet::LobbyInfo), 0);
 		}
-	*/
+	
 	LobbyPacketHeader header;
 	
 	// 레디 패킷이랑 채팅 구분;
