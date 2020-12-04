@@ -2,6 +2,8 @@
 
 mutex g_lock;
 
+#define BOMB 2
+
 const TilePos CLOSED_TILE_POS[] = {
    {0, 0}, {1, 0}, {2, 0}, {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0},  {8, 0},
    {0, 1},															{8, 1},
@@ -14,7 +16,7 @@ const TilePos CLOSED_TILE_POS[] = {
    {0, 8}, {1, 8}, {2, 8}, {3, 8}, {4, 8}, {5, 8}, {6, 8}, {7, 8},  {8, 8},
 };
 
-bool ClosedTiles[9][9] = {
+char ClosedTiles[9][9] = {
 	{true,	true,	 true,	  true,	  true,	  true,	  true,	  true,	  true},
 	{true,	false,   false,   false , false,  false,  false,  false , true},
 	{true,	false,   true,    false , true,   false,  true,   false , true},
@@ -167,10 +169,10 @@ void SetBomb(SendBombInfo bomb_tmp, ClientInfo* client) {
 		}
 	}
 	if (playerinfo[client->index].bomb_count > 0) {
-		//bombLock.lock();
-		//ClosedTiles[][]
+		bombLock.lock();
+		ClosedTiles[(int)bomb_tmp.pos.r][(int)bomb_tmp.pos.c] = BOMB;
 		bombs.emplace_back(bomb_tmp, (int)client->index);
-		//bombLock.unlock();
+		bombLock.unlock();
 		playerinfo[client->index].bomb_count--;
 	}
 
@@ -398,12 +400,17 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 				break;
 			case PlayerState::UP:
 				playerinfo[i].state = PlayerState::UP;
-				if ((1.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 2.9) ||
-					(3.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 4.9) ||
-					(5.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 6.9)) {
+				if ((1.2 < playerinfo[i].pos.r && playerinfo[i].pos.r < 2.8) ||
+					(3.2 < playerinfo[i].pos.r && playerinfo[i].pos.r < 4.8) ||
+					(5.2 < playerinfo[i].pos.r && playerinfo[i].pos.r < 6.8)) {
 					vel_x[i] = 0;
 					vel_y[i] = 0;
 				}//  气藕 面倒 贸府 0.2 -0.1;
+				else if (ClosedTiles[(int)(playerinfo[i].pos.r + 0.4)][(int)(playerinfo[i].pos.c-0.1)] == BOMB) {
+					vel_x[i] = 0;
+					vel_y[i] = 0;
+
+				}
 				else {
 					vel_x[i] = 0;
 					vel_y[i] = -1;
@@ -412,12 +419,17 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 				break;
 			case PlayerState::DOWN:
 				playerinfo[i].state = PlayerState::DOWN;
-				if ((1.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 2.9) ||
-					(3.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 4.9) ||
-					(5.1 < playerinfo[i].pos.r && playerinfo[i].pos.r < 6.9)) {
+				if ((1.2 < playerinfo[i].pos.r && playerinfo[i].pos.r < 2.8) ||
+					(3.2 < playerinfo[i].pos.r && playerinfo[i].pos.r < 4.8) ||
+					(5.2 < playerinfo[i].pos.r && playerinfo[i].pos.r < 6.8)) {
 					vel_x[i] = 0;
 					vel_y[i] = 0;
 				}//  气藕 面倒 贸府 0.99 +0.1;
+				else if (ClosedTiles[(int)(playerinfo[i].pos.r)][(int)(playerinfo[i].pos.c + 1)] == BOMB) {
+					vel_x[i] = 0;
+					vel_y[i] = 0;
+
+				}
 				else {
 					playerinfo[i].pos.r = std::round(playerinfo[i].pos.r);
 					vel_x[i] = 0;
@@ -426,12 +438,19 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 				break;
 			case PlayerState::LEFT:
 				playerinfo[i].state = PlayerState::LEFT;
-				if ((1.1 < playerinfo[i].pos.c && playerinfo[i].pos.c < 2.9) ||
-					(3.1 < playerinfo[i].pos.c && playerinfo[i].pos.c < 4.9) ||
-					(5.1 < playerinfo[i].pos.c && playerinfo[i].pos.c < 6.9)) {
+				if ((1.2 < playerinfo[i].pos.c && playerinfo[i].pos.c < 2.8) ||
+					(3.2 < playerinfo[i].pos.c && playerinfo[i].pos.c < 4.8) ||
+					(5.2 < playerinfo[i].pos.c && playerinfo[i].pos.c < 6.8)) {
 					vel_x[i] = 0;
 					vel_y[i] = 0;
 				}//  气藕 面倒 贸府 -0.1 0.2;
+
+				else if (ClosedTiles[(int)(playerinfo[i].pos.r -0.1 )][(int)(playerinfo[i].pos.c +0.4)] == BOMB) {
+					vel_x[i] = 0;
+					vel_y[i] = 0;
+
+				}
+
 				else {
 					playerinfo[i].pos.c = std::round(playerinfo[i].pos.c);
 					vel_x[i] = -1;
@@ -440,12 +459,17 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 				break;
 			case PlayerState::RIGHT:
 				playerinfo[i].state = PlayerState::RIGHT;
-				if ((1.1 < playerinfo[i].pos.c && playerinfo[i].pos.c < 2.9) ||
-					(3.1 < playerinfo[i].pos.c && playerinfo[i].pos.c < 4.9) ||
-					(5.1 < playerinfo[i].pos.c && playerinfo[i].pos.c < 6.9)) {
+				if ((1.2 < playerinfo[i].pos.c && playerinfo[i].pos.c < 2.8) ||
+					(3.2 < playerinfo[i].pos.c && playerinfo[i].pos.c < 4.8) ||
+					(5.2 < playerinfo[i].pos.c && playerinfo[i].pos.c < 6.8)) {
 					vel_x[i] = 0;
 					vel_y[i] = 0;
 				}//  气藕 面倒 贸府  +0.1 0.99;
+				else if (ClosedTiles[(int)(playerinfo[i].pos.r + 1)][(int)(playerinfo[i].pos.c )] == BOMB) {
+					vel_x[i] = 0;
+					vel_y[i] = 0;
+
+				}
 				else {
 					playerinfo[i].pos.c = std::round(playerinfo[i].pos.c);
 					vel_x[i] = 1;
@@ -494,7 +518,7 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 
 				// 磊脚 何磐 坷弗率
 				for (int i = bomb.bombinfo.pos.r + 1; i < 9; ++i) {
-					if (!ClosedTiles[i][(int)bomb.bombinfo.pos.c]) {
+					if (ClosedTiles[i][(int)bomb.bombinfo.pos.c] != true) {
 						SendExplosiveInfo tmp;
 						tmp.pos.r = i;
 						tmp.pos.c = bomb.bombinfo.pos.c;
@@ -504,7 +528,7 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 				}
 				// 磊脚 何磐 哭率
 				for (int i = bomb.bombinfo.pos.r - 1; i > 0; --i) {
-					if (!ClosedTiles[i][(int)bomb.bombinfo.pos.c]) {
+					if (ClosedTiles[i][(int)bomb.bombinfo.pos.c] != true) {
 						SendExplosiveInfo tmp;
 						tmp.pos.r = i;
 						tmp.pos.c = bomb.bombinfo.pos.c;
@@ -515,7 +539,7 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 				//x蔼 绊沥 y蔼 裹困肺 气惯 犬厘
 				// 磊脚何磐 酒贰率
 				for (int i = bomb.bombinfo.pos.c + 1; i < 9; ++i) {
-					if (!ClosedTiles[(int)bomb.bombinfo.pos.r][i]) {
+					if (ClosedTiles[(int)bomb.bombinfo.pos.r][i] != true) {
 						SendExplosiveInfo tmp;
 						tmp.pos.r = bomb.bombinfo.pos.r;
 						tmp.pos.c = i;
@@ -525,7 +549,7 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 				}
 				// 磊脚何磐 困率
 				for (int i = bomb.bombinfo.pos.c - 1; i >= 0; --i) {
-					if (!ClosedTiles[(int)bomb.bombinfo.pos.r][i]) {
+					if (ClosedTiles[(int)bomb.bombinfo.pos.r][i] != true) {
 						SendExplosiveInfo tmp;
 						tmp.pos.r = bomb.bombinfo.pos.r;
 						tmp.pos.c = i;
@@ -546,16 +570,16 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 			if (playerinfo[i].state == PlayerState::DEAD)continue;
 			for (const auto& explosion : explosions) {
 
-				if ((std::abs(explosion.explosiveinfo.pos.r - playerinfo[i].pos.r) < 1)
-					&& (std::abs(explosion.explosiveinfo.pos.c - playerinfo[i].pos.c) < 1)) {
+				if ((std::abs(explosion.explosiveinfo.pos.r - playerinfo[i].pos.r) < 0.9)
+					&& (std::abs(explosion.explosiveinfo.pos.c - playerinfo[i].pos.c) < 0.9)) {
 
 					if (playerinfo[i].no_damage_count == 0) {
 						playerinfo[i].life_count--;
 						playerinfo[i].no_damage_count = 3000;
 					}
 				}
-				if ((std::abs(explosion.explosiveinfo.pos.c - playerinfo[i].pos.c) < 1) &&
-					(std::abs(explosion.explosiveinfo.pos.r - playerinfo[i].pos.r) < 1)) {
+				if ((std::abs(explosion.explosiveinfo.pos.c - playerinfo[i].pos.c) < 0.9) &&
+					(std::abs(explosion.explosiveinfo.pos.r - playerinfo[i].pos.r) < 0.9)) {
 					if (playerinfo[i].no_damage_count == 0) {
 						playerinfo[i].life_count--;
 						playerinfo[i].no_damage_count = 3000;
@@ -565,6 +589,15 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 
 			}
 
+		}
+		// 楷尖 气惯
+		for (auto& bomb : bombs) {
+			for (const auto& explosion : explosions) {
+				if (bomb.bombinfo.pos.r == explosion.explosiveinfo.pos.r &&
+					bomb.bombinfo.pos.c == explosion.explosiveinfo.pos.c) {
+					bomb.bombinfo.bomb_count_down = 0;
+				}
+			}
 		}
 
 		alivePlayer = 0;
@@ -617,6 +650,9 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 
 		// 气藕 俺荐 皑家
 		for (int i = 0; i < zero_bombs; ++i) {
+			bombLock.lock();
+			ClosedTiles[(int)bombs.front().bombinfo.pos.r][(int)bombs.front().bombinfo.pos.c] = false;
+			bombLock.unlock();
 			bombs.pop_front();
 		}
 		zero_bombs = 0;
