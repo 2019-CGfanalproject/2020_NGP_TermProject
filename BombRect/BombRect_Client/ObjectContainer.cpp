@@ -109,6 +109,13 @@ void ObjectContainer::Update()
 		case PlayerState::RIGHT:
 			degree[player_info.id] = 0.f;
 			break;
+		case PlayerState::DEAD:
+			ranking[curr_rank++] = player_info.id;
+
+			for(int i = 0; i < 4; ++i)
+				OutputDebugStringA(std::to_string(ranking[i]).c_str());
+
+			break;
 		default:
 			break;
 		}
