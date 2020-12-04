@@ -52,8 +52,11 @@ public:
 	}
 };
 
-class TextEditor : public GameObject {
-	// 프레임은 포함하지 않는다. 따로 그려줘야함
-
-	std::wstring m_Text;
+class TextObject {
+public:
+	String m_Text;
+	int m_Left;
+	int m_Top;
+	int m_Right;
+	int m_Bottom;
 };

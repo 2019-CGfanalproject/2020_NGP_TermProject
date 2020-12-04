@@ -23,8 +23,8 @@ BitmapPair g_bitmapInfo[] = {
 	{ BitmapKey::UI_GREEN,			L"Assets/ui_green.png"			},
 	{ BitmapKey::UI_CYAN,			L"Assets/ui_cyan.png"			},
 
-
 	{ BitmapKey::TEAM_ICON,			L"Assets/team_icon.png"			},
+	{ BitmapKey::PLAYER_SLOT,		L"Assets/player_slot.png"		},
 };
 
 
@@ -84,7 +84,7 @@ void Renderer::Initailize(HINSTANCE hInst, HWND hWnd)
 		DWRITE_FONT_WEIGHT_REGULAR,
 		DWRITE_FONT_STYLE_NORMAL,
 		DWRITE_FONT_STRETCH_NORMAL,
-		72.0f,
+		20.0f,
 		L"en-us",
 		&m_TextFormat
 	);
@@ -198,6 +198,21 @@ void Renderer::Render(const ObjectContainer& objects)
 
 	for (auto& object : objects.m_DynamicObjects) {
 		DrawBitmap(object);
+	}
+
+	// wstring과 텍스트가 그려질 사각형을 담는 자료형 필요
+	for (auto& object : objects.m_TextObjects) {
+		m_RenderTarget->DrawTextW(
+			object.m_Text.c_str(),
+			object.m_Text.size(),
+			m_TextFormat,
+			D2D1::RectF(object.m_Left, object.m_Top,
+				object.m_Right, object.m_Bottom),
+			m_TestBrush
+		);
+
+		// 정렬을 하려면 이 함수를 사용해야함
+		// m_RenderTarget->DrawTextLayout()
 	}
 
 	// 글씨의 정보를 담는 컨테이너를 만든 후 가져와서 for문 돌리기

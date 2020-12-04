@@ -35,6 +35,7 @@ enum class BitmapKey {
 	UI_CYAN,
 
 	TEAM_ICON,
+	PLAYER_SLOT,
 };
 
 template<class Interface>

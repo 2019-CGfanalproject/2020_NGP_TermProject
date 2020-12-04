@@ -1,12 +1,15 @@
 #pragma once
-class ResultScene
-{
-	int ranking[4];
-	int index;
+#include "Scene.h"
 
+class ResultScene : public Scene
+{
 public:
-	int SetRanking(int id) {
-		ranking[index++] = id;
-		return index;
-	}
+	ResultScene(GameFramework* framework);
+	virtual ~ResultScene();
+public:
+	void Initialize() override;
+	void Destroy() override;
+	void Update() override;
+	void HandleInput(InputHandler* inputHandler) { }
+	void HandleInput(UINT message, WPARAM wParam, LPARAM lParam) { }
 };

@@ -4,7 +4,29 @@
 
 void LobbyScene::Initialize()
 {
-	m_Framework->m_Objects.AddStaticObject(BitmapKey::READY_BUTTON, Vector2(300 + 10, 500 + 10));
+	Vector2 slot_origin{ 300, 0 };
+	Vector2 left_origin{ 300, 600 };
+	m_Framework->m_Objects.AddStaticObject(
+		BitmapKey::READY_BUTTON, 
+		Vector2(50, 50) + left_origin
+	);
+	
+	m_Framework->m_Objects.AddStaticObject(
+		BitmapKey::PLAYER_SLOT, 
+		Vector2(25,25) + slot_origin
+	);
+	m_Framework->m_Objects.AddStaticObject(
+		BitmapKey::PLAYER_SLOT,
+		Vector2(250 + 25, 25) + slot_origin
+	);
+	m_Framework->m_Objects.AddStaticObject(
+		BitmapKey::PLAYER_SLOT,
+		Vector2(25, 300 + 25) + slot_origin
+	);
+	m_Framework->m_Objects.AddStaticObject(
+		BitmapKey::PLAYER_SLOT,
+		Vector2(250 + 25, 300 + 25) + slot_origin
+	);
 }
 
 void LobbyScene::Destroy()
@@ -13,10 +35,7 @@ void LobbyScene::Destroy()
 
 void LobbyScene::Update()
 {
-}
-
-void LobbyScene::Update(PlayerInfo& info)
-{
+	m_Framework->m_Objects.NicknameUpdate();	
 }
 
 void LobbyScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
@@ -26,7 +45,6 @@ void LobbyScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wParam) {
 		case VK_RETURN:
 			m_Framework->m_Communicator.SendReady();
-			// m_Framework->m_SceneManager.ChangeScene(SceneID::GAME);
 			break;
 		default:
 			break;

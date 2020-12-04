@@ -17,6 +17,41 @@ BitmapKey GetBitmapKeyFrom(int id) {
 	}
 }
 
+Vector2 ui_pos[4] = {
+	{70,	10	},
+	{680,	10	},
+	{70,	730	},
+	{680,	730	},
+};
+Vector2 slot_player_pos[4] = {
+	{325 + 60,	25 + 60},
+	{575 + 60,	25 + 60},
+	{325 + 60,	325 + 60},
+	{575 + 60,	325 + 60},
+};
+
+Vector2 slot_nickname_pos[4] = {
+	{325,	25},
+	{575,	25},
+	{325,	325},
+	{575,	325},
+};
+
+ObjectContainer::ObjectContainer()
+{
+	degree[0] = 0.f;
+	degree[1] = 180.f;
+	degree[2] = 0.f;
+	degree[3] = 180.f;
+
+	for (int i = 0; i < 4; ++i) {
+		m_TextObjects[i].m_Left = slot_nickname_pos[i].x;
+		m_TextObjects[i].m_Top = slot_nickname_pos[i].y;
+		m_TextObjects[i].m_Right = slot_nickname_pos[i].x + 200;
+		m_TextObjects[i].m_Bottom = slot_nickname_pos[i].y + 50;
+	}
+}
+
 void ObjectContainer::AddStaticObject(BitmapKey key, Vector2 pos)
 {
 	m_StaticObjects.emplace_back(key, pos);
@@ -42,19 +77,35 @@ DynamicObject* ObjectContainer::AddDynamicObject(
 	return &m_DynamicObjects.back();
 }
 
-Vector2 ui_pos[4] = {
-	{70,	10	},
-	{680,	10	},
-	{70,	730	},
-	{680,	730	},
-};
+
+
+void ObjectContainer::NicknameUpdate()
+{
+	m_DynamicObjects.clear();
+
+	m_Lock.lock();
+	for (int i = 0; i < 4; ++i) {
+		if (m_Nicknames[i].id == -1) continue;		// 빈 슬롯은 id를 -1로 채워서 보내줄 것
+		AddDynamicObject(
+			GetBitmapKeyFrom(m_Nicknames[i].id),
+			slot_player_pos[i]
+		);
+		m_TextObjects[i].m_Left = slot_nickname_pos[i].x;
+		m_TextObjects[i].m_Top = slot_nickname_pos[i].y;
+		m_TextObjects[i].m_Right = slot_nickname_pos[i].x + 200;
+		m_TextObjects[i].m_Bottom = slot_nickname_pos[i].y + 50;
+
+		m_TextObjects[i].m_Text = m_Nicknames[i].name;
+	}
+	m_Lock.unlock();
+}
 
 void ObjectContainer::Update()
 {
 	m_DynamicObjects.clear();
 
 	// 현재 패킷을 해석해 업데이트한다.
-	lock.lock();
+	m_Lock.lock();
 	char* ptr = m_WorldState.buf;
 
 	PlayerInfo player_info;
@@ -140,7 +191,7 @@ void ObjectContainer::Update()
 		}
 	}
 	
-	lock.unlock();
+	m_Lock.unlock();
 }
 
 void ObjectContainer::Reset()

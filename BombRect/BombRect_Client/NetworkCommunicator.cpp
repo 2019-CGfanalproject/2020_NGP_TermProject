@@ -148,14 +148,18 @@ void NetworkCommunicator::ReceiveRobbyPacket()
 		recvn(m_Socket, (char*)&header, sizeof(header), 0);
 
 		switch (header.type) {
-		case PacketType::LOBBY_INFO: {
-			OutputDebugStringA("info\n");
-
+		case PacketType::LOBBY_INFO: { // 누군가 로비에 입장했을 때 이 패킷을 받는다
 			LobbyInfo packet;
 			recvn(m_Socket, (char*)&packet.users, sizeof(Nickname) * 4, 0);
 
-			for(int i = 0; i < 4; ++i)
-				OutputDebugString(packet.users[i].name);
+			//for (int i = 0; i < 4; ++i) {
+			//	OutputDebugString(std::to_wstring(packet.users[i].id).c_str());
+			//	OutputDebugString(L", ");
+			//	OutputDebugString(packet.users[i].name);
+			//	OutputDebugString(L"\n");
+			//}
+
+			m_Framework->m_Objects.SetNicknames(packet.users);
 			break;
 		}
 		case PacketType::READY: {
@@ -197,7 +201,7 @@ void NetworkCommunicator::ReceiveGameData()
 
 		if (1 >= packet.player_count) {
 			game_packet::CS_GameOver gameover;
-			gameover.type = PacketType::GameOver;
+			gameover.type = game_packet::PacketType::GameOver;
 			send(m_Socket, (const char*)&gameover, sizeof(gameover), 0);
 			return;
 		}

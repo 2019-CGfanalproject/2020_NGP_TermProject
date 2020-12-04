@@ -5,7 +5,7 @@
 #include "LoginScene.h"
 #include "LobbyScene.h"
 #include "GameScene.h"
-// #include "ResultScene.h"
+#include "ResultScene.h"
 
 SceneManager::SceneManager()
 	: m_InputHandler(this)
@@ -29,9 +29,10 @@ void SceneManager::Initialize(GameFramework* framework)
 {
 	// Scene들을 생성한다.
 	m_Framework = framework;
-	m_Scenes[(int)SceneID::LOGIN] = new LoginScene{ framework };
-	m_Scenes[(int)SceneID::LOBBY] = new LobbyScene{ framework };
-	m_Scenes[(int)SceneID::GAME] = new GameScene{ framework };
+	m_Scenes[(int)SceneID::LOGIN] =		new LoginScene{ framework };
+	m_Scenes[(int)SceneID::LOBBY] =		new LobbyScene{ framework };
+	m_Scenes[(int)SceneID::GAME] =		new GameScene{ framework };
+	m_Scenes[(int)SceneID::RESULT] =	new ResultScene{ framework };
 
 	m_CurScene = m_Scenes[(int)SceneID::LOGIN];
 	m_CurScene->Initialize();
