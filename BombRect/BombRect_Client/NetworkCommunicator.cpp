@@ -49,14 +49,20 @@ DWORD WINAPI NetworkCommunicator::ReceiveProc(LPVOID params)
 	while (true) {
 		switch (communicator->m_CurScene) {
 		case SceneID::LOBBY:
+			OutputDebugStringA("Lobby Scene");
 			communicator->ReceiveRobbyPacket();
 			communicator->m_CurScene = SceneID::GAME;
 			break;
 		case SceneID::GAME:
 			communicator->ReceiveGameData();
 			communicator->m_CurScene = SceneID::RESULT;
-		case SceneID::RESULT:
+		case SceneID::RESULT: {
+			result_packet::TimeOver packet;
+			recvn(communicator->m_Socket, (char*)&packet, sizeof(packet), 0);
+			communicator->m_CurScene = SceneID::LOBBY;
+			OutputDebugStringA("Result Scene");
 			break;
+		}
 		default:
 			break;
 		}
@@ -182,15 +188,19 @@ struct WorldHeader {
 
 void NetworkCommunicator::ReceiveGameData()
 {
-	PlayerInfo p[4];
-	SendBombInfo b[12];
-	TilePos e[100];
-
-	game_packet::SC_WorldState packet;
+	using namespace game_packet;
+	SC_WorldState packet;
 
 	while (true) {
 		// 패킷 받기
 		recvn(m_Socket, (char*)&packet, sizeof(packet), 0);
+
+		if (1 >= packet.player_count) {
+			game_packet::CS_GameOver gameover;
+			gameover.type = PacketType::GameOver;
+			send(m_Socket, (const char*)&gameover, sizeof(gameover), 0);
+			return;
+		}
 
 		m_Framework->m_Objects.SetWorldState(packet);
 	}

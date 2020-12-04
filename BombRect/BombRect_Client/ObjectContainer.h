@@ -13,6 +13,8 @@ public:
 
 	float degree[4];
 	std::mutex lock;
+	int ranking[4]{};
+	int curr_rank = 0;
 
 public:
 	ObjectContainer() {
