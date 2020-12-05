@@ -233,8 +233,10 @@ void Renderer::Render(const ObjectContainer& objects)
 			object->m_Text.c_str(),
 			object->m_Text.size(),
 			m_LobbyTextFormat,
-			D2D1::RectF(object->m_Left, object->m_Top,
-				object->m_Right, object->m_Bottom),
+			D2D1::RectF(
+				object->m_Left, object->m_Top,
+				object->m_Right, object->m_Bottom
+			),
 			m_TestBrush
 		);
 

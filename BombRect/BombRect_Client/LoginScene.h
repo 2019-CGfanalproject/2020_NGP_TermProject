@@ -6,6 +6,9 @@ class LoginScene : public Scene
 {
 	String m_Text;
 	TextObject* m_IPAddrText;
+	TextObject* m_NicknameText;
+
+	TextObject* m_CurrFocusText;
 
 public:
 	LoginScene(GameFramework* framework);

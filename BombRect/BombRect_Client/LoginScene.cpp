@@ -16,6 +16,15 @@ LoginScene::LoginScene(GameFramework* framework)
 	m_IPAddrText->m_Top = 400;
 	m_IPAddrText->m_Right = 800;
 	m_IPAddrText->m_Bottom = 500;
+
+	m_NicknameText = m_Framework->m_Objects.AddText();
+	m_NicknameText->m_Text.clear();
+	m_NicknameText->m_Left = 400;
+	m_NicknameText->m_Top = 500;
+	m_NicknameText->m_Right = 800;
+	m_NicknameText->m_Bottom = 600;
+
+	m_CurrFocusText = m_IPAddrText;
 }
 
 LoginScene::~LoginScene()
@@ -41,7 +50,7 @@ void LoginScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message) {
 	case WM_KEYUP:
 		switch (wParam) {
-		case VK_SPACE: {
+		case VK_F12: {
 			// 디버그를 위한 루프백 연결 키
 			bool connected = m_Framework->m_Communicator.Connect(loopback.c_str(), TEXT("혜리무"));
 			if (connected) m_Framework->m_SceneManager.ChangeScene(SceneID::LOBBY);
@@ -55,20 +64,36 @@ void LoginScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case WM_CHAR: {
-		m_IPAddrText->m_Text.push_back((const wchar_t)wParam);
-		//m_Framework->m_Objects.
-		//OutputDebugStringW(m_Text.c_str());
-		//OutputDebugStringW(L"\n");
+		switch (wParam) {
+		case 8: {	// backspace
+			if(0 < m_CurrFocusText->m_Text.size())
+				m_CurrFocusText->m_Text.pop_back();
+			break;
+		}
+		case '\t': break;
+		case '\n': break;
+		case ' ': break;
+		default:
+			m_CurrFocusText->m_Text.push_back((const wchar_t)wParam);
+			break;
+		}
+
 		break;
 	}
-	case WM_KEYDOWN:
+	case WM_KEYDOWN: {
+		switch (wParam) {
+		case VK_TAB:
+			if (m_CurrFocusText == m_IPAddrText) m_CurrFocusText = m_NicknameText;
+			else m_CurrFocusText = m_IPAddrText;
+			break;
+		}
 		break;
+	}
 	case WM_LBUTTONDOWN:
 	case WM_LBUTTONUP:
 		break;
 	}
 }
-
 
 void LoginScene::TryConnecting()
 {
@@ -77,7 +102,7 @@ void LoginScene::TryConnecting()
 	addr.assign(m_IPAddrText->m_Text.begin(), m_IPAddrText->m_Text.end());
 
 	// 연결
-	bool connected = m_Framework->m_Communicator.Connect(addr.c_str(), TEXT("혜리무"));
+	bool connected = m_Framework->m_Communicator.Connect(addr.c_str(), m_NicknameText->m_Text);
 
 	// 예외처리
 	if (connected) {
