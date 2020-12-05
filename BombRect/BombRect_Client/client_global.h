@@ -36,6 +36,8 @@ enum class BitmapKey {
 
 	TEAM_ICON,
 	PLAYER_SLOT,
+
+	LOGIN,
 };
 
 template<class Interface>

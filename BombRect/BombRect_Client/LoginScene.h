@@ -1,7 +1,12 @@
 #pragma once
 #include "Scene.h"
+
+class TextObject;
 class LoginScene : public Scene
 {
+	String m_Text;
+	TextObject* m_IPAddrText;
+
 public:
 	LoginScene(GameFramework* framework);
 	virtual ~LoginScene();

@@ -24,6 +24,7 @@ public:
 public:
 	std::vector<StaticObject>	m_StaticObjects;
 	std::list<DynamicObject>	m_DynamicObjects;
+	std::vector<TextObject*>		m_Texts;
 	TextObject m_TextObjects[4];
 
 public:
@@ -49,4 +50,5 @@ public:
 		m_Lock.unlock();
 	}
 
+	TextObject* AddText();
 };

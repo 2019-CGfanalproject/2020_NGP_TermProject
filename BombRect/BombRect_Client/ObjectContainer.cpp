@@ -198,4 +198,16 @@ void ObjectContainer::Reset()
 {
 	m_StaticObjects.clear();
 	m_DynamicObjects.clear();
+	for (auto& text : m_Texts) {
+		delete text;
+		text = nullptr;
+	}
+	m_Texts.clear();
+}
+
+TextObject* ObjectContainer::AddText()
+{
+	TextObject* text = new TextObject();
+	m_Texts.push_back(text);
+	return text;
 }

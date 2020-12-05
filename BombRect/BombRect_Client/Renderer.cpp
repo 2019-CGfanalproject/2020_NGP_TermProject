@@ -25,6 +25,7 @@ BitmapPair g_bitmapInfo[] = {
 
 	{ BitmapKey::TEAM_ICON,			L"Assets/team_icon.png"			},
 	{ BitmapKey::PLAYER_SLOT,		L"Assets/player_slot.png"		},
+	{ BitmapKey::LOGIN,				L"Assets/login.png"		},
 };
 
 
@@ -37,6 +38,7 @@ Renderer::Renderer():
 	// 이거 안 하면 IWICImagingFactory 사용할 때 에러난다
 	CoInitialize(NULL);		// wincodec.h
 }
+
 
 Renderer::~Renderer()
 {
@@ -87,6 +89,17 @@ void Renderer::Initailize(HINSTANCE hInst, HWND hWnd)
 		20.0f,
 		L"en-us",
 		&m_TextFormat
+	);
+
+	m_WriteFactory->CreateTextFormat(
+		L"메이플스토리",                // Font family name.
+		NULL,                       // Font collection (NULL sets it to use the system font collection).
+		DWRITE_FONT_WEIGHT_BOLD,
+		DWRITE_FONT_STYLE_NORMAL,
+		DWRITE_FONT_STRETCH_NORMAL,
+		36.f,
+		L"en-us",
+		&m_LobbyTextFormat
 	);
 
 	LoadGameBitmap();
@@ -189,7 +202,7 @@ void Renderer::Render(const ObjectContainer& objects)
 {
 	m_RenderTarget->BeginDraw();
 	m_RenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-	m_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::DimGray));
+	m_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Beige));
 
 	for (auto& object : objects.m_StaticObjects) {
 		// 여기서 가져온 정보들을 이용해 렌더링한다!
@@ -208,6 +221,20 @@ void Renderer::Render(const ObjectContainer& objects)
 			m_TextFormat,
 			D2D1::RectF(object.m_Left, object.m_Top,
 				object.m_Right, object.m_Bottom),
+			m_TestBrush
+		);
+
+		// 정렬을 하려면 이 함수를 사용해야함
+		// m_RenderTarget->DrawTextLayout()
+	}
+
+	for (auto& object : objects.m_Texts) {
+		m_RenderTarget->DrawTextW(
+			object->m_Text.c_str(),
+			object->m_Text.size(),
+			m_LobbyTextFormat,
+			D2D1::RectF(object->m_Left, object->m_Top,
+				object->m_Right, object->m_Bottom),
 			m_TestBrush
 		);
 

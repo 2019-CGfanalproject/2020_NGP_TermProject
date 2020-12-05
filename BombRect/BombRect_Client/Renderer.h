@@ -54,6 +54,7 @@ private:
 
 	IDWriteFactory			* m_WriteFactory;
 	IDWriteTextFormat		* m_TextFormat;
+	IDWriteTextFormat		* m_LobbyTextFormat;
 
 	// for test
 	ID2D1SolidColorBrush	* m_TestBrush = nullptr;
