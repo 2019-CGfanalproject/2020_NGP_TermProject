@@ -180,7 +180,6 @@ void ObjectContainer::Update()
 
 			for(int i = 0; i < 4; ++i)
 				OutputDebugStringA(std::to_string(ranking[i]).c_str());
-
 			break;
 		default:
 			break;
@@ -211,6 +210,8 @@ void ObjectContainer::Update()
 
 void ObjectContainer::Reset()
 {
+	//for (int i = 0; i < 4; ++i)
+	//	m_TextObjects[i];
 	m_StaticObjects.clear();
 	m_DynamicObjects.clear();
 	for (auto& text : m_Texts) {

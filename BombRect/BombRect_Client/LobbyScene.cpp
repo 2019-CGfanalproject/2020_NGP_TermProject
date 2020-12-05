@@ -14,6 +14,8 @@ void LobbyScene::Initialize()
 			BitmapKey::PLAYER_SLOT,
 			slot_pos[i]
 		);
+
+		m_Framework->m_Objects.m_ReadyState[i] = false;
 	}
 
 	Vector2 left_origin{ 300, 600 };

@@ -77,7 +77,6 @@ void LoginScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 			m_CurrFocusText->m_Text.push_back((const wchar_t)wParam);
 			break;
 		}
-
 		break;
 	}
 	case WM_KEYDOWN: {

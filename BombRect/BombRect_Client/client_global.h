@@ -39,6 +39,7 @@ enum class BitmapKey {
 
 	LOGIN,
 	READY_TEXT,
+	RESULT,
 };
 
 template<class Interface>

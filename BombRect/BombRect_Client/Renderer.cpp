@@ -27,7 +27,8 @@ BitmapPair g_bitmapInfo[] = {
 	{ BitmapKey::PLAYER_SLOT,		L"Assets/player_slot.png"		},
 	{ BitmapKey::LOGIN,				L"Assets/login.png"				},
 
-	{ BitmapKey::READY_TEXT,		L"Assets/ready_text.png"				},
+	{ BitmapKey::READY_TEXT,		L"Assets/ready_text.png"		},
+	{ BitmapKey::RESULT,			L"Assets/result.png"			},
 };
 
 
@@ -176,27 +177,6 @@ void Renderer::TestRender()
 		m_TestBrush
 	);
 	
-	m_RenderTarget->EndDraw();
-}
-
-void Renderer::DrawLobbyLayout()
-{
-	m_RenderTarget->BeginDraw();
-	m_RenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-	m_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::DimGray));
-
-	m_RenderTarget->DrawLine(
-		D2D1_POINT_2F{ 300.f, 0.f },
-		D2D1_POINT_2F{ 300.f, 800.f },
-		m_TestBrush
-	);
-
-	m_RenderTarget->DrawLine(
-		D2D1_POINT_2F{ 300.f, 600.f },
-		D2D1_POINT_2F{ 800.f, 600.f },
-		m_TestBrush
-	);
-
 	m_RenderTarget->EndDraw();
 }
 

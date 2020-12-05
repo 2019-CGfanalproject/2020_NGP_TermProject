@@ -31,11 +31,8 @@ void GameFramework::Update()
 
 void GameFramework::Render()
 {
-	// m_Renderer.TestRender();
 	Update();
 	m_Renderer.Render(m_Objects);
-
-	// m_Renderer.DrawLobbyLayout();
 }
 
 void GameFramework::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
@@ -56,7 +53,7 @@ void GameFramework::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 			m_SceneManager.ChangeScene(SceneID::GAME);
 			break;
 		case VK_F4:
-			// m_SceneManager.ChangeScene(SceneID::RESULT);
+			m_SceneManager.ChangeScene(SceneID::RESULT);
 			break;
 		}
 		break;

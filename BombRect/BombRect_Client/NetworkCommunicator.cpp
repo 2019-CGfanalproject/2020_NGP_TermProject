@@ -59,7 +59,9 @@ DWORD WINAPI NetworkCommunicator::ReceiveProc(LPVOID params)
 		case SceneID::RESULT: {
 			result_packet::TimeOver packet;
 			recvn(communicator->m_Socket, (char*)&packet, sizeof(packet), 0);
-			communicator->m_CurScene = SceneID::LOBBY;
+
+			 communicator->m_Framework->m_SceneManager.ChangeScene(SceneID::LOBBY );
+			 communicator->m_CurScene = SceneID::LOBBY;
 			OutputDebugStringA("Result Scene");
 			break;
 		}
@@ -197,6 +199,8 @@ void NetworkCommunicator::ReceiveGameData()
 			game_packet::CS_GameOver gameover;
 			gameover.type = game_packet::PacketType::GameOver;
 			send(m_Socket, (const char*)&gameover, sizeof(gameover), 0);
+
+			m_Framework->m_SceneManager.ChangeScene(SceneID::RESULT);
 			return;
 		}
 
