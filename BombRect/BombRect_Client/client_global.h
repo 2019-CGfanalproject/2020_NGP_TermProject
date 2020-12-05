@@ -38,6 +38,7 @@ enum class BitmapKey {
 	PLAYER_SLOT,
 
 	LOGIN,
+	READY_TEXT,
 };
 
 template<class Interface>

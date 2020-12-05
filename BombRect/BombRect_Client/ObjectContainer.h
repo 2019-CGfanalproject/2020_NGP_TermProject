@@ -10,6 +10,8 @@ class ObjectContainer	// GameDatamanager
 public:
 	std::mutex m_Lock;
 	lobby_packet::Nickname m_Nicknames[4];
+	bool m_ReadyState[4];
+
 	game_packet::SC_WorldState m_WorldState;
 
 	float degree[4];
@@ -32,7 +34,7 @@ public:
 	DynamicObject* AddDynamicObject(BitmapKey key, Vector2 pos);
 	DynamicObject* AddDynamicObject(BitmapKey key, Vector2 pos, float degree, float opacity);
 
-	void NicknameUpdate();
+	void UpdateLobby();
 
 	void Update();
 	
@@ -47,6 +49,12 @@ public:
 	inline void SetNicknames(lobby_packet::Nickname* nicknames) {
 		m_Lock.lock();
 		memcpy(m_Nicknames, nicknames, sizeof(lobby_packet::Nickname) * 4);
+		m_Lock.unlock();
+	}
+
+	inline void SetReady(int id) {
+		m_Lock.lock();
+		m_ReadyState[id] = !m_ReadyState[id];
 		m_Lock.unlock();
 	}
 

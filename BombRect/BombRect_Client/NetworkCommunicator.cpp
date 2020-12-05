@@ -152,18 +152,12 @@ void NetworkCommunicator::ReceiveRobbyPacket()
 			LobbyInfo packet;
 			recvn(m_Socket, (char*)&packet.users, sizeof(Nickname) * 4, 0);
 
-			//for (int i = 0; i < 4; ++i) {
-			//	OutputDebugString(std::to_wstring(packet.users[i].id).c_str());
-			//	OutputDebugString(L", ");
-			//	OutputDebugString(packet.users[i].name);
-			//	OutputDebugString(L"\n");
-			//}
-
 			m_Framework->m_Objects.SetNicknames(packet.users);
 			break;
 		}
 		case PacketType::READY: {
-			OutputDebugStringA("ready ¹ÞÀ½");
+			int player_id = header.size;
+			m_Framework->m_Objects.SetReady(player_id);
 			break;
 		}
 		case PacketType::CHATING: {

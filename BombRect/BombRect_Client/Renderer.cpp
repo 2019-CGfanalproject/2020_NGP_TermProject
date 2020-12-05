@@ -25,7 +25,9 @@ BitmapPair g_bitmapInfo[] = {
 
 	{ BitmapKey::TEAM_ICON,			L"Assets/team_icon.png"			},
 	{ BitmapKey::PLAYER_SLOT,		L"Assets/player_slot.png"		},
-	{ BitmapKey::LOGIN,				L"Assets/login.png"		},
+	{ BitmapKey::LOGIN,				L"Assets/login.png"				},
+
+	{ BitmapKey::READY_TEXT,		L"Assets/ready_text.png"				},
 };
 
 

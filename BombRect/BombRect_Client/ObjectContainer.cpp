@@ -37,6 +37,11 @@ Vector2 slot_nickname_pos[4] = {
 	{575,	325},
 };
 
+Vector2 slot_pos[4] = {
+	{ 325, 25 }, { 575, 25 },
+	{ 325, 325 }, { 575, 325 },
+};
+
 ObjectContainer::ObjectContainer()
 {
 	degree[0] = 0.f;
@@ -49,6 +54,8 @@ ObjectContainer::ObjectContainer()
 		m_TextObjects[i].m_Top = slot_nickname_pos[i].y;
 		m_TextObjects[i].m_Right = slot_nickname_pos[i].x + 200;
 		m_TextObjects[i].m_Bottom = slot_nickname_pos[i].y + 50;
+
+		m_ReadyState[i] = false;
 	}
 }
 
@@ -79,7 +86,7 @@ DynamicObject* ObjectContainer::AddDynamicObject(
 
 
 
-void ObjectContainer::NicknameUpdate()
+void ObjectContainer::UpdateLobby()
 {
 	m_DynamicObjects.clear();
 
@@ -96,6 +103,14 @@ void ObjectContainer::NicknameUpdate()
 		m_TextObjects[i].m_Bottom = slot_nickname_pos[i].y + 50;
 
 		m_TextObjects[i].m_Text = m_Nicknames[i].name;
+	}
+
+	for (int i = 0; i < 4; ++i) {
+		if (!m_ReadyState[i]) continue;
+		AddDynamicObject(
+			BitmapKey::READY_TEXT,
+			slot_pos[i] + Vector2(0, 200)
+		);
 	}
 	m_Lock.unlock();
 }

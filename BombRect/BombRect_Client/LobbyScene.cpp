@@ -4,28 +4,22 @@
 
 void LobbyScene::Initialize()
 {
-	Vector2 slot_origin{ 300, 0 };
+	Vector2 slot_pos[4] = {
+		{ 325, 25 }, { 575, 25 },
+		{ 325, 325 }, { 575, 325 },
+	};
+
+	for (int i = 0; i < 4; ++i) {
+		m_Framework->m_Objects.AddStaticObject(
+			BitmapKey::PLAYER_SLOT,
+			slot_pos[i]
+		);
+	}
+
 	Vector2 left_origin{ 300, 600 };
 	m_Framework->m_Objects.AddStaticObject(
 		BitmapKey::READY_BUTTON, 
 		Vector2(50, 50) + left_origin
-	);
-	
-	m_Framework->m_Objects.AddStaticObject(
-		BitmapKey::PLAYER_SLOT, 
-		Vector2(25,25) + slot_origin
-	);
-	m_Framework->m_Objects.AddStaticObject(
-		BitmapKey::PLAYER_SLOT,
-		Vector2(250 + 25, 25) + slot_origin
-	);
-	m_Framework->m_Objects.AddStaticObject(
-		BitmapKey::PLAYER_SLOT,
-		Vector2(25, 300 + 25) + slot_origin
-	);
-	m_Framework->m_Objects.AddStaticObject(
-		BitmapKey::PLAYER_SLOT,
-		Vector2(250 + 25, 300 + 25) + slot_origin
 	);
 }
 
@@ -35,7 +29,7 @@ void LobbyScene::Destroy()
 
 void LobbyScene::Update()
 {
-	m_Framework->m_Objects.NicknameUpdate();	
+	m_Framework->m_Objects.UpdateLobby();	
 }
 
 void LobbyScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
