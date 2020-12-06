@@ -40,6 +40,11 @@ enum class BitmapKey {
 	LOGIN,
 	READY_TEXT,
 	RESULT,
+
+	IPADDR_BAR,
+	IPADDR_SELECTED_BAR,
+	NICKNAME_BAR,
+	NICKNAME_SELECTED_BAR,
 };
 
 template<class Interface>

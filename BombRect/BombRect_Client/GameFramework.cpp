@@ -14,9 +14,9 @@ void GameFramework::Initialize(HINSTANCE instance, HWND wnd)
 	m_Inst = instance;
 	m_Wnd = wnd;
 
-	m_Renderer.Initailize(instance, wnd);
-	m_SceneManager.Initialize(this);
 	m_Communicator.Initialize(this);
+	m_SceneManager.Initialize(this);
+	m_Renderer.Initailize(instance, wnd);
 }
 
 void GameFramework::Release()

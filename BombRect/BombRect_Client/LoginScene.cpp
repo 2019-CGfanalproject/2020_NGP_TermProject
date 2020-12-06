@@ -12,17 +12,17 @@ LoginScene::LoginScene(GameFramework* framework)
 {
 	m_IPAddrText = m_Framework->m_Objects.AddText();
 	m_IPAddrText->m_Text.clear();
-	m_IPAddrText->m_Left = 400;
-	m_IPAddrText->m_Top = 400;
+	m_IPAddrText->m_Left = 450;
+	m_IPAddrText->m_Top = 350 + 16;
 	m_IPAddrText->m_Right = 800;
-	m_IPAddrText->m_Bottom = 500;
+	m_IPAddrText->m_Bottom = 450;
 
 	m_NicknameText = m_Framework->m_Objects.AddText();
 	m_NicknameText->m_Text.clear();
-	m_NicknameText->m_Left = 400;
-	m_NicknameText->m_Top = 500;
+	m_NicknameText->m_Left = 450;
+	m_NicknameText->m_Top = 450 + 16;
 	m_NicknameText->m_Right = 800;
-	m_NicknameText->m_Bottom = 600;
+	m_NicknameText->m_Bottom = 550;
 
 	m_CurrFocusText = m_IPAddrText;
 }
@@ -43,6 +43,17 @@ void LoginScene::Destroy()
 
 void LoginScene::Update()
 {
+	m_Framework->m_Objects.m_DynamicObjects.clear();
+
+	if (m_CurrFocusText == m_IPAddrText) {
+		m_Framework->m_Objects.AddDynamicObject(BitmapKey::IPADDR_SELECTED_BAR, Vector2(290, 350));
+		m_Framework->m_Objects.AddDynamicObject(BitmapKey::NICKNAME_BAR, Vector2(290, 450));
+	}
+	else {
+		m_Framework->m_Objects.AddDynamicObject(BitmapKey::IPADDR_BAR, Vector2(290, 350));
+		m_Framework->m_Objects.AddDynamicObject(BitmapKey::NICKNAME_SELECTED_BAR, Vector2(290, 450));
+	}
+	
 }
 
 void LoginScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)

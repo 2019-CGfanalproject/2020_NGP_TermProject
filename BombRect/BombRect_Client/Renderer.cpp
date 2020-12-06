@@ -29,6 +29,11 @@ BitmapPair g_bitmapInfo[] = {
 
 	{ BitmapKey::READY_TEXT,		L"Assets/ready_text.png"		},
 	{ BitmapKey::RESULT,			L"Assets/result.png"			},
+
+	{ BitmapKey::IPADDR_BAR,			L"Assets/ipaddr_bar.png"			},
+	{ BitmapKey::IPADDR_SELECTED_BAR,	L"Assets/ipaddr_selected_bar.png"	},
+	{ BitmapKey::NICKNAME_BAR,			L"Assets/nickname_bar.png"			},
+	{ BitmapKey::NICKNAME_SELECTED_BAR,	L"Assets/nickname_selected_bar.png"	},
 };
 
 
