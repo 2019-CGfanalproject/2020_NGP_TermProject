@@ -56,6 +56,8 @@ ObjectContainer::ObjectContainer()
 		m_TextObjects[i].m_Bottom = slot_nickname_pos[i].y + 50;
 
 		m_ReadyState[i] = false;
+
+		m_Nicknames[i].id = 100;
 	}
 }
 
@@ -92,7 +94,9 @@ void ObjectContainer::UpdateLobby()
 
 	m_Lock.lock();
 	for (int i = 0; i < 4; ++i) {
-		if (m_Nicknames[i].id == -1) continue;		// 빈 슬롯은 id를 -1로 채워서 보내줄 것
+		OutputDebugStringA(std::to_string(m_Nicknames[i].id).c_str());
+		OutputDebugStringA("\n");
+		if (m_Nicknames[i].id == 100) continue;		// 빈 슬롯은 id를 100로 채워서 보내줄 것
 		AddDynamicObject(
 			GetBitmapKeyFrom(m_Nicknames[i].id),
 			slot_player_pos[i]
@@ -175,12 +179,6 @@ void ObjectContainer::Update()
 		case PlayerState::RIGHT:
 			degree[player_info.id] = 0.f;
 			break;
-		case PlayerState::DEAD:
-			ranking[curr_rank++] = player_info.id;
-
-			for(int i = 0; i < 4; ++i)
-				OutputDebugStringA(std::to_string(ranking[i]).c_str());
-			break;
 		default:
 			break;
 		}
@@ -210,8 +208,9 @@ void ObjectContainer::Update()
 
 void ObjectContainer::Reset()
 {
-	//for (int i = 0; i < 4; ++i)
-	//	m_TextObjects[i];
+	for (int i = 0; i < 4; ++i) {
+		
+	}
 	m_StaticObjects.clear();
 	m_DynamicObjects.clear();
 	for (auto& text : m_Texts) {

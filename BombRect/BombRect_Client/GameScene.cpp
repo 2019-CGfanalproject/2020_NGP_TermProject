@@ -60,10 +60,6 @@ void GameScene::Update()
 	m_Framework->m_Objects.Update();
 }
 
-void GameScene::Update(PlayerInfo& info)
-{
-}
-
 void GameScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 {
 }

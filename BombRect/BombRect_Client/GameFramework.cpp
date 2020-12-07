@@ -25,7 +25,7 @@ void GameFramework::Release()
 
 void GameFramework::Update()
 {
-	m_Objects.Update();
+	//m_Objects.Update();
 	m_SceneManager.UpdateCurrentScene();
 }
 

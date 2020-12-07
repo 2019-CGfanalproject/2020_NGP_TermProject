@@ -38,11 +38,9 @@ void LobbyScene::Initialize()
 
 	Vector2 left_origin{ 300, 600 };
 	m_Framework->m_Objects.AddStaticObject(
-		BitmapKey::READY_BUTTON, 
+		BitmapKey::READY_BUTTON,
 		Vector2(50, 50) + left_origin
 	);
-
-
 }
 
 void LobbyScene::Destroy()
@@ -65,7 +63,7 @@ void LobbyScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		case '\t': break;
-		case '\n': break;
+		case '\r': break;
 		case ' ': break;
 		default:
 			m_ChattingText->m_Text.push_back((const wchar_t)wParam);
@@ -103,6 +101,7 @@ void LobbyScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_KEYUP:
 		switch (wParam) {
 		case VK_RETURN:
+			// m_Framework->m_Communicator.SendChatting(m_ChattingText->m_Text);
 			m_Framework->m_Communicator.SendReady();
 			break;
 		default:

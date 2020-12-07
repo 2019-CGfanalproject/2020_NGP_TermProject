@@ -11,14 +11,13 @@ public:
 	std::mutex m_Lock;
 	lobby_packet::Nickname m_Nicknames[4];
 	bool m_ReadyState[4];
+	std::vector<TextObject*> m_Chattings;
 
 	game_packet::SC_WorldState m_WorldState;
 
 	float degree[4];
 
-	int ranking[4]{};
-	int curr_rank = 0;
-
+	std::list<int> ranking;
 public:
 	ObjectContainer();
 	~ObjectContainer() { };
@@ -55,6 +54,18 @@ public:
 	inline void SetReady(int id) {
 		m_Lock.lock();
 		m_ReadyState[id] = !m_ReadyState[id];
+		m_Lock.unlock();
+	}
+
+	void AddChatting(const TCHAR* str) {
+		m_Lock.lock();
+		// せせせ 嬢追馬走せせ
+		/*TextObject* new_chat = AddText();
+		new_chat->m_Text = str;
+		new_chat->m_ = str;
+		new_chat->m_ = str;
+		new_chat->m_ = str;
+		new_chat->m_ = str;*/
 		m_Lock.unlock();
 	}
 

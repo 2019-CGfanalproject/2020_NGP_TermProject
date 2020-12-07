@@ -14,7 +14,6 @@ public:
 	void Destroy() override;
 
 	void Update() override;
-	void Update(PlayerInfo& info);
 	void HandleInput(UINT message, WPARAM wParam, LPARAM lParam) override;
 	void HandleInput(InputHandler* inputHandler) override;
 };
