@@ -24,6 +24,8 @@ void InputHandler::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		break;
+	default:
+		break;
 	}
 	case WM_KEYDOWN:
 		switch (wParam) {

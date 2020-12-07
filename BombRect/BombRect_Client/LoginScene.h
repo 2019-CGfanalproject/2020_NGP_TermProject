@@ -9,7 +9,7 @@ class LoginScene : public Scene
 	TextObject* m_NicknameText;
 
 	TextObject* m_CurrFocusText;
-
+	bool m_IsPreStrComp = false;
 public:
 	LoginScene(GameFramework* framework);
 	virtual ~LoginScene();

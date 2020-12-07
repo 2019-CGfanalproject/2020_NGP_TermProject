@@ -121,29 +121,31 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     static wchar_t* ptr = str;
     switch (message)
     {
-    case WM_IME_COMPOSITION: {
-        // 한글 입력을 받았을 때 발생하는 메세지
-        HIMC hIMC = ImmGetContext(hWnd);
-        if (lParam & GCS_COMPSTR) {         // 자모 단위로 가져온다
-            len = ImmGetCompositionStringW(hIMC, GCS_COMPSTR, NULL, 0);
-            ImmGetCompositionString(hIMC, GCS_COMPSTR, ptr, len);
+    //case WM_IME_COMPOSITION: {
+    //    // 한글 입력을 받았을 때 발생하는 메세지
+    //    HIMC hIMC = ImmGetContext(hWnd);
+    //    if (lParam & GCS_COMPSTR) {         // 자모 단위로 가져온다
+    //        len = ImmGetCompositionStringW(hIMC, GCS_COMPSTR, NULL, 0);
+    //        ImmGetCompositionString(hIMC, GCS_COMPSTR, ptr, len);
 
-        }
-        if (lParam & GCS_RESULTSTR) {       // 완성된 글자만 가져온다
-            len = ImmGetCompositionString(hIMC, GCS_RESULTSTR, NULL, 0);
-            ImmGetCompositionString(hIMC, GCS_RESULTSTR, ptr, len);
+    //    }
+    //    if (lParam & GCS_RESULTSTR) {       // 완성된 글자만 가져온다
+    //        len = ImmGetCompositionString(hIMC, GCS_RESULTSTR, NULL, 0);
+    //        ImmGetCompositionString(hIMC, GCS_RESULTSTR, ptr, len);
 
-            ++ptr;
-        }
-        ImmReleaseContext(hWnd, hIMC);
-        str[len] = '\n';
-        OutputDebugString(str);
-        break;
-    }
+    //        ++ptr;
+    //    }
+    //    ImmReleaseContext(hWnd, hIMC);
+    //    str[len] = '\n';
+    //    OutputDebugString(str);
+    //    break;
+    //}
     case WM_PAINT:
         g_GameFramework.Render();
         break;
-    case WM_CHAR:       // 텍스트 입력을 위한 것
+
+    case WM_CHAR:                   // 영문 입력
+    case WM_IME_COMPOSITION:        // 한글 입력
     case WM_KEYUP:
     case WM_KEYDOWN:
     case WM_LBUTTONDOWN:

@@ -90,6 +90,33 @@ void LoginScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	}
+	case WM_IME_COMPOSITION: {
+		int len;
+		wchar_t letter;
+		HIMC hIMC = ImmGetContext(m_Framework->m_Wnd);
+
+		// 전에 들어온 문자가 조합중인 문자였다면, 마지막 글자를 뺀다.
+		if (m_IsPreStrComp && 0 != m_CurrFocusText->m_Text.size()) {
+			m_CurrFocusText->m_Text.pop_back();
+		}
+
+		if (lParam & GCS_RESULTSTR) {       // 완성된 글자만 가져온다
+			len = ImmGetCompositionString(hIMC, GCS_RESULTSTR, NULL, 0);
+			ImmGetCompositionString(hIMC, GCS_RESULTSTR, &letter, len);
+			m_CurrFocusText->m_Text.push_back(letter);
+			m_IsPreStrComp = false;
+		}
+
+		else if (lParam & GCS_COMPSTR) {         // 자모 단위로 가져온다
+			len = ImmGetCompositionStringW(hIMC, GCS_COMPSTR, NULL, 0);		// 길이를 가져온다
+			ImmGetCompositionString(hIMC, GCS_COMPSTR, &letter, len);
+			m_CurrFocusText->m_Text.push_back(letter);
+			m_IsPreStrComp = true;
+		}
+
+		ImmReleaseContext(m_Framework->m_Wnd, hIMC);
+		break;
+	}
 	case WM_KEYDOWN: {
 		switch (wParam) {
 		case VK_TAB:

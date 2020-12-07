@@ -45,6 +45,15 @@ enum class BitmapKey {
 	IPADDR_SELECTED_BAR,
 	NICKNAME_BAR,
 	NICKNAME_SELECTED_BAR,
+
+	CHATTING_REGION,
+	CHATTING_INPUT_REGION,
+};
+
+enum class FontKey {
+	TITLE,
+	CHATTING,
+	NICKNAME,
 };
 
 template<class Interface>

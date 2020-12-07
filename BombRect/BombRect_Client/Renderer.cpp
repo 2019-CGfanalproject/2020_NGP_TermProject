@@ -34,6 +34,9 @@ BitmapPair g_bitmapInfo[] = {
 	{ BitmapKey::IPADDR_SELECTED_BAR,	L"Assets/ipaddr_selected_bar.png"	},
 	{ BitmapKey::NICKNAME_BAR,			L"Assets/nickname_bar.png"			},
 	{ BitmapKey::NICKNAME_SELECTED_BAR,	L"Assets/nickname_selected_bar.png"	},
+
+	{ BitmapKey::CHATTING_REGION,		L"Assets/chatting_region.png"		},
+	{ BitmapKey::CHATTING_INPUT_REGION,	L"Assets/chatting_input_region.png"	},
 };
 
 
@@ -101,6 +104,17 @@ void Renderer::Initailize(HINSTANCE hInst, HWND hWnd)
 
 	m_WriteFactory->CreateTextFormat(
 		L"메이플스토리",                // Font family name.
+		NULL,                       // Font collection (NULL sets it to use the system font collection).
+		DWRITE_FONT_WEIGHT_BOLD,
+		DWRITE_FONT_STYLE_NORMAL,
+		DWRITE_FONT_STRETCH_NORMAL,
+		36.f,
+		L"en-us",
+		&m_LobbyTextFormat
+	);
+
+	m_WriteFactory->CreateTextFormat(
+		L"나눔스퀘어",                // Font family name.
 		NULL,                       // Font collection (NULL sets it to use the system font collection).
 		DWRITE_FONT_WEIGHT_BOLD,
 		DWRITE_FONT_STYLE_NORMAL,
