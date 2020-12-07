@@ -24,6 +24,7 @@ void ResultScene::Initialize()
 
 	int i = 0;
 	for (int id : m_Framework->m_Objects.ranking) {
+		if (i >= 4) break;
 		m_Framework->m_Objects.AddStaticObject(GetBitmapKeyFrom(id), ranking_pos[i++]);
 		OutputDebugString(std::to_wstring(id).c_str());
 		OutputDebugString(L"\n");

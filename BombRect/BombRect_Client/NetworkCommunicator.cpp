@@ -207,6 +207,7 @@ void NetworkCommunicator::ReceiveGameData()
 			gameover.type = game_packet::PacketType::GameOver;
 			send(m_Socket, (const char*)&gameover, sizeof(gameover), 0);
 
+			memcpy(&player_info, player_start, sizeof(PlayerInfo));
 			m_Framework->m_Objects.ranking.push_front(player_info.id);
 
 			m_Framework->m_SceneManager.ChangeScene(SceneID::RESULT);
