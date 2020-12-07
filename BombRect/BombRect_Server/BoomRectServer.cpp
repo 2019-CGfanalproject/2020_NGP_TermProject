@@ -131,12 +131,26 @@ int recvn(SOCKET s, char* buf, int len, int flags) {
 unsigned __stdcall ClinetsThread(LPVOID arg) {
 	SceneCheck = SceneID::LOBBY;
 	HANDLE hThread;
+	ClientInfo* client = (ClientInfo*)arg;
+	int retval;
+
+	// 닉네임 받는 부분
+
+	retval = recvn(client->client, (char*)&nicknamePacket.users[client->index], sizeof(lobby_packet::Nickname), 0);
+	nicknamePacket.users[client->index].id = client->index;
+	nicknamePacket.type = lobby_packet::PacketType::LOBBY_INFO;
+	nicknamePacket.size = 100;
+	for (int i = 0; i < number_of_clients; ++i) {
+		send(clients[i].client, (const char*)&nicknamePacket, sizeof(lobby_packet::LobbyInfo), 0);
+	}
+
+
 	while (true) {
 
 		switch (SceneCheck) {
 
 		case SceneID::LOBBY:
-
+			ReadyCount = 0;
 			LobbyCummunicate(arg);
 
 
@@ -190,15 +204,6 @@ void LobbyCummunicate(LPVOID arg)
 	getpeername(client->client, (SOCKADDR*)&clientaddr, &addrlen);
 	bool ReadyPressed = false; 
 	
-	// 닉네임 받는 부분
-
-		retval = recvn(client->client, (char*)&nicknamePacket.users[client->index], sizeof(lobby_packet::Nickname), 0);
-		nicknamePacket.users[client->index].id = client->index;
-		nicknamePacket.type = lobby_packet::PacketType::LOBBY_INFO;
-		nicknamePacket.size = 100;
-		for (int i = 0; i < number_of_clients; ++i) {
-			send(clients[i].client, (const char*)&nicknamePacket, sizeof(lobby_packet::LobbyInfo), 0);
-		}
 	
 	LobbyPacketHeader header;
 	
@@ -239,6 +244,7 @@ void LobbyCummunicate(LPVOID arg)
 				send(clients[i].client, (char*)&startPacket, sizeof(startPacket), 0);	
 				
 				ResumeThread(hThread2);
+				SetEvent(hThread2);
 			}
 		}
 
@@ -285,6 +291,10 @@ void GameCommunicate(LPVOID arg) {
 	alivePlayer = number_of_clients;
 	PlayerState playerstate;
 	GamePacketHeader Gameheader;
+	
+	playerinfo[client->index].life_count = 3;
+	playerinfo[client->index].bomb_count = 3;
+
 
 	while (true) {
 		// 너는 리시브만 받고 업데이트로(전역 변수 업데이트 해줘)
@@ -370,8 +380,7 @@ void ResultCommunicate(LPVOID arg) {
 // 클라에서 사용하는 전역 변수 이용해서 업데이트하고 그걸 전부다 한테 send
 unsigned __stdcall UpdateAndSend(LPVOID arg) {
 
-	cout << "UpadteAndSend 실행\n";
-	//1번
+	// 게임 초기화
 	playerinfo[0].pos.r = 1.f;
 	playerinfo[0].pos.c = 1.f;
 	//2번
@@ -384,6 +393,7 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 	playerinfo[3].pos.r = 7.f;
 	playerinfo[3].pos.c = 7.f;
 
+	
 
 	while (true) {
 
@@ -718,7 +728,22 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 		
 
 		if (alivePlayer <= 1) {
-			return 0 ;
+			explosions.clear();
+			bombs.clear();
+			// 게임 초기화
+			playerinfo[0].pos.r = 1.f;
+			playerinfo[0].pos.c = 1.f;
+			//2번
+			playerinfo[1].pos.r = 7.f;
+			playerinfo[1].pos.c = 1.f;
+			////3번
+			playerinfo[2].pos.r = 1.f;
+			playerinfo[2].pos.c = 7.f;
+			////4번
+			playerinfo[3].pos.r = 7.f;
+			playerinfo[3].pos.c = 7.f;
+			WaitForSingleObject(hThread2, INFINITE);
+
 		}
 
 
@@ -770,6 +795,9 @@ int main(int argc, char* argv[])
 	int addrlen;
 	bool acceptflag = false;
 	SceneCheck = SceneID::LOBBY;
+	for (int i = 0; i < 4; ++i) {
+		nicknamePacket.users[i].id = 100;
+	}
 
 	while (1) {
 		//accept()
