@@ -21,6 +21,8 @@ public:
 	void DrawBitmap(BitmapKey key, Vector2 pos);
 	void DrawBitmap(const DynamicObject& object);
 
+	IDWriteTextFormat* GetTextFormat(FontKey font);
+
 	HRESULT LoadGameBitmap();
 
 	HRESULT LoadBitmapFromFile(
@@ -52,11 +54,12 @@ private:
 	std::map<BitmapKey, ID2D1Bitmap*> m_Bitmaps;
 
 	IDWriteFactory			* m_WriteFactory;
-	IDWriteTextFormat		* m_TextFormat;
-	IDWriteTextFormat		* m_LobbyTextFormat;
+	IDWriteTextFormat		* m_LoginTextFormat;
+	IDWriteTextFormat		* m_ChattingTextFormat;
+	IDWriteTextFormat		* m_NicknameTextFormat;
+	ID2D1SolidColorBrush	* m_FontBrush = nullptr;
 	 
 	// for test
-	ID2D1SolidColorBrush	* m_FontBrush = nullptr;
 	ID2D1SolidColorBrush	* m_TestBrush = nullptr;
 	ID2D1Bitmap				* m_TestBitmap = nullptr;        
 	ID2D1Bitmap				* m_TestResourceBitmap = nullptr;

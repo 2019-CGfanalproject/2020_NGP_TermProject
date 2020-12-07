@@ -16,6 +16,7 @@ LoginScene::LoginScene(GameFramework* framework)
 	m_IPAddrText->m_Top = 350 + 16;
 	m_IPAddrText->m_Right = 800;
 	m_IPAddrText->m_Bottom = 450;
+	m_IPAddrText->font = FontKey::LOGIN;
 
 	m_NicknameText = m_Framework->m_Objects.AddText();
 	m_NicknameText->m_Text.clear();
@@ -23,6 +24,7 @@ LoginScene::LoginScene(GameFramework* framework)
 	m_NicknameText->m_Top = 450 + 16;
 	m_NicknameText->m_Right = 800;
 	m_NicknameText->m_Bottom = 550;
+	m_NicknameText->font = FontKey::LOGIN;
 
 	m_CurrFocusText = m_IPAddrText;
 }

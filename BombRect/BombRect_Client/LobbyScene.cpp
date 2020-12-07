@@ -3,10 +3,17 @@
 #include "GameFramework.h"
 #include "GameObject.h"
 
+Vector2 slot_nickname_pos[4] = {
+{325,	25 + 15 },
+{575,	25 + 15 },
+{325,	325 + 15 },
+{575,	325 + 15 },
+};
+
 void LobbyScene::Initialize()
 {
 	m_Framework->m_Objects.AddStaticObject(
-		BitmapKey::CHATTING_REGION, 
+		BitmapKey::CHATTING_REGION,
 		Vector2(20, 20)
 	);
 
@@ -16,11 +23,12 @@ void LobbyScene::Initialize()
 	);
 
 	m_ChattingText = m_Framework->m_Objects.AddText();
-	m_ChattingText->m_Text.clear();
+	m_ChattingText->m_Text = m_ChattingText->m_Text;
 	m_ChattingText->m_Left = 20;
 	m_ChattingText->m_Top = 660;
 	m_ChattingText->m_Right = 300;
 	m_ChattingText->m_Bottom = 780;
+	m_ChattingText->font = FontKey::CHATTING;
 
 	Vector2 slot_pos[4] = {
 		{ 325, 25 }, { 575, 25 },
@@ -34,6 +42,17 @@ void LobbyScene::Initialize()
 		);
 
 		m_Framework->m_Objects.m_ReadyState[i] = false;
+
+		if (100 != m_Framework->m_Objects.m_Nicknames[i].id) {
+			TextObject* name = m_Framework->m_Objects.AddText();
+			name->m_Text = m_Framework->m_Objects.m_Nicknames[i].name;
+			name->m_Left = slot_nickname_pos[i].x;
+			name->m_Top = slot_nickname_pos[i].y;
+			name->m_Right = slot_nickname_pos[i].x + 200;
+			name->m_Bottom = slot_nickname_pos[i].y + 50;
+			name->font = FontKey::NICKNAME;
+			name->is_align_center = true;
+		}
 	}
 
 	Vector2 left_origin{ 300, 600 };
@@ -49,7 +68,7 @@ void LobbyScene::Destroy()
 
 void LobbyScene::Update()
 {
-	m_Framework->m_Objects.UpdateLobby();	
+	m_Framework->m_Objects.UpdateLobby();
 }
 
 void LobbyScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
@@ -64,7 +83,7 @@ void LobbyScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		case '\t': break;
 		case '\r': break;
-		case ' ': break;
+		// case ' ': break;
 		default:
 			m_ChattingText->m_Text.push_back((const wchar_t)wParam);
 			break;

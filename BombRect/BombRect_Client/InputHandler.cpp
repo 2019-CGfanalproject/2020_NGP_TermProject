@@ -31,8 +31,6 @@ void InputHandler::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wParam) {
 		case VK_SPACE:
 			m_InputControls[(int)KeyInput::SPACEBAR] = true;
-			m_LastInput = wParam;
-			// m_Framework->m_Communicator.SendBomb();
 			break;
 		case VK_LEFT:
 			m_InputControls[(int)KeyInput::ARROW_LEFT] = true;

@@ -7,6 +7,13 @@
 // 렌더링을 위한 정보를 담은 오브젝트를 관리한다.
 class ObjectContainer	// GameDatamanager
 {
+	Vector2 slot_nickname_pos[4] = {
+		{325,	25 + 15 },
+		{575,	25 + 15 },
+		{325,	325 + 15 },
+		{575,	325 + 15 }
+	};
+
 public:
 	std::mutex m_Lock;
 	bool m_ReadyState[4];
@@ -24,9 +31,10 @@ public:
 	~ObjectContainer() { };
 
 public:
+	// rederer에서 참조하는 객체들
 	std::vector<StaticObject>	m_StaticObjects;
 	std::list<DynamicObject>	m_DynamicObjects;
-	std::vector<TextObject*>		m_Texts;
+	std::vector<TextObject*>	m_Texts;
 
 public:
 	void AddStaticObject(BitmapKey key, Vector2 pos);
@@ -47,7 +55,22 @@ public:
 
 	inline void SetNicknames(lobby_packet::Nickname* nicknames) {
 		m_Lock.lock();
+
+		for (int i = 0; i < 4; ++i) {
+			if (m_Nicknames[i].id != nicknames[i].id) {	// 변화한 것만 새로 닉네임을 추가해줌
+				TextObject* name = AddText();
+				name->m_Text = nicknames[i].name;
+				name->m_Left = slot_nickname_pos[i].x;
+				name->m_Top = slot_nickname_pos[i].y;
+				name->m_Right = slot_nickname_pos[i].x + 200;
+				name->m_Bottom = slot_nickname_pos[i].y + 50;
+				name->font = FontKey::NICKNAME;
+				name->is_align_center = true;
+			}
+		}
+
 		memcpy(m_Nicknames, nicknames, sizeof(lobby_packet::Nickname) * 4);
+
 		m_Lock.unlock();
 	}
 
