@@ -176,14 +176,24 @@ unsigned __stdcall ClinetsThread(LPVOID arg) {
 
 mutex bombLock;
 void SetBomb(SendBombInfo bomb_tmp, ClientInfo* client) {
-
+	// 같은 위치 불가
 	for (auto bomb : bombs) {
 		if (((bomb.bombinfo.pos.r == bomb_tmp.pos.r)
 			&& (bomb.bombinfo.pos.c == bomb_tmp.pos.c))) {
 			return;
 		}
 	}
+
+	// 폭발 범위 위에 불가
+	
+		for (auto explosion : explosions) {
+			if ((explosion.explosiveinfo.pos.c == std::round(playerinfo[client->index].pos.c)) && 
+				(explosion.explosiveinfo.pos.r == std::round(playerinfo[client->index].pos.r)))return;
+		}
+	
+
 	if (playerinfo[client->index].bomb_count > 0) {
+		
 		bombLock.lock();
 		ClosedTiles[(int)bomb_tmp.pos.r][(int)bomb_tmp.pos.c] = BOMB;
 		bombs.emplace_back(bomb_tmp, (int)client->index);
@@ -294,8 +304,7 @@ void GameCommunicate(LPVOID arg) {
 	
 	playerinfo[client->index].life_count = 3;
 	playerinfo[client->index].bomb_count = 3;
-
-
+	
 	while (true) {
 		// 너는 리시브만 받고 업데이트로(전역 변수 업데이트 해줘)
 
@@ -742,8 +751,16 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 			////4번
 			playerinfo[3].pos.r = 7.f;
 			playerinfo[3].pos.c = 7.f;
-			WaitForSingleObject(hThread2, INFINITE);
 
+			for (int i = 0; i < number_of_clients; ++i) {
+				playerinfo[i].life_count = 3;
+				playerinfo[i].bomb_count = 3;
+				playerinfo[i].no_damage_count = 0;
+				playerinfo[i].state = PlayerState::IDLE;
+				PlayerPacket[i].state = PlayerState::IDLE;
+
+			}
+			SuspendThread(hThread2);
 		}
 
 
