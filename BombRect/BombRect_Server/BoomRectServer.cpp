@@ -766,11 +766,20 @@ int main(int argc, char* argv[])
 	SOCKADDR_IN clientaddr;
 	int addrlen;
 	bool acceptflag = false;
+	SceneCheck = SceneID::LOBBY;
+
 	while (1) {
 		//accept()
-		
+		// 게임 시작과 4명이상 어셉트 불가.
+		if (number_of_clients >= 4 || SceneCheck != SceneID::LOBBY) continue;
 		addrlen = sizeof(clientaddr);
 		client_sock = accept(listen_sock, (SOCKADDR*)&clientaddr, &addrlen);
+		// 여기서 연결 끊기 게임시작 되었으면 연결 끊기
+		if (SceneCheck != SceneID::LOBBY ) {
+			// 연결 끊기
+			closesocket(client_sock);
+			continue;
+		}
 		if (client_sock == INVALID_SOCKET) {
 			error_display((char*)"accept()");
 			break;
@@ -780,8 +789,7 @@ int main(int argc, char* argv[])
 		// 초기화
 		clients[number_of_clients].client = client_sock;
 		clients[number_of_clients].index = number_of_clients;
-		SceneCheck = SceneID::LOGIN;
-
+		
 		hThread = (HANDLE)_beginthreadex(NULL, 0, ClinetsThread, (LPVOID)&clients[number_of_clients], 0, NULL);
 
 		++number_of_clients;
