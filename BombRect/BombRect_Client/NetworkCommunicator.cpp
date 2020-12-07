@@ -197,26 +197,28 @@ void NetworkCommunicator::ReceiveGameData()
 		// 패킷 받기
 		recvn(m_Socket, (char*)&packet, sizeof(packet), 0);
 
+		PlayerInfo player_info;
+		char* player_start = packet.buf
+			+ packet.explosive_count * sizeof(SendExplosiveInfo)
+			+ packet.bomb_count * sizeof(SendBombInfo);
+
 		if (1 >= packet.player_count) {
 			game_packet::CS_GameOver gameover;
 			gameover.type = game_packet::PacketType::GameOver;
 			send(m_Socket, (const char*)&gameover, sizeof(gameover), 0);
 
+			m_Framework->m_Objects.ranking.push_front(player_info.id);
+
 			m_Framework->m_SceneManager.ChangeScene(SceneID::RESULT);
 			return;
 		}
 
-		PlayerInfo player_info;
-		char* player_start = packet.buf 
-			+ packet.explosive_count * sizeof(SendExplosiveInfo)
-			+ packet.bomb_count * sizeof(SendBombInfo);
 		for (int i = 0; i < packet.player_count; ++i) {
 			memcpy(&player_info, player_start, sizeof(PlayerInfo));
 			player_start += sizeof(PlayerInfo);
 
 			if (PlayerState::DEAD == player_info.state) {
 				m_Framework->m_Objects.ranking.push_front(player_info.id);
-
 			}
 		}
 

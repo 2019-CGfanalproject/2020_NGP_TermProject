@@ -39,6 +39,17 @@ BitmapPair g_bitmapInfo[] = {
 	{ BitmapKey::CHATTING_INPUT_REGION,	L"Assets/chatting_input_region.png"	},
 };
 
+IDWriteTextFormat* GetTextFormat(FontKey font) {
+	switch (font) {
+	case FontKey::TITLE:
+		return nullptr;
+	case FontKey::CHATTING:
+		return nullptr;
+	case FontKey::NICKNAME:
+		return nullptr;
+	}
+}
+
 
 Renderer::Renderer():
 	m_Wnd(NULL),

@@ -59,4 +59,6 @@ public:
 	int m_Top;
 	int m_Right;
 	int m_Bottom;
+
+	FontKey font;
 };

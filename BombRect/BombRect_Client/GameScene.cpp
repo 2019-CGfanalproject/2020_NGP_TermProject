@@ -55,11 +55,6 @@ void GameScene::Destroy()
 {
 }
 
-//PlayerInfo g_lobby_state[4] = {
-//	{0, nullptr},{1, nullptr},
-//	{2, nullptr},{3, nullptr},
-//}
-
 void GameScene::Update()
 {
 	m_Framework->m_Objects.Update();

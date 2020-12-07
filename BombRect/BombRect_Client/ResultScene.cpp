@@ -32,6 +32,7 @@ void ResultScene::Initialize()
 
 void ResultScene::Destroy()
 {
+	m_Framework->m_Objects.ranking.clear();
 }
 
 void ResultScene::Update()

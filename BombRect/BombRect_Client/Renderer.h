@@ -54,9 +54,10 @@ private:
 	IDWriteFactory			* m_WriteFactory;
 	IDWriteTextFormat		* m_TextFormat;
 	IDWriteTextFormat		* m_LobbyTextFormat;
-
+	 
 	// for test
+	ID2D1SolidColorBrush	* m_FontBrush = nullptr;
 	ID2D1SolidColorBrush	* m_TestBrush = nullptr;
-	ID2D1Bitmap				* m_TestBitmap = nullptr;
+	ID2D1Bitmap				* m_TestBitmap = nullptr;        
 	ID2D1Bitmap				* m_TestResourceBitmap = nullptr;
 };
