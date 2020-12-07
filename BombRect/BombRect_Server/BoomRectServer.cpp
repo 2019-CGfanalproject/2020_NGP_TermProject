@@ -380,7 +380,7 @@ void GameCommunicate(LPVOID arg) {
 void ResultCommunicate(LPVOID arg) {
 	ClientInfo* client = (ClientInfo*)arg;
 	timeoverPacket.time_over = true;
-	Sleep(2000);
+	Sleep(5000);
 	send(clients[client->index].client, (const char*)&timeoverPacket, sizeof(result_packet::TimeOver), 0);
 	SceneCheck = SceneID::LOBBY;
 }
@@ -751,6 +751,11 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 			////4¹ø
 			playerinfo[3].pos.r = 7.f;
 			playerinfo[3].pos.c = 7.f;
+			for (int i = 0; i < 9; ++i) {
+				for (int j = 0; j < 9; ++j) {
+					if (ClosedTiles[i][j] == BOMB) ClosedTiles[i][j] = false;
+				}
+			}
 
 			for (int i = 0; i < number_of_clients; ++i) {
 				playerinfo[i].life_count = 3;
@@ -760,6 +765,7 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 				PlayerPacket[i].state = PlayerState::IDLE;
 
 			}
+
 			SuspendThread(hThread2);
 		}
 
