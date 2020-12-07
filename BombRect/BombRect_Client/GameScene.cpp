@@ -44,6 +44,11 @@ void GameScene::Initialize()
 	m_Framework->m_Objects.AddStaticObject(BitmapKey::UI_YELLOW, Vector2(790 - 50, 10));
 	m_Framework->m_Objects.AddStaticObject(BitmapKey::UI_GREEN, Vector2(10, 790 - 60));
 	m_Framework->m_Objects.AddStaticObject(BitmapKey::UI_CYAN, Vector2(790 - 50, 790 - 60));
+
+	m_Framework->m_Objects.degree[0] = 0.f;
+	m_Framework->m_Objects.degree[1] = 180.f;
+	m_Framework->m_Objects.degree[2] = 0.f;
+	m_Framework->m_Objects.degree[3] = 180.f;
 }
 
 void GameScene::Destroy()

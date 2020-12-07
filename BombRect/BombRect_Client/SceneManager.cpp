@@ -70,5 +70,7 @@ void SceneManager::ChangeScene(SceneID id)
 	m_CurScene = m_Scenes[(int)id];
 
 	m_Framework->m_Objects.Reset();
+	m_InputHandler.Reset();
+
 	m_CurScene->Initialize();
 }

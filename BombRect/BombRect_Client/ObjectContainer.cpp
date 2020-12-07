@@ -2,21 +2,6 @@
 #include "ObjectContainer.h"
 #include "GameObject.h"
 
-BitmapKey GetBitmapKeyFrom(int id) {
-	switch (id) {
-	case 0:
-		return BitmapKey::CHARACTER_RED;
-	case 1:
-		return BitmapKey::CHARACTER_YELLOW;
-	case 2:
-		return BitmapKey::CHARACTER_GREEN;
-	case 3:
-		return BitmapKey::CHARACTER_CYAN;
-	default:
-		return BitmapKey::CHARACTER_RED;
-	}
-}
-
 Vector2 ui_pos[4] = {
 	{70,	10	},
 	{680,	10	},

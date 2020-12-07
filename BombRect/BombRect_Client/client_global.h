@@ -63,3 +63,18 @@ inline void SafeRelease(Interface** ppInterfaceToRelease) {
 		(*ppInterfaceToRelease) = NULL;
 	}
 }
+
+inline BitmapKey GetBitmapKeyFrom(int id) {
+	switch (id) {
+	case 0:
+		return BitmapKey::CHARACTER_RED;
+	case 1:
+		return BitmapKey::CHARACTER_YELLOW;
+	case 2:
+		return BitmapKey::CHARACTER_GREEN;
+	case 3:
+		return BitmapKey::CHARACTER_CYAN;
+	default:
+		return BitmapKey::CHARACTER_RED;
+	}
+}

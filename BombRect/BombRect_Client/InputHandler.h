@@ -27,6 +27,7 @@ public:
 	void HandleInput(UINT message, WPARAM wParam, LPARAM lParam);
 
 	void Reset() {
+		m_LastInput = NULL;
 		for (int i = 0; i < INPUT_COUNT; ++i)
 			m_InputControls[i] = false;
 	}
