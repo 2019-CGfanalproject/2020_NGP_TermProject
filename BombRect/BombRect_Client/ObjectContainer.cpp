@@ -50,14 +50,7 @@ ObjectContainer::ObjectContainer()
 	degree[3] = 180.f;
 
 	for (int i = 0; i < 4; ++i) {
-		m_TextObjects[i].m_Left = slot_nickname_pos[i].x;
-		m_TextObjects[i].m_Top = slot_nickname_pos[i].y;
-		m_TextObjects[i].m_Right = slot_nickname_pos[i].x + 200;
-		m_TextObjects[i].m_Bottom = slot_nickname_pos[i].y + 50;
-
-		m_ReadyState[i] = false;
-
-		m_Nicknames[i].id = 100;
+		m_Nicknames[i].id = 0;
 	}
 }
 
@@ -91,6 +84,7 @@ DynamicObject* ObjectContainer::AddDynamicObject(
 void ObjectContainer::UpdateLobby()
 {
 	m_DynamicObjects.clear();
+	m_Texts.clear();
 
 	m_Lock.lock();
 	for (int i = 0; i < 4; ++i) {
@@ -101,12 +95,13 @@ void ObjectContainer::UpdateLobby()
 			GetBitmapKeyFrom(m_Nicknames[i].id),
 			slot_player_pos[i]
 		);
-		m_TextObjects[i].m_Left = slot_nickname_pos[i].x;
-		m_TextObjects[i].m_Top = slot_nickname_pos[i].y;
-		m_TextObjects[i].m_Right = slot_nickname_pos[i].x + 200;
-		m_TextObjects[i].m_Bottom = slot_nickname_pos[i].y + 50;
 
-		m_TextObjects[i].m_Text = m_Nicknames[i].name;
+		TextObject* name = AddText();
+		name->m_Text = m_Nicknames[i].name;
+		name->m_Left = slot_nickname_pos[i].x;
+		name->m_Top = slot_nickname_pos[i].y;
+		name->m_Right = slot_nickname_pos[i].x + 200;
+		name->m_Bottom = slot_nickname_pos[i].y + 50;
 	}
 
 	for (int i = 0; i < 4; ++i) {
@@ -116,6 +111,7 @@ void ObjectContainer::UpdateLobby()
 			slot_pos[i] + Vector2(0, 200)
 		);
 	}
+
 	m_Lock.unlock();
 }
 

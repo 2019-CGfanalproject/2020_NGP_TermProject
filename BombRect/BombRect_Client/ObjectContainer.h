@@ -9,10 +9,11 @@ class ObjectContainer	// GameDatamanager
 {
 public:
 	std::mutex m_Lock;
-	lobby_packet::Nickname m_Nicknames[4];
 	bool m_ReadyState[4];
+
 	std::vector<TextObject*> m_Chattings;
 
+	lobby_packet::Nickname m_Nicknames[4];
 	game_packet::SC_WorldState m_WorldState;
 
 	float degree[4];
@@ -26,7 +27,6 @@ public:
 	std::vector<StaticObject>	m_StaticObjects;
 	std::list<DynamicObject>	m_DynamicObjects;
 	std::vector<TextObject*>		m_Texts;
-	TextObject m_TextObjects[4];
 
 public:
 	void AddStaticObject(BitmapKey key, Vector2 pos);

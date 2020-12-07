@@ -214,21 +214,6 @@ void Renderer::Render(const ObjectContainer& objects)
 		DrawBitmap(object);
 	}
 
-	// wstring과 텍스트가 그려질 사각형을 담는 자료형 필요
-	for (auto& object : objects.m_TextObjects) {
-		m_RenderTarget->DrawTextW(
-			object.m_Text.c_str(),
-			object.m_Text.size(),
-			m_TextFormat,
-			D2D1::RectF(object.m_Left, object.m_Top,
-				object.m_Right, object.m_Bottom),
-			m_TestBrush
-		);
-
-		// 정렬을 하려면 이 함수를 사용해야함
-		// m_RenderTarget->DrawTextLayout()
-	}
-
 	for (auto& object : objects.m_Texts) {
 		m_RenderTarget->DrawTextW(
 			object->m_Text.c_str(),
