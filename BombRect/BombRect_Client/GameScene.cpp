@@ -67,8 +67,10 @@ void GameScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 // InputHandler가 호출함
 void GameScene::HandleInput(InputHandler* inputHandler)
 {
-	if (inputHandler->CheckSpace()) 
+	if (inputHandler->CheckSpace()) {
 		m_Framework->m_Communicator.SendBomb();
+		return;
+	}
 
 	PlayerState state = inputHandler->CalcPlayerState();
 
