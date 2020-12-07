@@ -194,7 +194,7 @@ void LobbyCummunicate(LPVOID arg)
 		retval = recvn(client->client, (char*)&nicknamePacket.users[client->index], sizeof(lobby_packet::Nickname), 0);
 		nicknamePacket.users[client->index].id = client->index;
 		nicknamePacket.type = lobby_packet::PacketType::LOBBY_INFO;
-		nicknamePacket.size = 0;
+		nicknamePacket.size = 100;
 		for (int i = 0; i < number_of_clients; ++i) {
 			send(clients[i].client, (const char*)&nicknamePacket, sizeof(lobby_packet::LobbyInfo), 0);
 		}
@@ -694,12 +694,15 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 		//플레이어 정보 복사
 		for (int i = 0; i < number_of_clients; ++i) {
 			if (playerinfo[i].state == PlayerState::DEAD) continue;
+			// dead
+			if (playerinfo[i].life_count == 0) {
+				playerinfo[i].state = PlayerState::DEAD;
+			}
 			playerinfo[i].id = i;
 			memcpy(cur_ptr, &playerinfo[i], sizeof(PlayerInfo));
 			cur_ptr += sizeof(PlayerInfo);
 
 		}
-
 
 		for (int i = 0; i < number_of_clients; ++i) {
 			int retval = send(clients[i].client, (char*)&WorldPacket, sizeof(WorldPacket), 0);
@@ -707,12 +710,7 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 				error_display("send");
 			}
 		}
-
-		for (int i = 0; i < number_of_clients; ++i) {
-			if (playerinfo[i].life_count == 0) {
-				playerinfo[i].state = PlayerState::DEAD;
-			}
-		}
+		
 
 		if (alivePlayer <= 1) {
 			return 0 ;
