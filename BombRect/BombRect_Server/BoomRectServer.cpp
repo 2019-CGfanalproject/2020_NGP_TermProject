@@ -68,6 +68,7 @@ list<S_Bombinfo> bombs;
 int number_of_clients;
 int ReadyCount;
 int alivePlayer;
+bool retireFlag[4];
 result_packet::TimeOver timeoverPacket;
 unsigned int CountDown{ 0 };
 
@@ -283,7 +284,6 @@ void GameCommunicate(LPVOID arg) {
 	getpeername(client->client, (SOCKADDR*)&clientaddr, &addrlen);
 	alivePlayer = number_of_clients;
 	PlayerState playerstate;
-
 	GamePacketHeader Gameheader;
 
 	while (true) {
@@ -291,7 +291,11 @@ void GameCommunicate(LPVOID arg) {
 
 		retval = recvn(client->client, (char*)&Gameheader, sizeof(Gameheader), 0);
 		if (retval == SOCKET_ERROR) {
-			error_display("recv");
+			if (!retireFlag[client->index]) {
+				retireFlag[client->index] = true;
+			
+			}
+			continue;
 		}
 
 		PlayerState player_state;
@@ -672,7 +676,7 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 
 		game_packet::SC_WorldState WorldPacket{};
 		// 패킷 보내기전 
-		WorldPacket.player_count = alivePlayer;
+		WorldPacket.player_count = alivePlayer ;
 		WorldPacket.bomb_count = bombs.size();
 		WorldPacket.explosive_count = explosions.size();
 
@@ -694,8 +698,9 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 		//플레이어 정보 복사
 		for (int i = 0; i < number_of_clients; ++i) {
 			if (playerinfo[i].state == PlayerState::DEAD) continue;
-			// dead
-			if (playerinfo[i].life_count == 0) {
+			
+			if (playerinfo[i].life_count == 0 ||
+				retireFlag[i] == true) {
 				playerinfo[i].state = PlayerState::DEAD;
 			}
 			playerinfo[i].id = i;

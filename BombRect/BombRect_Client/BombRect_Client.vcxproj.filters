@@ -20,9 +20,6 @@
     <Filter Include="NetworkCommunicator">
       <UniqueIdentifier>{84a8ad48-8c9e-45bb-a90a-a5f523592d9c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameObject">
-      <UniqueIdentifier>{d9d36520-05de-47d4-8c98-21179f585638}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Renderer">
       <UniqueIdentifier>{b221423a-5270-47a2-b814-67a77c8bbaf2}</UniqueIdentifier>
     </Filter>
@@ -49,6 +46,9 @@
     </Filter>
     <Filter Include="InputHandler">
       <UniqueIdentifier>{a7e91e5d-41d5-42e2-be74-8ea114f793a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="InputHandler\GameObject">
+      <UniqueIdentifier>{d9d36520-05de-47d4-8c98-21179f585638}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -86,10 +86,10 @@
       <Filter>Scene\Scenes\Game</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
-      <Filter>GameObject</Filter>
+      <Filter>InputHandler\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="ObjectContainer.h">
-      <Filter>GameObject</Filter>
+      <Filter>InputHandler\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Scene\Scenes</Filter>
@@ -135,10 +135,10 @@
       <Filter>GameFramework</Filter>
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
-      <Filter>GameObject</Filter>
+      <Filter>InputHandler\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="ObjectContainer.cpp">
-      <Filter>GameObject</Filter>
+      <Filter>InputHandler\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="LobbyScene.cpp">
       <Filter>Scene\Scenes\Lobby</Filter>
