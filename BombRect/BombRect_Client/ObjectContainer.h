@@ -82,13 +82,13 @@ public:
 
 	void AddChatting(const TCHAR* str) {
 		m_Lock.lock();
-		// ㅋㅋㅋ 어케하지ㅋㅋ
-		/*TextObject* new_chat = AddText();
+		TextObject* new_chat = AddText();
 		new_chat->m_Text = str;
-		new_chat->m_ = str;
-		new_chat->m_ = str;
-		new_chat->m_ = str;
-		new_chat->m_ = str;*/
+		// 누가 보냈는 지 모르는데 어떻게 닉네임을 표시하냐?
+		// 무슨 생각으로 개별 텍스트의 사각형 영역을 구할 수 있다고 생각한거니
+		// 알고리즘 다시 생각해야함
+		new_chat->font = FontKey::CHATTING;
+		m_Chattings.push_back(new_chat);
 		m_Lock.unlock();
 	}
 

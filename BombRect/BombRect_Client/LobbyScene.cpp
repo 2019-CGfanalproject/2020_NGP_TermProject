@@ -4,10 +4,10 @@
 #include "GameObject.h"
 
 Vector2 slot_nickname_pos[4] = {
-{325,	25 + 15 },
-{575,	25 + 15 },
-{325,	325 + 15 },
-{575,	325 + 15 },
+	{325,	25 + 15 },
+	{575,	25 + 15 },
+	{325,	325 + 15 },
+	{575,	325 + 15 },
 };
 
 void LobbyScene::Initialize()
@@ -24,10 +24,10 @@ void LobbyScene::Initialize()
 
 	m_ChattingText = m_Framework->m_Objects.AddText();
 	m_ChattingText->m_Text = m_ChattingText->m_Text;
-	m_ChattingText->m_Left = 20;
-	m_ChattingText->m_Top = 660;
-	m_ChattingText->m_Right = 300;
-	m_ChattingText->m_Bottom = 780;
+	m_ChattingText->m_Left = 20 + 10;
+	m_ChattingText->m_Top = 660 + 10;
+	m_ChattingText->m_Right = 300 - 10;
+	m_ChattingText->m_Bottom = 780 - 10;
 	m_ChattingText->font = FontKey::CHATTING;
 
 	Vector2 slot_pos[4] = {
@@ -58,7 +58,7 @@ void LobbyScene::Initialize()
 	Vector2 left_origin{ 300, 600 };
 	m_Framework->m_Objects.AddStaticObject(
 		BitmapKey::READY_BUTTON,
-		Vector2(50, 50) + left_origin
+		Vector2(75, 25) + left_origin
 	);
 }
 
@@ -120,8 +120,8 @@ void LobbyScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_KEYUP:
 		switch (wParam) {
 		case VK_RETURN:
-			// m_Framework->m_Communicator.SendChatting(m_ChattingText->m_Text);
-			m_Framework->m_Communicator.SendReady();
+			m_Framework->m_Communicator.SendChatting(m_ChattingText->m_Text);
+			// m_Framework->m_Communicator.SendReady();
 			break;
 		default:
 			break;
@@ -129,7 +129,19 @@ void LobbyScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_KEYDOWN:
 		break;
-	case WM_LBUTTONDOWN:
+	case WM_LBUTTONDOWN: {
+		POINT pt;
+		pt.x = LOWORD(lParam);
+		pt.y = HIWORD(lParam);
+
+		OutputDebugString(std::to_wstring(pt.x).c_str());
+
+		if (pt.x > 375 && pt.x < 375 + 350 &&
+			pt.y > 625 && pt.y < 625 + 118) {
+			m_Framework->m_Communicator.SendReady();
+		}
+		break;
+	}
 	case WM_LBUTTONUP:
 		break;
 	}
