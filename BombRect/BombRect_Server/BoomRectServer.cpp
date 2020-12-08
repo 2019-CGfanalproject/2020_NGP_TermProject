@@ -66,14 +66,13 @@ list <S_ExplosiveInfo> explosions;
 list<S_Bombinfo> bombs;
 
 int number_of_clients;
-bool ReadyCount[4];
 int alivePlayer;
 bool retireFlag[4];
 result_packet::TimeOver timeoverPacket;
 bool allready;
 unsigned int CountDown{ 0 };
 
-lobby_packet::LobbyInfo nicknamePacket{};
+lobby_packet::LobbyInfo userPacket{};
 
 game_packet::CS_PlayerState volatile PlayerPacket[4];
 game_packet::CS_Bomb BombPacket;
@@ -137,12 +136,12 @@ unsigned __stdcall ClinetsThread(LPVOID arg) {
 
 	// 닉네임 받는 부분
 
-	retval = recvn(client->client, (char*)&nicknamePacket.users[client->index], sizeof(lobby_packet::Nickname), 0);
-	nicknamePacket.users[client->index].id = client->index;
-	nicknamePacket.type = lobby_packet::PacketType::LOBBY_INFO;
-	nicknamePacket.size = 100;
+	retval = recvn(client->client, (char*)&userPacket.users[client->index], sizeof(lobby_packet::Nickname), 0);
+	userPacket.users[client->index].id = client->index;
+	userPacket.type = lobby_packet::PacketType::LOBBY_INFO;
+	userPacket.size = 100;
 	for (int i = 0; i < number_of_clients; ++i) {
-		send(clients[i].client, (const char*)&nicknamePacket, sizeof(lobby_packet::LobbyInfo), 0);
+		send(clients[i].client, (const char*)&userPacket, sizeof(lobby_packet::LobbyInfo), 0);
 	}
 
 
@@ -204,7 +203,7 @@ void SetBomb(SendBombInfo bomb_tmp, ClientInfo* client) {
 
 }
 
-
+mutex Ready_L;
 void LobbyCummunicate(LPVOID arg)
 {
 	ClientInfo* client = (ClientInfo *)arg;
@@ -214,7 +213,7 @@ void LobbyCummunicate(LPVOID arg)
 	addrlen = sizeof(clientaddr);
 	getpeername(client->client, (SOCKADDR*)&clientaddr, &addrlen);
 	bool ReadyPressed = false; 
-	
+	userPacket.users[client->index].Ready[client->index] = false;
 	
 	LobbyPacketHeader header;
 	
@@ -232,12 +231,13 @@ void LobbyCummunicate(LPVOID arg)
 			readyPacket.size = client->index;
 			if (!ReadyPressed ) {
 				cout << "레디\n";
-				ReadyCount[client->index] = true;
+				
+				userPacket.users[client->index].Ready[client->index] = true;
 				ReadyPressed = true;
 			}
 			else {
 				cout << "레디 취소\n";
-				ReadyCount[client->index] = false;
+				userPacket.users[client->index].Ready[client->index] = false;
 				ReadyPressed = false;
 
 			}
@@ -247,21 +247,24 @@ void LobbyCummunicate(LPVOID arg)
 				send(clients[i].client, (char*)&readyPacket , sizeof(readyPacket), 0);
 			}
 			for (int i = 0; i < number_of_clients; ++i) {
-				if (ReadyCount[i] == false) allready = false;
-				
-				allready = true;
-				
+				if (userPacket.users[i].Ready[i] == false) { 
+					allready = false; 
+					break;
+				}
+				else {
+					allready = true;
+				}
 			}
 			if (allready) {
 				// 게임 시작 패킷 보내기
 				
 				lobby_packet::SC_GameStart startPacket{};
 				startPacket.type = lobby_packet::PacketType::GAME_START;
-				for(int i =0; i < number_of_clients ;++i)
-				send(clients[i].client, (char*)&startPacket, sizeof(startPacket), 0);	
-				
+				for (int i = 0; i < number_of_clients; ++i) {
+					send(clients[i].client, (char*)&startPacket, sizeof(startPacket), 0);
+					userPacket.users[i].Ready[i] = false;
+				}
 				ResumeThread(hThread2);
-				SetEvent(hThread2);
 			}
 		}
 
@@ -324,16 +327,14 @@ void GameCommunicate(LPVOID arg) {
 		PlayerState player_state;
 
 		if (Gameheader.type == game_packet::PacketType::PlayerState) {
-			retval = recvn(client->client, (char*)&player_state, sizeof(PlayerPacket[client->index].state), 0);
+			retval = recvn(client->client, (char*)&playerinfo[client->index].state, sizeof(PlayerPacket[client->index].state), 0);
 
-			g_lock.lock();
-			PlayerPacket[client->index].state = player_state;
-			g_lock.unlock();
+
 
 			if (retval == SOCKET_ERROR) {
 				error_display("recv");
 			}
-			switch (PlayerPacket[client->index].state) {
+			switch (playerinfo[client->index].state) {
 			case PlayerState::IDLE:
 				cout << "player state: 기본 \n";
 				break;
@@ -411,15 +412,11 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 	while (true) {
 
 		// 이동 및 충돌 처리
-		PlayerState player_state[4];
-
+		
 		for (int i = 0; i < number_of_clients; ++i) {
 			if (playerinfo[i].state == PlayerState::DEAD)continue;
-			g_lock.lock();
-			player_state[i] = PlayerPacket[i].state;
-			g_lock.unlock();
-
-			switch (player_state[i]) {
+			
+			switch (playerinfo[i].state) {
 			case PlayerState::IDLE:
 				playerinfo[i].state = PlayerState::IDLE;
 				vel_x[i] = 0;
@@ -823,7 +820,7 @@ int main(int argc, char* argv[])
 	bool acceptflag = false;
 	SceneCheck = SceneID::LOBBY;
 	for (int i = 0; i < 4; ++i) {
-		nicknamePacket.users[i].id = 100;
+		userPacket.users[i].id = 100;
 	}
 
 	while (1) {

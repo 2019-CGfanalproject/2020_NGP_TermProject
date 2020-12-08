@@ -11,6 +11,7 @@ namespace lobby_packet {
 #pragma pack(1)
 	struct Nickname {
 		unsigned int id;
+		bool Ready[4];
 		TCHAR name[16];
 	};
 
@@ -28,6 +29,7 @@ namespace lobby_packet {
 	struct Chatting {
 		PacketType type;
 		unsigned short size;
+		unsigned int id;
 		TCHAR string[256];
 	};
 
