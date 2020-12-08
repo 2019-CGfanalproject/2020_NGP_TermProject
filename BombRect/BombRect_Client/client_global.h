@@ -51,7 +51,7 @@ enum class BitmapKey {
 };
 
 enum class FontKey {
-	TITLE,
+	LOGIN,
 	CHATTING,
 	NICKNAME,
 };

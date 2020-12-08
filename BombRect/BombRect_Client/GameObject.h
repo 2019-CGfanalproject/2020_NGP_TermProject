@@ -61,4 +61,5 @@ public:
 	int m_Bottom;
 
 	FontKey font;
+	bool is_align_center = false;
 };

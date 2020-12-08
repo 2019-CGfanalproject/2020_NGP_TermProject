@@ -39,18 +39,6 @@ BitmapPair g_bitmapInfo[] = {
 	{ BitmapKey::CHATTING_INPUT_REGION,	L"Assets/chatting_input_region.png"	},
 };
 
-IDWriteTextFormat* GetTextFormat(FontKey font) {
-	switch (font) {
-	case FontKey::TITLE:
-		return nullptr;
-	case FontKey::CHATTING:
-		return nullptr;
-	case FontKey::NICKNAME:
-		return nullptr;
-	}
-}
-
-
 Renderer::Renderer():
 	m_Wnd(NULL),
 	m_Factory(NULL),
@@ -102,37 +90,45 @@ void Renderer::Initailize(HINSTANCE hInst, HWND hWnd)
 		reinterpret_cast<IUnknown**>(&m_WriteFactory)
 	);
 
+	// login
 	m_WriteFactory->CreateTextFormat(
-		L"Gabriola",                // Font family name.
+		L"나눔스퀘어라운드",                // Font family name.
+		NULL,							// Font collection
+		DWRITE_FONT_WEIGHT_EXTRA_BOLD,
+		DWRITE_FONT_STYLE_NORMAL,
+		DWRITE_FONT_STRETCH_NORMAL,
+		36.0f,
+		L"en-us",
+		&m_LoginTextFormat
+	);
+
+	// chatting
+	m_WriteFactory->CreateTextFormat(
+		L"나눔스퀘어라운드",                // Font family name.
 		NULL,                       // Font collection (NULL sets it to use the system font collection).
 		DWRITE_FONT_WEIGHT_REGULAR,
 		DWRITE_FONT_STYLE_NORMAL,
 		DWRITE_FONT_STRETCH_NORMAL,
-		20.0f,
+		16.f,
 		L"en-us",
-		&m_TextFormat
+		&m_ChattingTextFormat
 	);
 
+	// nickname
 	m_WriteFactory->CreateTextFormat(
-		L"메이플스토리",                // Font family name.
+		L"나눔스퀘어라운드",                // Font family name.
 		NULL,                       // Font collection (NULL sets it to use the system font collection).
-		DWRITE_FONT_WEIGHT_BOLD,
+		DWRITE_FONT_WEIGHT_EXTRA_BOLD,
 		DWRITE_FONT_STYLE_NORMAL,
 		DWRITE_FONT_STRETCH_NORMAL,
-		36.f,
+		24.f,
 		L"en-us",
-		&m_LobbyTextFormat
+		&m_NicknameTextFormat
 	);
 
-	m_WriteFactory->CreateTextFormat(
-		L"나눔스퀘어",                // Font family name.
-		NULL,                       // Font collection (NULL sets it to use the system font collection).
-		DWRITE_FONT_WEIGHT_BOLD,
-		DWRITE_FONT_STYLE_NORMAL,
-		DWRITE_FONT_STRETCH_NORMAL,
-		36.f,
-		L"en-us",
-		&m_LobbyTextFormat
+	m_RenderTarget->CreateSolidColorBrush(
+		D2D1::ColorF(D2D1::ColorF::Black),
+		&m_FontBrush
 	);
 
 	LoadGameBitmap();
@@ -198,14 +194,6 @@ void Renderer::TestRender()
 	D2D1_RECT_F layoutRect = D2D1::RectF(
 		0, 0, 200, 100
 	);
-
-	m_RenderTarget->DrawTextW(
-		L"Hello World",
-		11,
-		m_TextFormat,
-		layoutRect,
-		m_TestBrush
-	);
 	
 	m_RenderTarget->EndDraw();
 }
@@ -225,23 +213,48 @@ void Renderer::Render(const ObjectContainer& objects)
 		DrawBitmap(object);
 	}
 
+
+	IDWriteTextLayout* text_layout = nullptr;
 	for (auto& object : objects.m_Texts) {
-		m_RenderTarget->DrawTextW(
-			object->m_Text.c_str(),
-			object->m_Text.size(),
-			m_LobbyTextFormat,
-			D2D1::RectF(
-				object->m_Left, object->m_Top,
-				object->m_Right, object->m_Bottom
-			),
-			m_TestBrush
-		);
 
-		// 정렬을 하려면 이 함수를 사용해야함
-		// m_RenderTarget->DrawTextLayout()
+		if (object->is_align_center) {
+
+			m_WriteFactory->CreateTextLayout(
+				object->m_Text.c_str(),
+				object->m_Text.size(),
+				this->GetTextFormat(object->font),
+				object->m_Right - object->m_Left,
+				object->m_Bottom - object->m_Top,
+				&text_layout
+			);
+
+			if (text_layout) {
+				text_layout->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+
+				m_RenderTarget->DrawTextLayout(
+					D2D1_POINT_2F{
+						static_cast<float>(object->m_Left),
+						static_cast<float>(object->m_Top)
+					},
+					text_layout,
+					m_FontBrush
+				);
+			}
+
+		}
+		else {
+			m_RenderTarget->DrawTextW(
+				object->m_Text.c_str(),
+				object->m_Text.size(),
+				this->GetTextFormat(object->font),
+				D2D1::RectF(
+					object->m_Left, object->m_Top,
+					object->m_Right, object->m_Bottom
+				),
+				m_FontBrush
+			);
+		}
 	}
-
-	// 글씨의 정보를 담는 컨테이너를 만든 후 가져와서 for문 돌리기
 
 	m_RenderTarget->EndDraw();
 }
@@ -284,6 +297,18 @@ void Renderer::DrawBitmap(const DynamicObject& object)
 			pos.x + size.width, pos.y + size.height),
 		object.m_Opacity
 	);
+}
+
+IDWriteTextFormat* Renderer::GetTextFormat(FontKey font)
+{
+	switch (font) {
+	case FontKey::LOGIN:
+		return m_LoginTextFormat;
+	case FontKey::CHATTING:
+		return m_ChattingTextFormat;
+	case FontKey::NICKNAME:
+		return m_NicknameTextFormat;
+	}
 }
 
 HRESULT Renderer::LoadGameBitmap()

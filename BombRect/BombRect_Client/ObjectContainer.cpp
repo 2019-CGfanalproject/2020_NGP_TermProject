@@ -15,13 +15,6 @@ Vector2 slot_player_pos[4] = {
 	{575 + 60,	325 + 60},
 };
 
-Vector2 slot_nickname_pos[4] = {
-	{325,	25},
-	{575,	25},
-	{325,	325},
-	{575,	325},
-};
-
 Vector2 slot_pos[4] = {
 	{ 325, 25 }, { 575, 25 },
 	{ 325, 325 }, { 575, 325 },
@@ -35,7 +28,7 @@ ObjectContainer::ObjectContainer()
 	degree[3] = 180.f;
 
 	for (int i = 0; i < 4; ++i) {
-		m_Nicknames[i].id = 0;
+		m_Nicknames[i].id = 100;
 	}
 }
 
@@ -69,24 +62,15 @@ DynamicObject* ObjectContainer::AddDynamicObject(
 void ObjectContainer::UpdateLobby()
 {
 	m_DynamicObjects.clear();
-	m_Texts.clear();
 
 	m_Lock.lock();
+
 	for (int i = 0; i < 4; ++i) {
-		OutputDebugStringA(std::to_string(m_Nicknames[i].id).c_str());
-		OutputDebugStringA("\n");
 		if (m_Nicknames[i].id == 100) continue;		// 빈 슬롯은 id를 100로 채워서 보내줄 것
 		AddDynamicObject(
 			GetBitmapKeyFrom(m_Nicknames[i].id),
 			slot_player_pos[i]
 		);
-
-		TextObject* name = AddText();
-		name->m_Text = m_Nicknames[i].name;
-		name->m_Left = slot_nickname_pos[i].x;
-		name->m_Top = slot_nickname_pos[i].y;
-		name->m_Right = slot_nickname_pos[i].x + 200;
-		name->m_Bottom = slot_nickname_pos[i].y + 50;
 	}
 
 	for (int i = 0; i < 4; ++i) {
@@ -203,7 +187,7 @@ void ObjectContainer::Reset()
 
 TextObject* ObjectContainer::AddText()
 {
-	TextObject* text = new TextObject();
+	TextObject* text = new TextObject;
 	m_Texts.push_back(text);
 	return text;
 }

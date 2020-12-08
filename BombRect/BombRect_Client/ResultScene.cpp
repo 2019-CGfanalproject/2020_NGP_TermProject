@@ -25,6 +25,17 @@ void ResultScene::Initialize()
 	int i = 0;
 	for (int id : m_Framework->m_Objects.ranking) {
 		if (i >= 3) break;
+		if (i == 0) {
+			TextObject* nickname = m_Framework->m_Objects.AddText();
+			nickname->m_Text = m_Framework->m_Objects.m_Nicknames[id].name;
+			nickname->m_Left = 225;
+			nickname->m_Right = 225 + 350;
+			nickname->m_Top = 275;
+			nickname->m_Bottom = 400;
+			nickname->font = FontKey::LOGIN;
+			nickname->is_align_center = true;
+		}
+
 		m_Framework->m_Objects.AddStaticObject(GetBitmapKeyFrom(id), ranking_pos[i++]);
 		OutputDebugString(std::to_wstring(id).c_str());
 		OutputDebugString(L"\n");
