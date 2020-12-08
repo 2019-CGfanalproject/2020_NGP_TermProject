@@ -65,7 +65,7 @@ void LoginScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wParam) {
 		case VK_F12: {
 			// 디버그를 위한 루프백 연결 키
-			bool connected = m_Framework->m_Communicator.Connect(loopback.c_str(), TEXT("혜리무"));
+			bool connected = m_Framework->m_Communicator.Connect(shphone.c_str(), TEXT("혜리무"));
 			if (connected) m_Framework->m_SceneManager.ChangeScene(SceneID::LOBBY);
 			break;
 		}

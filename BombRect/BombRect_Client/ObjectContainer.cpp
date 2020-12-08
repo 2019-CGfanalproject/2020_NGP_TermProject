@@ -90,44 +90,32 @@ void ObjectContainer::Update()
 
 	// 현재 패킷을 해석해 업데이트한다.
 	m_Lock.lock();
-	char* ptr = m_WorldState.buf;
+	game_packet::SC_WorldState world = m_WorldState;
+	m_Lock.unlock();
+
+	char* ptr = world.buf;
 
 	PlayerInfo player_info;
 	SendBombInfo bomb_info;
 	SendExplosiveInfo explosion_info;
 
-	// for debug : print count
-	/*
-	OutputDebugString(L"player count: ");
-	OutputDebugString(std::to_wstring(m_WorldState.player_count).c_str());
-	OutputDebugString(L"\n");
-
-	OutputDebugString(L"bomb count: ");
-	OutputDebugString(std::to_wstring(m_WorldState.bomb_count).c_str());
-	OutputDebugString(L"\n");
-
-	OutputDebugString(L"explosive count: ");
-	OutputDebugString(std::to_wstring(m_WorldState.explosive_count).c_str());
-	OutputDebugString(L"\n");
-	*/
-
 	int map_padding = 40;
 
-	for (int i = 0; i < m_WorldState.explosive_count; ++i) {
+	for (int i = 0; i < world.explosive_count; ++i) {
 		memcpy(&explosion_info, ptr, sizeof(TilePos));
 		ptr += sizeof(TilePos);
 
 		AddDynamicObject(BitmapKey::EXPLOSION, Vector2(explosion_info.pos) + map_padding);
 	}
 
-	for (int i = 0; i < m_WorldState.bomb_count; ++i) {
+	for (int i = 0; i < world.bomb_count; ++i) {
 		memcpy(&bomb_info, ptr, sizeof(SendBombInfo));
 		ptr += sizeof(SendBombInfo);
 
 		AddDynamicObject(BitmapKey::BOMB, Vector2(bomb_info.pos) + map_padding);
 	}
 
-	for (int i = 0; i < m_WorldState.player_count; ++i) {
+	for (int i = 0; i < world.player_count; ++i) {
 		memcpy(&player_info, ptr, sizeof(PlayerInfo));
 		ptr += sizeof(PlayerInfo);
 
@@ -167,8 +155,6 @@ void ObjectContainer::Update()
 			AddDynamicObject(BitmapKey::UI_HEART, pos);
 		}
 	}
-	
-	m_Lock.unlock();
 }
 
 void ObjectContainer::Reset()

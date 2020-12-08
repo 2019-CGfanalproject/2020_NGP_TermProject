@@ -104,10 +104,14 @@ void NetworkCommunicator::SendChatting(const String& chatting)
 	Chatting packet;
 	packet.type = PacketType::CHATING;
 	packet.size = chatting.length() * sizeof(wchar_t);
-	packet.id = 0;
 
-	for (int i = 0; i < chatting.length(); ++i)
-		packet.string[i] = chatting[i];
+	packet.id = 100;
+	ZeroMemory(packet.string, sizeof(TCHAR) * 256);
+
+	//for (int i = 0; i < chatting.length(); ++i)
+	//	packet.string[i] = chatting[i];
+	memcpy(packet.string, chatting.c_str(), chatting.size() * sizeof(TCHAR));
+
 	send(m_Socket, (char*)&packet, sizeof(packet), 0);	// 문자열 개수만큼만 보내기
 }
 
@@ -126,7 +130,7 @@ void NetworkCommunicator::SendPlayerState(PlayerState state)
 	game_packet::CS_PlayerState packet;
 	packet.type = game_packet::PacketType::PlayerState;
 	packet.state = state;
-	send(m_Socket, (char*)&packet, sizeof(packet), 0);	// 문자열 개수만큼만 보내기
+	send(m_Socket, (char*)&packet, sizeof(packet), 0);
 }
 
 void NetworkCommunicator::SendBomb()
