@@ -103,8 +103,8 @@ void error_display(const char* msg) {
 		NULL, WSAGetLastError(),
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 		(LPTSTR)&lpMsgBuf, 0, NULL);
-	printf("[%s] %s", msg, (char*)lpMsgBuf);
-	LocalFree(lpMsgBuf);
+	wcout << lpMsgBuf << endl;
+	//LocalFree(lpMsgBuf);
 }
 
 
@@ -283,13 +283,14 @@ void LobbyCummunicate(LPVOID arg)
 
 			lobby_packet::Chatting chattingPacket{};
 
-			retval = recvn(client->client, (char*)chattingPacket.id, sizeof(unsigned int), 0);
+			retval = recvn(client->client, (char*)chattingPacket.id, sizeof(chattingPacket.id), 0);
 			chattingPacket.type = lobby_packet::PacketType::CHATING;
+
 			chattingPacket.id = client->index;
 			chattingPacket.size = header.size;
 			
 			
-			retval = recvn(client->client, (char*)chattingPacket.string, header.size, 0);
+			retval = recvn(client->client, (char*)chattingPacket.string, sizeof(WCHAR)*256, 0);
 			
 			for (int i = 0; i < number_of_clients; ++i) {
 				send(clients[i].client, (char*)&chattingPacket, sizeof(chattingPacket), 0);
