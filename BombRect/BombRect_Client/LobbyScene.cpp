@@ -131,7 +131,8 @@ void LobbyScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_KEYUP:
 		switch (wParam) {
 		case VK_RETURN:
-			m_Framework->m_Communicator.SendChatting(m_ChattingText->m_Text);
+			//m_Framework->m_Communicator.SendChatting(m_ChattingText->m_Text);
+			m_ChattingText->m_Text.clear();
 			break;
 		default:
 			break;
