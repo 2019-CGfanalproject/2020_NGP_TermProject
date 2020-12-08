@@ -88,6 +88,7 @@ bool NetworkCommunicator::Connect(const char* ip_addr, const String& nickname)
 	// 2. nickname 보내기
 	lobby_packet::Nickname packet;
 	packet.id = 0;
+	packet.Ready = false;
 	ZeroMemory(packet.name, sizeof(TCHAR) * 16);
 	memcpy(packet.name, nickname.c_str(), nickname.size() * sizeof(TCHAR));
 	send(m_Socket, (const char*)&packet, sizeof(packet), 0);
@@ -103,6 +104,8 @@ void NetworkCommunicator::SendChatting(const String& chatting)
 	Chatting packet;
 	packet.type = PacketType::CHATING;
 	packet.size = chatting.length() * sizeof(wchar_t);
+	packet.id = 0;
+
 	for (int i = 0; i < chatting.length(); ++i)
 		packet.string[i] = chatting[i];
 	send(m_Socket, (char*)&packet, sizeof(packet), 0);	// 문자열 개수만큼만 보내기
@@ -163,7 +166,9 @@ void NetworkCommunicator::ReceiveRobbyPacket()
 			break;
 		}
 		case PacketType::CHATING: {
+			int id = 0;
 			TCHAR buf[256];
+			recvn(m_Socket, (char*)id, sizeof(unsigned int), 0);
 			recvn(m_Socket, (char*)buf, header.size, 0);
 			m_Framework->m_Objects.AddChatting(buf);
 			break;

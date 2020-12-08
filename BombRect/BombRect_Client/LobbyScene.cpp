@@ -3,12 +3,19 @@
 #include "GameFramework.h"
 #include "GameObject.h"
 
+constexpr int MAX_CHATTING_SIZE = 17 * 6;
+
 Vector2 slot_nickname_pos[4] = {
 	{325,	25 + 15 },
 	{575,	25 + 15 },
 	{325,	325 + 15 },
 	{575,	325 + 15 },
 };
+
+Vector2 chatting_box_size = { 120, 260 };
+
+// 630
+// 5개의 채팅이 들어갈 수 있음
 
 void LobbyScene::Initialize()
 {
@@ -25,9 +32,9 @@ void LobbyScene::Initialize()
 	m_ChattingText = m_Framework->m_Objects.AddText();
 	m_ChattingText->m_Text = m_ChattingText->m_Text;
 	m_ChattingText->m_Left = 20 + 10;
-	m_ChattingText->m_Top = 660 + 10;
+	m_ChattingText->m_Top = 660 + 5;
 	m_ChattingText->m_Right = 300 - 10;
-	m_ChattingText->m_Bottom = 780 - 10;
+	m_ChattingText->m_Bottom = 780 - 5;
 	m_ChattingText->font = FontKey::CHATTING;
 
 	Vector2 slot_pos[4] = {
@@ -75,6 +82,8 @@ void LobbyScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message) {
 	case WM_CHAR: {
+		if (m_ChattingText->m_Text.size() >= MAX_CHATTING_SIZE) return;
+
 		switch (wParam) {
 		case 8: {	// backspace
 			if (0 < m_ChattingText->m_Text.size())
@@ -91,6 +100,8 @@ void LobbyScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	}
 	case WM_IME_COMPOSITION: {
+		if (m_ChattingText->m_Text.size() >= MAX_CHATTING_SIZE) return;
+
 		int len;
 		wchar_t letter;
 		HIMC hIMC = ImmGetContext(m_Framework->m_Wnd);
@@ -121,7 +132,6 @@ void LobbyScene::HandleInput(UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wParam) {
 		case VK_RETURN:
 			m_Framework->m_Communicator.SendChatting(m_ChattingText->m_Text);
-			// m_Framework->m_Communicator.SendReady();
 			break;
 		default:
 			break;
