@@ -66,10 +66,11 @@ list <S_ExplosiveInfo> explosions;
 list<S_Bombinfo> bombs;
 
 int number_of_clients;
-int ReadyCount;
+bool ReadyCount[4];
 int alivePlayer;
 bool retireFlag[4];
 result_packet::TimeOver timeoverPacket;
+bool allready;
 unsigned int CountDown{ 0 };
 
 lobby_packet::LobbyInfo nicknamePacket{};
@@ -150,7 +151,7 @@ unsigned __stdcall ClinetsThread(LPVOID arg) {
 		switch (SceneCheck) {
 
 		case SceneID::LOBBY:
-			ReadyCount = 0;
+		
 			LobbyCummunicate(arg);
 
 
@@ -196,8 +197,8 @@ void SetBomb(SendBombInfo bomb_tmp, ClientInfo* client) {
 		
 		bombLock.lock();
 		ClosedTiles[(int)bomb_tmp.pos.r][(int)bomb_tmp.pos.c] = BOMB;
-		bombs.emplace_back(bomb_tmp, (int)client->index);
 		bombLock.unlock();
+		bombs.emplace_back(bomb_tmp, (int)client->index);
 		playerinfo[client->index].bomb_count--;
 	}
 
@@ -231,12 +232,12 @@ void LobbyCummunicate(LPVOID arg)
 			readyPacket.size = client->index;
 			if (!ReadyPressed ) {
 				cout << "레디\n";
-				++ReadyCount;
+				ReadyCount[client->index] = true;
 				ReadyPressed = true;
 			}
 			else {
 				cout << "레디 취소\n";
-				--ReadyCount;
+				ReadyCount[client->index] = false;
 				ReadyPressed = false;
 
 			}
@@ -245,7 +246,13 @@ void LobbyCummunicate(LPVOID arg)
 				//레디 정보 패킷 보내기
 				send(clients[i].client, (char*)&readyPacket , sizeof(readyPacket), 0);
 			}
-			if (number_of_clients == ReadyCount) {
+			for (int i = 0; i < number_of_clients; ++i) {
+				if (ReadyCount[i] == false) allready = false;
+				
+				allready = true;
+				
+			}
+			if (allready) {
 				// 게임 시작 패킷 보내기
 				
 				lobby_packet::SC_GameStart startPacket{};
@@ -302,8 +309,6 @@ void GameCommunicate(LPVOID arg) {
 	PlayerState playerstate;
 	GamePacketHeader Gameheader;
 	
-	playerinfo[client->index].life_count = 3;
-	playerinfo[client->index].bomb_count = 3;
 	
 	while (true) {
 		// 너는 리시브만 받고 업데이트로(전역 변수 업데이트 해줘)
@@ -312,7 +317,6 @@ void GameCommunicate(LPVOID arg) {
 		if (retval == SOCKET_ERROR) {
 			if (!retireFlag[client->index]) {
 				retireFlag[client->index] = true;
-			
 			}
 			continue;
 		}
