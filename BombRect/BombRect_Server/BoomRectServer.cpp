@@ -213,7 +213,7 @@ void LobbyCummunicate(LPVOID arg)
 	addrlen = sizeof(clientaddr);
 	getpeername(client->client, (SOCKADDR*)&clientaddr, &addrlen);
 	bool ReadyPressed = false; 
-	userPacket.users[client->index].Ready[client->index] = false;
+	userPacket.users[client->index].Ready = false;
 	
 	LobbyPacketHeader header;
 	
@@ -232,12 +232,12 @@ void LobbyCummunicate(LPVOID arg)
 			if (!ReadyPressed ) {
 				cout << "레디\n";
 				
-				userPacket.users[client->index].Ready[client->index] = true;
+				userPacket.users[client->index].Ready = true;
 				ReadyPressed = true;
 			}
 			else {
 				cout << "레디 취소\n";
-				userPacket.users[client->index].Ready[client->index] = false;
+				userPacket.users[client->index].Ready = false;
 				ReadyPressed = false;
 
 			}
@@ -247,7 +247,7 @@ void LobbyCummunicate(LPVOID arg)
 				send(clients[i].client, (char*)&readyPacket , sizeof(readyPacket), 0);
 			}
 			for (int i = 0; i < number_of_clients; ++i) {
-				if (userPacket.users[i].Ready[i] == false) { 
+				if (userPacket.users[i].Ready == false) { 
 					allready = false; 
 					break;
 				}
@@ -262,7 +262,7 @@ void LobbyCummunicate(LPVOID arg)
 				startPacket.type = lobby_packet::PacketType::GAME_START;
 				for (int i = 0; i < number_of_clients; ++i) {
 					send(clients[i].client, (char*)&startPacket, sizeof(startPacket), 0);
-					userPacket.users[i].Ready[i] = false;
+					userPacket.users[i].Ready = false;
 				}
 				ResumeThread(hThread2);
 			}
@@ -280,14 +280,17 @@ void LobbyCummunicate(LPVOID arg)
 		//채팅
 		if (header.type == lobby_packet::PacketType::CHATING) {
 			//채팅 패킷 보내기
-			
-			char ChattingBuf[256]{};
-			lobby_packet::Chatting chattingPacket;
+
+			lobby_packet::Chatting chattingPacket{};
+
+			retval = recvn(client->client, (char*)chattingPacket.id, sizeof(unsigned int), 0);
 			chattingPacket.type = lobby_packet::PacketType::CHATING;
 			chattingPacket.id = client->index;
+			chattingPacket.size = header.size;
 			
 			
 			retval = recvn(client->client, (char*)chattingPacket.string, header.size, 0);
+			
 			for (int i = 0; i < number_of_clients; ++i) {
 				send(clients[i].client, (char*)&chattingPacket, sizeof(chattingPacket), 0);
 			}
@@ -784,6 +787,9 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 int main(int argc, char* argv[])
 {
 	int retval;
+	for (int i = 0; i < 4; ++i) {
+		userPacket.users[i].Ready = false;
+	}
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		return 1;

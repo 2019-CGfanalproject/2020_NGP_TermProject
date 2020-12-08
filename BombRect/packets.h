@@ -11,7 +11,7 @@ namespace lobby_packet {
 #pragma pack(1)
 	struct Nickname {
 		unsigned int id;
-		bool Ready[4];
+		bool Ready = false;
 		TCHAR name[16];
 	};
 
