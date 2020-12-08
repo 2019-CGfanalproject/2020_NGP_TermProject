@@ -280,10 +280,11 @@ void LobbyCummunicate(LPVOID arg)
 		//채팅
 		if (header.type == lobby_packet::PacketType::CHATING) {
 			//채팅 패킷 보내기
-
+			
 			char ChattingBuf[256]{};
 			lobby_packet::Chatting chattingPacket;
 			chattingPacket.type = lobby_packet::PacketType::CHATING;
+			chattingPacket.id = client->index;
 			
 			
 			retval = recvn(client->client, (char*)chattingPacket.string, header.size, 0);
