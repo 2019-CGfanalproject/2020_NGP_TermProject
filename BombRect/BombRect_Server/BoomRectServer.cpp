@@ -196,9 +196,9 @@ void SetBomb(SendBombInfo bomb_tmp, ClientInfo* client) {
 		
 		bombLock.lock();
 		ClosedTiles[(int)bomb_tmp.pos.r][(int)bomb_tmp.pos.c] = BOMB;
-		bombLock.unlock();
 		bombs.emplace_back(bomb_tmp, (int)client->index);
 		playerinfo[client->index].bomb_count--;
+		bombLock.unlock();
 	}
 
 }
@@ -278,25 +278,25 @@ void LobbyCummunicate(LPVOID arg)
 		}
 
 		//채팅
-		if (header.type == lobby_packet::PacketType::CHATING) {
-			//채팅 패킷 보내기
+		//if (header.type == lobby_packet::PacketType::CHATING) {
+		//	//채팅 패킷 보내기
 
-			lobby_packet::Chatting chattingPacket{};
+		//	lobby_packet::Chatting chattingPacket{};
 
-			retval = recvn(client->client, (char*)chattingPacket.id, sizeof(chattingPacket.id), 0);
-			chattingPacket.type = lobby_packet::PacketType::CHATING;
+		//	retval = recvn(client->client, (char*)chattingPacket.id, sizeof(chattingPacket.id), 0);
+		//	chattingPacket.type = lobby_packet::PacketType::CHATING;
 
-			chattingPacket.id = client->index;
-			chattingPacket.size = header.size;
-			
-			
-			retval = recvn(client->client, (char*)chattingPacket.string, sizeof(WCHAR)*256, 0);
-			
-			for (int i = 0; i < number_of_clients; ++i) {
-				send(clients[i].client, (char*)&chattingPacket, sizeof(chattingPacket), 0);
-			}
+		//	chattingPacket.id = client->index;
+		//	chattingPacket.size = header.size;
+		//	
+		//	
+		//	retval = recvn(client->client, (char*)chattingPacket.string, sizeof(WCHAR)*256, 0);
+		//	
+		//	for (int i = 0; i < number_of_clients; ++i) {
+		//		send(clients[i].client, (char*)&chattingPacket, sizeof(chattingPacket), 0);
+		//	}
 
-		}
+		//}
 
 
 	}
@@ -334,8 +334,6 @@ void GameCommunicate(LPVOID arg) {
 		if (Gameheader.type == game_packet::PacketType::PlayerState) {
 			retval = recvn(client->client, (char*)&playerinfo[client->index].state, sizeof(PlayerPacket[client->index].state), 0);
 
-
-
 			if (retval == SOCKET_ERROR) {
 				error_display("recv");
 			}
@@ -365,7 +363,7 @@ void GameCommunicate(LPVOID arg) {
 				bomb_tmp.bomb_count_down = 3000;
 				bomb_tmp.pos.r = std::round(playerinfo[client->index].pos.r);
 				bomb_tmp.pos.c = std::round(playerinfo[client->index].pos.c);
-
+				
 
 				SetBomb(bomb_tmp, client);
 
@@ -535,7 +533,9 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 
 			if (bomb.bombinfo.bomb_count_down == 0) {
 				//터지면 소지 수 증가
+				bombLock.lock();
 				playerinfo[bomb.id].bomb_count++;
+				bombLock.unlock();
 				zero_bombs++;
 
 				// 자기 위치
@@ -681,8 +681,8 @@ unsigned __stdcall UpdateAndSend(LPVOID arg) {
 		for (int i = 0; i < zero_bombs; ++i) {
 			bombLock.lock();
 			ClosedTiles[(int)bombs.front().bombinfo.pos.r][(int)bombs.front().bombinfo.pos.c] = false;
-			bombLock.unlock();
 			bombs.pop_front();
+			bombLock.unlock();
 		}
 		zero_bombs = 0;
 
